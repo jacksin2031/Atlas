@@ -1,0 +1,30 @@
+﻿# Rust build artifacts
+/target/
+Cargo.lock
+
+# Generated files
+_gen0106.py
+_write_rfc0401.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+*.pdb
+*.dll
+*.exe
+
+# Large directories
+benchmarks/results/
+samples/output/
+
+# Knowledge packs cache
+knowledge-packs/.cache/

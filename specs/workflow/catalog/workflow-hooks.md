@@ -1,0 +1,1 @@
+# WORKFLOW HOOKS\n\nCatalog document for workflow-hooks.\n\nThis catalog document provides a reference for the workflow-hooks workflow specification.\n\n## Classification\n\n| Attribute | Value |\n|---|---|\n| Category | Workflow |\n| Type | Catalog |\n| Status | Proposed |\n| Version | 1.0.0 |\n

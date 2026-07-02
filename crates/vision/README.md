@@ -1,8 +1,9 @@
-﻿# crates/vision
+﻿# crates/capture
 
 ## Purpose
 
-Rust-native vision processing module. Skeleton only; no implementation.
+Screen capture and frame acquisition for Rust-native vision. Skeleton only; no
+implementation.
 
 ## Ownership
 
@@ -10,7 +11,7 @@ Vision team
 
 ## Dependencies
 
-- `crates/capture`
+None
 
 ## Related RFCs
 
@@ -18,4 +19,4 @@ Vision team
 
 ## Future Scope
 
-OCR, image analysis, and frame processing pipelines.
+Cross-platform screen capture, screenshot APIs, and frame buffering.

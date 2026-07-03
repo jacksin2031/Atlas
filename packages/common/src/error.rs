@@ -2,7 +2,9 @@
 //!
 //! Re-exports from atlas-contracts and defines composite errors.
 
-pub use atlas_contracts::{ServiceError, EventBusError, SchedulerError, StateTransitionError};
+pub use atlas_contracts::{
+    ServiceError, EventBusError, SchedulerError, StateTransitionError, MetricsError, StorageError,
+};
 use thiserror::Error;
 
 /// Error from manifest operations.
@@ -14,6 +16,12 @@ pub enum ManifestError {
     CapabilityUnsupported(String),
     #[error("version mismatch: {0}")]
     VersionMismatch(String),
+    #[error("parse error: {0}")]
+    ParseError(String),
+    #[error("file not found: {0}")]
+    FileNotFound(String),
+    #[error("schema error: {0}")]
+    SchemaError(String),
 }
 
 /// Error from configuration operations.
@@ -25,6 +33,10 @@ pub enum ConfigError {
     FileNotFound(String),
     #[error("invalid value for {key}: {value}")]
     InvalidValue { key: String, value: String },
+    #[error("immutable: configuration is frozen after runtime reaches Running")]
+    Frozen,
+    #[error("missing required key: {0}")]
+    MissingKey(String),
 }
 
 /// Error from health checks.
@@ -34,6 +46,8 @@ pub enum HealthError {
     CheckFailed(String, String),
     #[error("interval enforcement violation")]
     IntervalViolation,
+    #[error("service not registered: {0}")]
+    NotRegistered(String),
 }
 
 /// Error from dependency resolution.
@@ -64,4 +78,8 @@ pub enum AtlasError {
     Health(#[from] HealthError),
     #[error("dependency error: {0}")]
     Dependency(#[from] DependencyError),
+    #[error("metrics error: {0}")]
+    Metrics(#[from] MetricsError),
+    #[error("storage error: {0}")]
+    Storage(#[from] StorageError),
 }

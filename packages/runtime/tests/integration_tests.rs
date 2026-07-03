@@ -1,7 +1,7 @@
 ﻿//! Integration tests for the full runtime lifecycle.
 
 use atlas_runtime::lifecycle::LifecycleManager;
-use atlas_common::{RuntimeState, ConfigError, AtlasError};
+use atlas_common::RuntimeState;
 
 #[test]
 fn test_lifecycle_manager_full_boot() {
@@ -45,12 +45,11 @@ fn test_fatal_recovery() {
 }
 
 #[test]
-fn test_config_loader_missing_file() {
-    let result = atlas_runtime::config::ConfigLoader::load("/nonexistent/path.toml");
+fn test_config_service_missing_file() {
+    let result = atlas_runtime::config::ConfigService::new().load("/nonexistent/path.toml");
     assert!(result.is_err());
-    let err = result.unwrap_err();
-    match err {
-        AtlasError::Config(ConfigError::FileNotFound(_)) => {},
-        _ => panic!("expected ConfigError::FileNotFound, got {:?}", err),
-    }
+    assert!(matches!(
+        result.unwrap_err(),
+        atlas_common::ConfigError::FileNotFound(_)
+    ));
 }

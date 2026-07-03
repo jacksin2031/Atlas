@@ -4,6 +4,8 @@ members = [
     "packages/contracts",
     "packages/common",
     "packages/runtime",
+    "packages/storage",
+    "packages/plugin",
 ]
 
 [workspace.package]
@@ -16,8 +18,17 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "1"
 tracing = "0.1"
-uuid = { version = "1", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
+# NOTE: uuid is pinned to 1.10.0 because uuid >=1.11 pulls getrandom 0.3,
+# whose BCryptGenRandom (bcryptprimitives.dll) import-library generation on
+# the rustup `x86_64-pc-windows-gnu` self-contained toolchain requires a GNU
+# assembler (`as`) that does not ship with that toolchain. uuid 1.10.0 uses
+# getrandom 0.2, which links the prebuilt `libadvapi32.a` (RtlGenRandom) and
+# avoids the dlltool/as path entirely.
+uuid = { version = "=1.10.0", features = ["v4", "serde"] }
+# NOTE: chrono pinned to 0.4.38 to avoid the newer windows-link dependency
+# that triggers dlltool-based import-library generation on
+# `x86_64-pc-windows-gnu` self-contained toolchains.
+chrono = { version = "=0.4.38", features = ["serde"] }
 
 [workspace.lints.clippy]
 all = { level = "warn" }

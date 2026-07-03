@@ -8,18 +8,20 @@ pub mod scheduler;
 pub mod health;
 pub mod config;
 pub mod manifest;
+pub mod metrics;
 pub mod error;
 
 use atlas_common::{AtlasError, HealthStatus};
-use atlas_contracts::RuntimeState;
+use atlas_contracts::{RuntimeState, ServiceContract};
 use registry::ServiceRegistry;
 use lifecycle::LifecycleManager;
 use eventbus::EventBusImpl;
 use scheduler::SchedulerImpl;
-use health::HealthMonitor;
+use health::HealthService;
+use config::ConfigService;
+use manifest::ManifestService;
+use metrics::MetricsService;
 use dependency::DependencyResolver;
-use config::ConfigLoader;
-use manifest::ManifestLoader;
 
 /// The Atlas Runtime — central coordinator for all core services.
 pub struct AtlasRuntime {
@@ -27,28 +29,45 @@ pub struct AtlasRuntime {
     registry: ServiceRegistry,
     event_bus: EventBusImpl,
     scheduler: SchedulerImpl,
-    health_monitor: HealthMonitor,
-    config: ConfigLoader,
-    manifest_loader: ManifestLoader,
+    health: HealthService,
+    config: ConfigService,
+    manifest: ManifestService,
+    metrics: MetricsService,
     dependency_resolver: DependencyResolver,
 }
 
 impl AtlasRuntime {
     /// Bootstrap the runtime from a configuration file path.
     pub fn bootstrap(config_path: &str) -> Result<Self, AtlasError> {
-        let config = ConfigLoader::load(config_path)?;
-        let manifest = ManifestLoader::load_from_config(&config)?;
+        // Configuration Service loads and parses the configuration document.
+        let mut config = ConfigService::new();
+        config.load(config_path).map_err(AtlasError::from)?;
+        config.initialize().map_err(AtlasError::from)?;
+        config.start().map_err(AtlasError::from)?;
+
+        // Manifest Service loads and validates the manifest (RFC-0010 §12).
+        let mut manifest = ManifestService::new();
+        manifest
+            .load_from_config(&config)
+            .map_err(AtlasError::from)?;
+        manifest.initialize().map_err(AtlasError::from)?;
+        manifest.start().map_err(AtlasError::from)?;
 
         let mut lifecycle = LifecycleManager::new();
         let mut event_bus = EventBusImpl::new();
         let scheduler = SchedulerImpl::new(&event_bus);
-        let health_monitor = HealthMonitor::new(&event_bus);
+        let mut health = HealthService::new();
+        health.initialize().map_err(AtlasError::from)?;
+        health.start().map_err(AtlasError::from)?;
+        let mut metrics = MetricsService::new();
+        metrics.initialize().map_err(AtlasError::from)?;
+        metrics.start().map_err(AtlasError::from)?;
         let mut registry = ServiceRegistry::new();
         let dependency_resolver = DependencyResolver::new();
 
         lifecycle.transition(RuntimeState::Initializing)?;
 
-        let services = ManifestLoader::discover_services(&manifest, &registry);
+        let services = manifest.discover_services().map_err(AtlasError::from)?;
         for decl in &services {
             registry.register_declaration(decl.clone())?;
         }
@@ -67,16 +86,21 @@ impl AtlasRuntime {
             registry,
             event_bus,
             scheduler,
-            health_monitor,
+            health,
             config,
-            manifest_loader: manifest,
+            manifest,
+            metrics,
             dependency_resolver,
         })
     }
 
     /// Activate the runtime — transition to Running state.
+    ///
+    /// Configuration is frozen (made immutable) once the Runtime reaches the
+    /// Running state, per RFC-0010 §4.
     pub fn activate(&mut self) -> Result<(), AtlasError> {
         self.lifecycle.transition(RuntimeState::Running)?;
+        self.config.freeze();
         self.scheduler.resume()?;
         Ok(())
     }
@@ -113,7 +137,7 @@ impl AtlasRuntime {
     pub fn health_status(&self) -> RuntimeHealth {
         RuntimeHealth {
             runtime_state: self.lifecycle.current_state(),
-            services: self.health_monitor.aggregate_health(),
+            services: self.health.all_health(),
         }
     }
 
@@ -125,6 +149,31 @@ impl AtlasRuntime {
     /// Get a reference to the service registry.
     pub fn registry(&self) -> &ServiceRegistry {
         &self.registry
+    }
+
+    /// Get a reference to the configuration service.
+    pub fn config(&self) -> &ConfigService {
+        &self.config
+    }
+
+    /// Get a reference to the manifest service.
+    pub fn manifest(&self) -> &ManifestService {
+        &self.manifest
+    }
+
+    /// Get a reference to the metrics service.
+    pub fn metrics(&self) -> &MetricsService {
+        &self.metrics
+    }
+
+    /// Get a reference to the health service.
+    pub fn health(&self) -> &HealthService {
+        &self.health
+    }
+
+    /// Get a reference to the dependency resolver.
+    pub fn dependency_resolver(&self) -> &DependencyResolver {
+        &self.dependency_resolver
     }
 }
 

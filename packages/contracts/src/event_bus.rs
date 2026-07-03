@@ -84,12 +84,11 @@ pub enum EventBusError {
 }
 
 /// The event bus interface.
+///
+/// Uses boxed closures for subscribe to ensure `dyn` compatibility.
 pub trait EventBus: Send + Sync {
     fn publish(&self, channel: Channel, event: Event) -> Result<(), EventBusError>;
-    fn subscribe<F>(&self, pattern: String, handler: F) -> SubscriptionHandle
-    where
-        F: Fn(&Event) + Send + Sync + 'static;
+    fn subscribe(&self, pattern: String, handler: Box<dyn Fn(&Event) + Send + Sync>) -> SubscriptionHandle;
     fn unsubscribe(&self, handle: &SubscriptionHandle) -> Result<(), EventBusError>;
     fn get_stats(&self) -> EventBusStats;
 }
-

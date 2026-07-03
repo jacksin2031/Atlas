@@ -1,25 +1,12 @@
 ﻿//! Service identity types.
 
-use serde::{Deserialize, Serialize};
-
 /// Unique service identifier (UUID).
 pub type ServiceId = String;
 
 /// Human-readable service name.
 pub type ServiceName = String;
 
-/// Service health status.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum HealthStatus {
-    Healthy,
-    Degraded(String),
-    Unhealthy(String),
-    Disabled,
-}
-
-impl HealthStatus {
-    /// Check if the service is considered operational.
-    pub fn is_healthy(&self) -> bool {
-        matches!(self, HealthStatus::Healthy)
-    }
-}
+/// Service health status — re-exported from `atlas-contracts` so that
+/// `atlas_common::HealthStatus` and `atlas_contracts::HealthStatus` are the
+/// same type, satisfying the `ServiceContract` and `HealthChecker` traits.
+pub use atlas_contracts::HealthStatus;

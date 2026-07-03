@@ -14,14 +14,21 @@ pub struct ServiceEntry {
 }
 
 /// Service Registry.
+///
+/// Tracks services in registration order so that shutdown can proceed in
+/// reverse registration order (RFC-0003 §10.1 / RFC-0002 §32: services are
+/// deinitialised in the reverse of their initialization order).
 pub struct ServiceRegistry {
     services: HashMap<String, ServiceEntry>,
+    /// Insertion order of service IDs (registration order).
+    order: Vec<String>,
 }
 
 impl ServiceRegistry {
     pub fn new() -> Self {
         Self {
             services: HashMap::new(),
+            order: Vec::new(),
         }
     }
 
@@ -30,6 +37,7 @@ impl ServiceRegistry {
             return Err(ServiceError::DuplicateRegistration(decl.id));
         }
 
+        self.order.push(decl.id.clone());
         self.services.insert(
             decl.id.clone(),
             ServiceEntry {
@@ -52,8 +60,9 @@ impl ServiceRegistry {
         Ok(())
     }
 
+    /// Return service IDs in reverse registration order for shutdown.
     pub fn deinitialize_all(&mut self) -> Result<Vec<String>, ServiceError> {
-        let mut ids: Vec<String> = self.services.keys().cloned().collect();
+        let mut ids = self.order.clone();
         ids.reverse();
         Ok(ids)
     }

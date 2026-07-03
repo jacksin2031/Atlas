@@ -1,29 +1,36 @@
-﻿//! Health monitor tests.
+﻿//! Health Service tests.
 
-use atlas_runtime::health::HealthMonitor;
+use atlas_runtime::health::HealthService;
 use atlas_common::HealthStatus;
-use atlas_runtime::eventbus::EventBusImpl;
+use atlas_contracts::HealthChecker;
 
 #[test]
-fn test_health_monitor_empty() {
-    let bus = EventBusImpl::new();
-    let monitor = HealthMonitor::new(&bus);
-    let health = monitor.aggregate_health();
-    assert!(health.is_empty());
+fn test_health_service_empty() {
+    let svc = HealthService::new();
+    assert_eq!(svc.aggregate_health(), HealthStatus::Healthy);
+    assert!(svc.all_health().is_empty());
 }
 
 #[test]
 fn test_record_and_query_health() {
-    let bus = EventBusImpl::new();
-    let mut monitor = HealthMonitor::new(&bus);
+    let svc = HealthService::new();
 
-    monitor.record_health("svc-1".to_string(), HealthStatus::Healthy);
-    monitor.record_health("svc-2".to_string(), HealthStatus::Degraded("high cpu".to_string()));
+    svc.record_health(&"svc-1".to_string(), HealthStatus::Healthy);
+    svc.record_health(
+        &"svc-2".to_string(),
+        HealthStatus::Degraded("high cpu".to_string()),
+    );
 
-    let health = monitor.aggregate_health();
+    let health = svc.all_health();
     assert_eq!(health.len(), 2);
 
-    assert_eq!(monitor.service_health("svc-1"), Some(HealthStatus::Healthy));
-    assert!(matches!(monitor.service_health("svc-2"), Some(HealthStatus::Degraded(_))));
-    assert_eq!(monitor.service_health("nonexistent"), None);
+    assert_eq!(
+        svc.service_health(&"svc-1".to_string()),
+        Some(HealthStatus::Healthy)
+    );
+    assert!(matches!(
+        svc.service_health(&"svc-2".to_string()),
+        Some(HealthStatus::Degraded(_))
+    ));
+    assert_eq!(svc.service_health(&"nonexistent".to_string()), None);
 }

@@ -1,4 +1,4 @@
-# Atlas Workflow Runtime Architecture
+﻿# Atlas Workflow Runtime Architecture
 
 ## Overview
 
@@ -88,3 +88,39 @@ src/atlas_workflow/
 
 - [IMPLEMENTATION_STRATEGY.md](IMPLEMENTATION_STRATEGY.md) — Reference vs. Production distinction
 - [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) — RFC traceability matrix
+
+---
+
+## IPC Runtime Architecture
+
+The Atlas IPC Runtime provides the complete inter-process communication layer for the Atlas platform. It implements RFC-0101 through RFC-0112 as a platform-independent Rust reference implementation.
+
+### Module Structure
+
+`
+packages/ipc/src/
+├── message/            # MessageEnvelope, Header, Payload, Metadata, Priority, validation
+├── serialization/      # Serializer trait, JSON/Binary/Structured serializers, factory
+├── transport/          # Transport trait, InMemoryTransport, factory
+├── router/             # Router, routes, rule_engine, priority_queue, dead_letter_queue, discovery
+├── channel/            # Channel, state_machine, registry, context
+├── security/           # Permissions, auth, trust boundaries, origin validation, message validation, replay protection, authorization, audit
+├── reliability/        # Delivery guarantees, ordering, retry, DLQ manager
+├── command/            # Command trait, handler, registry, dispatcher
+├── eventbus/           # Bridge, events, publisher, subscriber
+├── request_response/   # Request, correlator, timeout_manager, cancellation, client, server
+├── session/            # Session, manager, registry, context
+├── endpoint/           # Endpoint, registry, descriptor
+├── capability/         # Resolver, matcher, version, negotiation
+├── health/             # HealthService, HealthIntegration
+├── metrics/            # MetricsService, MetricRecorders
+├── plugin/             # PluginIntegration, PluginBridge
+└── workflow/           # WorkflowIntegration, WorkflowBridge
+`
+
+### Key Properties
+- **Platform-independent**: No platform-specific IPC primitives
+- **Deterministic routing**: Priority-sorted rules with exact/wildcard/prefix matching
+- **Dependency injection**: All components use Arc<Mutex<>>, no global mutable state
+- **Zero warnings**: Clean compilation with cargo check and cargo test
+- **84 tests**: All passing, covering every module

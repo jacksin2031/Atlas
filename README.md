@@ -21,12 +21,12 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.8.0-alpha |
-| **Latest Sprint** | Sprint 8 — Knowledge Runtime |
-| **Next Sprint** | Sprint 9 — Project Runtime |
-| **Total Packages** | 15 (Rust + Python) |
-| **Test Cases** | 1,140+ |
-| **RFCs Implemented** | 89 (Runtime + IPC + Plugin + Workflow) |
+| **Version** | 0.9.0-alpha |
+| **Latest Sprint** | Sprint 9 — Project Runtime |
+| **Next Sprint** | Sprint 10 — Conformance Tests |
+| **Total Packages** | 16 (Rust + Python) |
+| **Test Cases** | 1,572+ |
+| **RFCs Implemented** | 125 (Runtime + IPC + Plugin + Workflow + Project) |
 | **License** | Apache 2.0 |
 
 ## Architecture
@@ -42,9 +42,9 @@ Build automation that understands intent instead of recording coordinates.
                  │
           Atlas Runtime
                  │
- ┌─────┬─────┬─────┬─────┬─────┐
- │Plugin│IPC│Vision│AI│Knowledge│
- └─────┴─────┴─────┴─────┴─────┘
+ ┌─────┬─────┬─────┬─────┬─────┬─────┐
+ │Plugin│IPC│Vision│AI│Knowledge│Project│
+ └─────┴─────┴─────┴─────┴─────┴─────┘
 `
 
 ## Implemented Modules
@@ -142,6 +142,25 @@ Build automation that understands intent instead of recording coordinates.
 - 15-module architecture with frozen dataclass models
 - 247 test cases
 
+### Project Runtime (Sprint 9)
+- 16 subsystems: Workspace, Project, Asset, Configuration, Environment, Template, Build, Hosting, Metrics, Health, Security, Events/IPC, Integration, Common, Main Runtime
+- Workspace Runtime: Workspace, WorkspaceLifecycle, WorkspaceRegistry, WorkspaceManager
+- Project Runtime: Project, ProjectLifecycle, ProjectRegistry, ProjectManager, ProjectContext, ProjectSession, ProjectRuntimeManager
+- Asset Runtime: Asset, AssetLifecycle, AssetRegistry, AssetManager (10 asset types)
+- Configuration Runtime: ConfigurationProfile, ConfigurationLayer (5 layers), ConfigurationManager
+- Environment Runtime: Environment, EnvironmentProfile, EnvironmentManager
+- Template Runtime: Template, TemplateDescriptor, TemplateManager (6 builtin templates)
+- Build Runtime: BuildProfile, BuildConfiguration, BuildManager (abstract, no compiler)
+- Hosting Layer: RuntimeHost, RuntimeHostingLayer (hosts 7 runtimes)
+- Metrics: MetricsCollector (15 metric types)
+- Health: HealthService (6 states)
+- Security: SecurityService (isolation, validation)
+- Events/IPC: EventBus, ProjectIPCBus (16 event types)
+- Integration: Workflow/Vision/AI/Knowledge services
+- Main Runtime: ProjectRuntime (coordinator)
+- 57 Python source files, 11 test files, 432 tests, 36 RFC specs
+- Quick start: rom atlas_project import ProjectRuntime, ProjectDescriptor
+
 ## Quick Start
 
 ### Prerequisites
@@ -160,6 +179,7 @@ cargo test --all
 cd packages/vision && pytest
 cd packages/ai && pytest
 cd packages/knowledge && pytest
+cd packages/project && pytest
 `
 
 ## Repository Structure
@@ -176,7 +196,8 @@ Atlas/
 │   ├── workflow/       # Workflow runtime (Python ref)
 │   ├── vision/         # Vision runtime (Python ref)
 │   ├── ai/             # AI runtime (Python ref)
-│   └── knowledge/      # Knowledge runtime (Python ref)
+│   ├── knowledge/      # Knowledge runtime (Python ref)
+│   └── project/        # Project runtime (Python ref)
 ├── specs/              # RFC specifications
 │   ├── runtime/        # RFC-0001–0014
 │   ├── ipc/            # RFC-0101–0112

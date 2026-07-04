@@ -1,9 +1,9 @@
 ﻿# Atlas Roadmap
 
 > **Last Updated**: 2026-07-04
-> **Current Version**: 0.8.0-alpha
-> **Current Sprint**: Sprint 8 (Knowledge Runtime)
-> **Next Milestone**: Sprint 9 — Project Runtime
+> **Current Version**: 0.9.0-alpha
+> **Current Sprint**: Sprint 9 (Project Runtime)
+> **Next Milestone**: Sprint 10 — Conformance Tests
 
 ---
 
@@ -141,12 +141,26 @@
 
 ### Sprint 9 — Project Runtime
 **Version**: 0.9.0-alpha
-**Status**: ⬜ Planned
-- Project management
-- Workspace boundaries
-- Hierarchical configuration
-- Multi-project orchestration
-
+**Status**: ✅ Complete
+- Project management and orchestration layer
+- 16 subsystems implemented as Python Reference Implementation
+- Workspace Runtime: Workspace, WorkspaceLifecycle, WorkspaceRegistry, WorkspaceManager
+- Project Runtime: Project, ProjectLifecycle, ProjectRegistry, ProjectManager, ProjectContext, ProjectSession, ProjectRuntimeManager
+- Asset Runtime: Asset, AssetLifecycle, AssetRegistry, AssetManager (10 asset types)
+- Configuration Runtime: ConfigurationProfile, ConfigurationLayer (5 layers), ConfigurationManager
+- Environment Runtime: Environment, EnvironmentProfile, EnvironmentManager
+- Template Runtime: Template, TemplateDescriptor, TemplateManager (6 builtin templates)
+- Build Runtime: BuildProfile, BuildConfiguration, BuildManager (abstract, no compiler)
+- Hosting Layer: RuntimeHost, RuntimeHostingLayer (hosts 7 runtimes)
+- Common: ProjectError hierarchy, EventType, frozen dataclasses
+- Metrics: MetricsCollector (15 metric types)
+- Health: HealthService (6 states)
+- Security: SecurityService (isolation, validation)
+- Events/IPC: EventBus, ProjectIPCBus (16 event types)
+- Integration: Workflow/Vision/AI/Knowledge integration services
+- Main Runtime: ProjectRuntime (coordinator)
+- 57 Python source files, 11 test files, 432 tests, 36 RFC specs
+- Quick start: from atlas_project import ProjectRuntime, ProjectDescriptor
 ### Sprint 10 — Conformance Tests
 **Version**: 0.10.0-alpha
 **Status**: ⬜ Planned

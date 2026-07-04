@@ -1,6 +1,6 @@
 ﻿# Atlas Documentation
 
-> **Last Updated**: 2026-07-04
+> **Last Updated**: 2026-07-05
 
 ---
 
@@ -19,6 +19,7 @@
   - Vision Runtime (Sprint 6)
   - AI Runtime (Sprint 7)
   - Knowledge Runtime (Sprint 8)
+  - Project Runtime (Sprint 9)
 
 ## Compliance Reports
 
@@ -27,6 +28,7 @@
 - [PLUGIN_COMPLIANCE_REPORT.md](PLUGIN_COMPLIANCE_REPORT.md) — Plugin RFC compliance
 - [AI_COMPLIANCE_REPORT.md](ai/AI_COMPLIANCE_REPORT.md) — AI Runtime RFC compliance
 - [KNOWLEDGE_COMPLIANCE_REPORT.md](knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md) — Knowledge Runtime RFC compliance
+- [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md) — Project Runtime RFC compliance
 
 ## Vision
 
@@ -45,6 +47,11 @@
 - [knowledge/](knowledge/) — Knowledge Runtime documentation
   - [KNOWLEDGE_COMPLIANCE_REPORT.md](knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md)
   - [knowledge.md](knowledge/knowledge.md)
+
+## Project
+
+- [project/](project/) — Project Runtime documentation
+  - [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md)
 
 ## Implementation
 

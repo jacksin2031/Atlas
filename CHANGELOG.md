@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
 
+
+---
+
+## [0.9.0-alpha] — 2026-07-05
+
+### Sprint 9 — Project Runtime
+
+#### Added
+- **Project Runtime** — Complete project management and orchestration layer
+  - Workspace Runtime: Workspace, WorkspaceLifecycle, WorkspaceRegistry, WorkspaceManager
+  - Project Runtime: Project, ProjectLifecycle, ProjectRegistry, ProjectManager, ProjectContext, ProjectSession, ProjectRuntimeManager
+  - Asset Runtime: Asset, AssetLifecycle, AssetRegistry, AssetManager (10 asset types)
+  - Configuration Runtime: ConfigurationProfile, ConfigurationLayer (5 layers), ConfigurationManager
+  - Environment Runtime: Environment, EnvironmentProfile, EnvironmentManager
+  - Template Runtime: Template, TemplateDescriptor, TemplateManager (6 builtin templates)
+  - Build Runtime: BuildProfile, BuildConfiguration, BuildManager (abstract, no compiler)
+  - Hosting Layer: RuntimeHost, RuntimeHostingLayer (hosts 7 runtimes)
+  - Common: ProjectError hierarchy (7 types), EventType, frozen dataclasses
+  - Metrics: MetricsCollector (15 metric types)
+  - Health: HealthService (6 states)
+  - Security: SecurityService (isolation, validation)
+  - Events/IPC: EventBus, ProjectIPCBus (16 event types)
+  - Integration: Workflow/Vision/AI/Knowledge integration services
+  - Main Runtime: ProjectRuntime (coordinator)
+- **Project Compliance Report** — Full RFC mapping, acceptance criteria, coverage summary
+- 57 Python source files in src/atlas_project/
+- 11 test files in tests/project/
+- 432 tests passing (237 workflow + 195 project runtime)
+- 36 RFC specs
+
+#### Changed
+- Workspace structure updated with project package
+- Documentation structure updated
+
+#### Security
+- SecurityService with isolation and validation
+- Asset lifecycle security controls
+
+#### Performance
+- Deterministic execution across all 16 subsystems
+- Frozen dataclasses with slots=True
+- Dependency injection throughout
+
+#### Documentation
+- Added Project Compliance Report
+- Updated Architecture documentation
+- Quick start: from atlas_project import ProjectRuntime, ProjectDescriptor
+
+---
 ## [Unreleased]
 
 ---
@@ -287,4 +336,5 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 - Repository organization
 - `.gitignore` with comprehensive exclusions
 - Initial documentation scaffold
+
 

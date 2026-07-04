@@ -45,3 +45,9 @@ knowledge-packs/.cache/
 *.gen.*
 _generate*
 _write*
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+

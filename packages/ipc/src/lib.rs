@@ -21,6 +21,7 @@ pub mod health;
 pub mod metrics;
 pub mod plugin;
 pub mod workflow;
+pub mod tracing;
 
 // Re-export key types for convenient access.
 pub use message::*;
@@ -87,3 +88,4 @@ pub use plugin::integration::*;
 pub use plugin::bridge::*;
 pub use workflow::integration::*;
 pub use workflow::bridge::*;
+pub use tracing::*;

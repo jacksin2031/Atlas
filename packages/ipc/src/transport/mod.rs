@@ -1,4 +1,4 @@
-﻿//! Transport abstraction — RFC-0103.
+//! Transport abstraction — RFC-0103.
 //!
 //! Defines the `Transport` trait and a reference in-memory implementation.
 //! All transports MUST be platform-independent.
@@ -10,3 +10,7 @@ pub mod factory;
 pub use transport::*;
 pub use in_memory_transport::*;
 pub use factory::*;
+
+pub mod adapters;
+
+pub use adapters::*;

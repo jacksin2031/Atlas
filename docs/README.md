@@ -1,27 +1,28 @@
-﻿
+# Atlas Vision Runtime Documentation
 
-## IPC Runtime
+## Overview
 
-The Atlas IPC Runtime (packages/ipc) provides the complete inter-process communication layer. See [IPC_COMPLIANCE_REPORT.md](IPC_COMPLIANCE_REPORT.md) for full RFC traceability.
+The Atlas Vision Runtime provides platform-independent image acquisition,
+frame processing, computer vision pipelines, provider abstraction, and
+deterministic execution.
 
-### Quick Start
+## Components
 
-cargo check -p atlas-ipc    # Verify compilation
-cargo test -p atlas-ipc     # Run 84 tests
-# Atlas Workflow Runtime
+- [Frame Model](vision/) — Immutable frame data structures
+- [Capture Abstraction](vision/) — Platform-independent capture sources
+- [Vision Pipeline](vision/) — Deterministic composable processing stages
+- [Provider Abstraction](vision/) — Plugin-based vision processing
+- [Vision Registry](vision/) — Service, provider, and capability registries
+- [Graph Execution](vision/) — Deterministic DAG planning
+- [Scheduler](vision/) — Multi-trigger task scheduling
+- [Resources](vision/) — LRU caching and buffer management
+- [Metrics](vision/) — Counters, gauges, histograms
+- [Health](vision/) — Runtime health monitoring
+- [Security](vision/) — Permission validation and isolation
+- [Storage](vision/) — Abstract persistence
+- [Integration](vision/) — IPC, Workflow, Plugin bridges
 
-The Atlas Workflow Runtime transforms declarative workflow definitions into executable runtime graphs.
-The architecture is platform-independent. The current reference implementation is written in Python 3.10+.
+## Architecture Compliance
 
-## Quick Start
-
-See docs/ARCHITECTURE.md for full details.
-## Documentation
-
-| Document | Purpose |
-|----------|---------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Module structure and design principles |
-| [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) | RFC-by-RFC requirement traceability |
-| [IMPLEMENTATION_STRATEGY.md](IMPLEMENTATION_STRATEGY.md) | Reference vs. Production distinction and contribution guide |
-
-
+See [VISION_COMPLIANCE_REPORT.md](VISION_COMPLIANCE_REPORT.md) for full RFC mapping
+and acceptance criteria verification.

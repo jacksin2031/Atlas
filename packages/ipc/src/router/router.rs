@@ -1,4 +1,4 @@
-﻿//! The IPC Router - deterministic message routing engine.
+//! The IPC Router - deterministic message routing engine.
 
 use std::sync::{Arc, Mutex};
 use crate::message::{MessageEnvelope, MessageValidator};
@@ -7,7 +7,7 @@ use crate::router::rule_engine::{RuleEngine, RuleEvaluation};
 use crate::router::priority_queue::PriorityMessageQueue;
 use crate::router::dead_letter_queue::DeadLetterQueue;
 use crate::router::discovery::{EndpointDiscovery, DiscoveredEndpoint};
-
+use crate::tracing::SpanContext;
 /// Routing result describing what happened to a message.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RoutingResult {
@@ -138,6 +138,14 @@ impl Router {
                 match &route.action {
                     RouteAction::Forward { destination } => {
                         message.metadata.increment_hop();
+                        // Propagate trace context on each hop
+                        if message.metadata.trace_id.is_none() {
+                            let ctx = SpanContext::new_root();
+                            message.metadata = message.metadata.with_trace(ctx.trace_id.to_string()).with_span(ctx.span_id.to_string());
+                        } else {
+                            let ctx = SpanContext::new_root();
+                            message.metadata = message.metadata.with_span(ctx.span_id.to_string());
+                        }
                         {
                             let mut m = self.metrics.lock().unwrap();
                             m.messages_routed += 1;

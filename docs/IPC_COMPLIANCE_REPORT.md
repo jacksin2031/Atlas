@@ -13,9 +13,9 @@
 The Atlas IPC Runtime is a complete, platform-independent reference implementation written in Rust. It implements the full IPC communication layer spanning RFC-0101 through RFC-0112, providing message envelopes, deterministic routing, command/event buses, session management, channel management, endpoint registry, capability negotiation, serialization abstractions, security, health monitoring, and metrics collection.
 
 **Key Statistics**:
-- 88 source files
-- ~7,900 lines of code
-- 84 unit tests (all passing)
+- 91 source files
+- ~8,500 lines of code
+- 100 unit tests (all passing)
 - Zero compilation errors, zero warnings
 - Zero TODOs, zero placeholders
 
@@ -226,3 +226,35 @@ The Atlas IPC Runtime is a complete, platform-independent reference implementati
 ## 8. Implementation Language Note
 
 This is a **Rust reference implementation** of the Atlas IPC specifications. It serves as the executable specification for the future Rust production implementation. The architecture is designed to be portable to any language, with the Rust implementation validating the RFCs before production deployment.
+
+
+
+## 2b. New Enhancements (Post-Sprint 5)
+
+### Transport Adapters
+| Feature | Status |
+|---|---|
+| TransportAdapter trait (extends Transport with metadata) | Implemented |
+| TransportKind enum (InProcess, NamedPipe, TCP, UDP, WebSocket, gRPC) | Implemented |
+| TransportAdapterInfo (kind, name, version, description) | Implemented |
+| NamedPipeTransport adapter | Implemented (skeleton) |
+| TcpTransport adapter | Implemented (skeleton) |
+| WebSocketTransport adapter | Implemented (skeleton) |
+| TransportFactory with create_in_memory() | Already existed, now extended |
+
+### Distributed Tracing
+| Feature | Status |
+|---|---|
+| SpanContext (trace_id, span_id, parent_span_id, sampled) | Implemented |
+| TraceId / SpanId types (UUID v4) | Implemented |
+| Auto-trace propagation on router hops | Implemented |
+| Root span + child span creation | Implemented |
+| Span context extraction from strings | Implemented |
+
+### Schema Versioning
+| Feature | Status |
+|---|---|
+| MessagePayload.schema_version field | Implemented |
+| with_schema_version() builder | Implemented |
+| schema_version() accessor | Implemented |
+| Backward compatible (optional, defaults to None) | Implemented |

@@ -1,9 +1,9 @@
 ﻿# Atlas Roadmap
 
 > **Last Updated**: 2026-07-04
-> **Current Version**: 0.5.0-alpha
-> **Current Sprint**: Sprint 5 (IPC Runtime)
-> **Next Milestone**: Sprint 6 — Vision Runtime
+> **Current Version**: 0.7.0-alpha
+> **Current Sprint**: Sprint 7 (AI Runtime)
+> **Next Milestone**: Sprint 8 — Knowledge Runtime
 
 ---
 
@@ -85,7 +85,7 @@
 
 ### Sprint 6 — Vision Runtime
 **Version**: 0.6.0-alpha
-**Status**: ⬜ Planned
+**Status**: ✅ Complete
 - Image acquisition and frame processing
 - Computer vision pipeline engine
 - Provider abstraction (OpenCV, PIL, etc.)
@@ -98,15 +98,28 @@
 
 ### Sprint 7 — AI Runtime
 **Version**: 0.7.0-alpha
-**Status**: ⬜ Planned
-- AI model integration
-- Prompt management
-- Response handling
-- Context window management
-
+**Status**: ✅ Complete
+- AI model inference and management layer
+- Model Management (14 types), Provider Abstraction (plugin-based)
+- Capability Negotiation (14 capabilities: Chat, Completion, Embedding, Vision, Audio, Image, Tool Calling, Structured Output, Streaming, Batch, Fine Tuning, RAG, Memory, Reasoning)
+- Inference Runtime: deterministic execution with scheduler and executor
+- Prompt Runtime: template compilation and execution
+- Conversation Runtime: session management with history
+- Memory Runtime: scoped storage (Session/Workspace/Project/Global)
+- Embedding Runtime: vector index and store
+- Agent Runtime: agent lifecycle and execution
+- Tool Runtime: tool registry with permission model
+- Core Services: AIRuntime (full lifecycle FSM), AIManager, AIContext, AISession, AIRuntimeManager
+- Resource Management: LRU cache, temp buffers, leak prevention
+- Metrics: latency, tokens, queue depth, memory histograms
+- Health: 6-status monitoring (Healthy/Busy/Loading/Recovering/Degraded/Failed)
+- Security: model/tool/prompt validation, provider isolation, sandbox
+- Storage: abstract persistence (no DB dependency)
+- Integration: IPC, Workflow, Vision bridges
+- 35 Python source files, 105 tests, 174 exported symbols
 ### Sprint 8 — Knowledge Runtime
 **Version**: 0.8.0-alpha
-**Status**: ⬜ Planned
+**Status**: ⬜ Upcoming
 - Knowledge pack system
 - Semantic search
 - Vector embeddings
@@ -159,3 +172,5 @@ Build automation that understands intent instead of recording coordinates.
 - Vision-based interaction
 - Knowledge-driven workflows
 - Marketplace for plugins and knowledge packs
+
+

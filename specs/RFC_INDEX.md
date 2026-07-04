@@ -1,7 +1,7 @@
 ﻿# Atlas Specification RFC Index
 
 > **Master Registry** — All Atlas specifications are registered here.  
-> **Last Updated**: 2026-07-04  
+> ****Last Updated**: 2026-07-04  
 > **Owner**: Atlas Specification Committee  `n> **Related Policies**: [RFC_CHANGE_POLICY.md](RFC_CHANGE_POLICY.md), [RFC_VERSIONING_POLICY.md](RFC_VERSIONING_POLICY.md), [RFC_STYLE_GUIDE.md](RFC_STYLE_GUIDE.md), [RFC_REVIEW_CHECKLIST.md](RFC_REVIEW_CHECKLIST.md)  
 
 ---
@@ -250,4 +250,5 @@ graph LR
 | [DOMAIN_OWNERS.md](DOMAIN_OWNERS.md) | Per-RFC ownership registry |
 | [SPECIFICATION_PRINCIPLES.md](SPECIFICATION_PRINCIPLES.md) | 10 shared principles |
 | [SPECIFICATION_CHANGE_PROCESS.md](SPECIFICATION_CHANGE_PROCESS.md) | How to modify any spec artifact |
+
 

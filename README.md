@@ -21,11 +21,11 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.5.0-alpha |
-| **Latest Sprint** | Sprint 5 — IPC Runtime |
-| **Next Sprint** | Sprint 6 — Vision Runtime |
-| **Total Packages** | 12 (Rust + Python) |
-| **Test Cases** | 467+ |
+| **Version** | 0.7.0-alpha |
+| **Latest Sprint** | Sprint 7 — AI Runtime |
+| **Next Sprint** | Sprint 8 — Knowledge Runtime |
+| **Total Packages** | 14 (Rust + Python) |
+| **Test Cases** | 702+ |
 | **RFCs Implemented** | 56 (Runtime + IPC + Plugin) |
 | **License** | Apache 2.0 |
 
@@ -72,6 +72,41 @@ Build automation that understands intent instead of recording coordinates.
 - Endpoint Registry
 - Distributed Tracing
 
+### Vision Runtime (Sprint 6)
+- Frame Model (12 frozen dataclasses)
+- Capture Sources and Provider ABC
+- 11-stage Deterministic Pipeline
+- 6 Registries (Vision, Provider, Pipeline, Capture, Model, Capability)
+- Graph Execution (Kahn's algorithm)
+- 7 Trigger Types Scheduler
+- LRU Cache and Temp Buffer Management
+- Metrics (Counter, Gauge, Histogram p50/p95/p99)
+- Health (6-status)
+- Security (10 permissions)
+- Storage Abstraction (5 domains)
+- Integration Bridges (IPC, Workflow, Plugin)
+- 185 test cases
+
+### AI Runtime (Sprint 7)
+- Model Management (14 types)
+- Provider Abstraction (plugin-based factory)
+- Capability Negotiation (14 capabilities: Chat, Completion, Embedding, Vision, Audio, Image, Tool Calling, Structured Output, Streaming, Batch, Fine Tuning, RAG, Memory, Reasoning)
+- Inference Runtime (deterministic execution)
+- Prompt Runtime (template compilation)
+- Conversation Runtime (session + history)
+- Memory Runtime (scoped: Session/Workspace/Project/Global)
+- Embedding Runtime (vector index/store)
+- Agent Runtime (lifecycle + execution)
+- Tool Runtime (registry + permissions)
+- Core Services (AIRuntime, AIManager, AIContext, AISession)
+- Resource Management (LRU cache, temp buffers, leak prevention)
+- Metrics (latency, tokens, queue depth, memory histograms)
+- Health (6-status: Healthy/Busy/Loading/Recovering/Degraded/Failed)
+- Security (model/tool/prompt validation, sandbox enforcement)
+- Storage (abstract persistence — no DB dependency)
+- Integration (IPCAIBridge, WorkflowAIBridge, VisionAIBridge)
+- 105 test cases, 174 exported symbols
+
 ## Architecture
 
 ```
@@ -79,10 +114,10 @@ Atlas Platform
 ├── Runtime Foundation (RFC-0001–0014) ✅
 ├── IPC Runtime (RFC-0101–0112) ✅
 ├── Plugin Runtime (RFC-0201–0230) ✅
+├── AI Runtime (Sprint 7) ✅
+├── Vision Runtime (Sprint 6) ✅
 ├── Workflow Runtime (RFC-0301–0333) ⬜
 ├── Storage Runtime (RFC-0401–0425) ⬜
-├── Vision Runtime (Sprint 6) ⬜
-├── AI Runtime (Sprint 7) ⬜
 ├── Knowledge Runtime (Sprint 8) ⬜
 └── Project Runtime (Sprint 9) ⬜
 ```
@@ -103,6 +138,7 @@ cargo test
 ```bash
 cargo test --all
 cd packages/vision && pytest
+cd packages/ai && pytest
 ```
 
 ## Repository Structure
@@ -117,7 +153,8 @@ Atlas/
 │   ├── ipc/            # IPC runtime (Rust)
 │   ├── storage/        # Storage abstraction (Rust)
 │   ├── workflow/       # Workflow specs (Python ref)
-│   └── vision/         # Vision runtime (Python ref)
+│   ├── vision/         # Vision runtime (Python ref)
+│   └── ai/             # AI runtime (Python ref)
 ├── specs/              # RFC specifications
 │   ├── runtime/        # RFC-0001–0014
 │   ├── ipc/            # RFC-0101–0112

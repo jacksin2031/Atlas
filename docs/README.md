@@ -1,28 +1,38 @@
-# Atlas Vision Runtime Documentation
+﻿# Atlas Documentation
 
-## Overview
+> **Last Updated**: 2026-07-04
 
-The Atlas Vision Runtime provides platform-independent image acquisition,
-frame processing, computer vision pipelines, provider abstraction, and
-deterministic execution.
+---
 
-## Components
+## Architecture
 
-- [Frame Model](vision/) — Immutable frame data structures
-- [Capture Abstraction](vision/) — Platform-independent capture sources
-- [Vision Pipeline](vision/) — Deterministic composable processing stages
-- [Provider Abstraction](vision/) — Plugin-based vision processing
-- [Vision Registry](vision/) — Service, provider, and capability registries
-- [Graph Execution](vision/) — Deterministic DAG planning
-- [Scheduler](vision/) — Multi-trigger task scheduling
-- [Resources](vision/) — LRU caching and buffer management
-- [Metrics](vision/) — Counters, gauges, histograms
-- [Health](vision/) — Runtime health monitoring
-- [Security](vision/) — Permission validation and isolation
-- [Storage](vision/) — Abstract persistence
-- [Integration](vision/) — IPC, Workflow, Plugin bridges
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Complete runtime architecture
+  - Runtime Foundation (Sprint 1)
+  - IPC Runtime (Sprint 5)
+  - Plugin Runtime (Sprint 3)
+  - Workflow Runtime (Sprint 4)
+  - Vision Runtime (Sprint 6)
+  - AI Runtime (Sprint 7)
 
-## Architecture Compliance
+## Compliance Reports
 
-See [VISION_COMPLIANCE_REPORT.md](VISION_COMPLIANCE_REPORT.md) for full RFC mapping
-and acceptance criteria verification.
+- [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) — Runtime RFC compliance
+- [IPC_COMPLIANCE_REPORT.md](IPC_COMPLIANCE_REPORT.md) — IPC RFC compliance
+- [PLUGIN_COMPLIANCE_REPORT.md](PLUGIN_COMPLIANCE_REPORT.md) — Plugin RFC compliance
+- [AI_COMPLIANCE_REPORT.md](ai/AI_COMPLIANCE_REPORT.md) — AI Runtime RFC compliance
+
+## Vision
+
+- [vision/](vision/) — Vision Runtime documentation
+  - [VISION_COMPLIANCE_REPORT.md](vision/VISION_COMPLIANCE_REPORT.md)
+  - [vision-engine.md](vision/vision-engine.md)
+
+## AI
+
+- [ai/](ai/) — AI Runtime documentation
+  - [AI_COMPLIANCE_REPORT.md](ai/AI_COMPLIANCE_REPORT.md)
+  - [ai.md](ai/ai.md)
+
+## Implementation
+
+- [IMPLEMENTATION_STRATEGY.md](IMPLEMENTATION_STRATEGY.md) — Reference vs. Production distinction

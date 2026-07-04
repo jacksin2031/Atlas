@@ -1,6 +1,6 @@
 ﻿# Atlas Versioning Policy
 
-> **Effective**: 2026-07-04
+> ****Effective**: 2026-07-04
 > **Owner**: Atlas Architecture Board
 
 ---
@@ -101,3 +101,4 @@ Example: `0.5.0-alpha`
 ## Governance
 
 Changes to this policy require Architecture Board approval and an RFC update.
+

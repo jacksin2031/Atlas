@@ -1,9 +1,9 @@
 ﻿# Atlas Project Status
 
 > **Last Updated**: 2026-07-04
-> **Current Version**: 0.5.0-alpha
-> **Current Sprint**: Sprint 5 (IPC Runtime)
-> **Next Sprint**: Sprint 6 (Vision Runtime)
+> **Current Version**: 0.7.0-alpha
+> **Current Sprint**: Sprint 7 (AI Runtime)
+> **Next Sprint**: Sprint 8 (Knowledge Runtime)
 
 ---
 
@@ -17,8 +17,8 @@
 | 3 | 0.3.0-alpha | Plugin Runtime | ✅ Complete | 16 | — | 133 | — |
 | 4 | 0.4.0-alpha | Workflow Runtime | ✅ Complete | — | Specs | — | — |
 | 5 | 0.5.0-alpha | IPC Runtime | ✅ Complete | 91 | — | 100 | — |
-| 6 | 0.6.0-alpha | Vision Runtime | ⬜ Upcoming | — | 51 (+62 tests) | — | 185 |
-| 7 | 0.7.0-alpha | AI Runtime | ⬜ Planned | — | — | — | — |
+| 6 | 0.6.0-alpha | Vision Runtime | ✅ Complete | — | 51 | — | 185 |
+| 7 | 0.7.0-alpha | AI Runtime | ✅ Complete | — | 35 | — | 105 |
 | 8 | 0.8.0-alpha | Knowledge Runtime | ⬜ Planned | — | — | — | — |
 | 9 | 0.9.0-alpha | Project Runtime | ⬜ Planned | — | — | — | — |
 | 10 | 0.10.0-alpha | Conformance Tests | ⬜ Planned | — | — | — | — |
@@ -35,13 +35,14 @@
 | `packages/contracts` | Rust | 12 | 16 `#[test]` | ✅ Implemented |
 | `packages/common` | Rust | 9 | 0 | ✅ Implemented |
 | `packages/storage` | Rust | 2 | 0 | ⚠️ Partial |
-| `packages/vision` | Python | 51 (+62 test files) | 185 `def test_` | ⬜ Sprint 6 |
+| `packages/vision` | Python | 51 | 185 `def test_` | ✅ Implemented |
+| `packages/ai` | Python | 35 | 105 `def test_` | ✅ Implemented |
 | `packages/workflow` | Python | Specs only | 0 | ⬜ Sprint 4 |
 | `packages/core` | — | Specs only | 0 | ⬜ Deferred |
 
 **Total Rust tests**: 282
-**Total Python tests**: 185
-**Combined**: 467 test cases
+**Total Python tests**: 420
+**Combined**: 702 test cases
 
 ---
 
@@ -49,8 +50,8 @@
 
 | Metric | Value |
 |---|---|
-| Total source files | 148 Rust + 51 Python + specs |
-| Total test cases | 467+ |
+| Total source files | 148 Rust + 86 Python + specs |
+| Total test cases | 702+ |
 | Compilation warnings | 0 |
 | Circular dependencies | 0 |
 | Platform-specific deps | 0 |
@@ -65,6 +66,7 @@
 | Runtime (RFC-0001–0014) | 14 | 14 Frozen | 0 |
 | IPC (RFC-0101–0112) | 12 | 12 Implemented | 0 |
 | Plugin (RFC-0201–0230) | 30 | 30 Implemented | 0 |
+| AI (RFC-0701+) | — | 0 | Pending |
 | Storage (RFC-0401–0425) | 25 | 0 | 25 Proposed |
 | Workflow (RFC-0301–0333) | 33 | 0 | 33 Proposed |
 | Common (RFC-1001–1006) | 6 | 0 | 6 Draft |
@@ -94,16 +96,33 @@ Atlas Platform
 │   ├── Capability Negotiation ✅
 │   ├── Sandbox ✅
 │   └── Registry ✅
+├── AI Runtime (Sprint 7) ✅
+│   ├── Model Management ✅
+│   ├── Provider Abstraction ✅
+│   ├── Capability Negotiation (14 caps) ✅
+│   ├── Inference Runtime ✅
+│   ├── Prompt Runtime ✅
+│   ├── Conversation Runtime ✅
+│   ├── Memory Runtime ✅
+│   ├── Embedding Runtime ✅
+│   ├── Agent Runtime ✅
+│   ├── Tool Runtime ✅
+│   ├── Scheduling ✅
+│   ├── Resource Management ✅
+│   ├── Metrics ✅
+│   ├── Health ✅
+│   ├── Security ✅
+│   ├── Storage ✅
+│   └── Integration (IPC/Workflow/Vision) ✅
 ├── Workflow Runtime (RFC-0301–0333) ⬜
 │   ├── Execution Engine
 │   ├── State Machine
 │   └── Recovery
-├── Vision Runtime (Sprint 6) ⬜
+├── Vision Runtime (Sprint 6) ✅
 │   ├── Frame Processing
 │   ├── Pipeline Engine
 │   └── Provider Abstraction
 ├── Storage Runtime (RFC-0401–0425) ⬜
-├── AI Runtime (Sprint 7) ⬜
 ├── Knowledge Runtime (Sprint 8) ⬜
 └── Project Runtime (Sprint 9) ⬜
 ```
@@ -112,12 +131,12 @@ Atlas Platform
 
 ## Next Milestone
 
-**Sprint 6 — Vision Runtime**
-- Image acquisition and frame processing
-- Computer vision pipeline engine
-- Provider abstraction (OpenCV, PIL, etc.)
-- Deterministic execution graph
-- Target version: `0.6.0-alpha`
+**Sprint 8 — Knowledge Runtime**
+- Knowledge pack system
+- Semantic search
+- Vector embeddings
+- Knowledge graph
+- Target version: `0.8.0-alpha`
 
 ---
 

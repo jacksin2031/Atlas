@@ -21,13 +21,31 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.7.0-alpha |
-| **Latest Sprint** | Sprint 7 — AI Runtime |
-| **Next Sprint** | Sprint 8 — Knowledge Runtime |
-| **Total Packages** | 14 (Rust + Python) |
-| **Test Cases** | 702+ |
-| **RFCs Implemented** | 56 (Runtime + IPC + Plugin) |
+| **Version** | 0.8.0-alpha |
+| **Latest Sprint** | Sprint 8 — Knowledge Runtime |
+| **Next Sprint** | Sprint 9 — Project Runtime |
+| **Total Packages** | 15 (Rust + Python) |
+| **Test Cases** | 1,140+ |
+| **RFCs Implemented** | 89 (Runtime + IPC + Plugin + Workflow) |
 | **License** | Apache 2.0 |
+
+## Architecture
+
+`
+            Desktop UI
+                 │
+      ┌──────────┴──────────┐
+      │                     │
+ Marketplace         Workflow Studio
+      │                     │
+      └──────────┬──────────┘
+                 │
+          Atlas Runtime
+                 │
+ ┌─────┬─────┬─────┬─────┬─────┐
+ │Plugin│IPC│Vision│AI│Knowledge│
+ └─────┴─────┴─────┴─────┴─────┘
+`
 
 ## Implemented Modules
 
@@ -107,20 +125,22 @@ Build automation that understands intent instead of recording coordinates.
 - Integration (IPCAIBridge, WorkflowAIBridge, VisionAIBridge)
 - 105 test cases, 174 exported symbols
 
-## Architecture
-
-```
-Atlas Platform
-├── Runtime Foundation (RFC-0001–0014) ✅
-├── IPC Runtime (RFC-0101–0112) ✅
-├── Plugin Runtime (RFC-0201–0230) ✅
-├── AI Runtime (Sprint 7) ✅
-├── Vision Runtime (Sprint 6) ✅
-├── Workflow Runtime (RFC-0301–0333) ⬜
-├── Storage Runtime (RFC-0401–0425) ⬜
-├── Knowledge Runtime (Sprint 8) ⬜
-└── Project Runtime (Sprint 9) ⬜
-```
+### Knowledge Runtime (Sprint 8)
+- Knowledge Pack System design and RFC specifications
+- Document Lifecycle: Create, Import, Update, Archive, Delete, Restore, Version
+- Chunk Processing with deterministic lifecycle
+- Abstract Index Builder (no DB dependency)
+- Retrieval and Search Orchestrators
+- Citation Management with Policy Engine
+- Provider Abstraction (plugin-based factory)
+- Unified KnowledgeRegistry
+- Resource Management (cache tracking, leak prevention)
+- Health Service (6 statuses)
+- Security Service (7 layers)
+- Metrics Collector (9 metric types)
+- Integration Bridges: IPC, AI, Vision, Workflow, Scheduler
+- 15-module architecture with frozen dataclass models
+- 247 test cases
 
 ## Quick Start
 
@@ -129,21 +149,22 @@ Atlas Platform
 - Python 3.10+ (for reference implementations)
 
 ### Build
-```bash
+`ash
 cargo build
 cargo test
-```
+`
 
 ### Run Tests
-```bash
+`ash
 cargo test --all
 cd packages/vision && pytest
 cd packages/ai && pytest
-```
+cd packages/knowledge && pytest
+`
 
 ## Repository Structure
 
-```
+`
 Atlas/
 ├── packages/           # Source packages
 │   ├── common/         # Shared Rust types
@@ -152,9 +173,10 @@ Atlas/
 │   ├── plugin/         # Plugin runtime (Rust)
 │   ├── ipc/            # IPC runtime (Rust)
 │   ├── storage/        # Storage abstraction (Rust)
-│   ├── workflow/       # Workflow specs (Python ref)
+│   ├── workflow/       # Workflow runtime (Python ref)
 │   ├── vision/         # Vision runtime (Python ref)
-│   └── ai/             # AI runtime (Python ref)
+│   ├── ai/             # AI runtime (Python ref)
+│   └── knowledge/      # Knowledge runtime (Python ref)
 ├── specs/              # RFC specifications
 │   ├── runtime/        # RFC-0001–0014
 │   ├── ipc/            # RFC-0101–0112
@@ -165,7 +187,7 @@ Atlas/
 ├── docs/               # Architecture docs
 ├── .ai/                # AI agent skills
 └── Cargo.toml          # Workspace manifest
-```
+`
 
 ## Documentation
 
@@ -176,6 +198,8 @@ Atlas/
 - [CHANGELOG.md](CHANGELOG.md) — Release history
 - [specs/RFC_INDEX.md](specs/RFC_INDEX.md) — RFC registry
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Architecture docs
+- [docs/DESIGN_PRINCIPLES.md](docs/DESIGN_PRINCIPLES.md) — Design philosophy
+- [docs/MODULE_DEPENDENCIES.md](docs/MODULE_DEPENDENCIES.md) — Module dependency map
 
 ## License
 

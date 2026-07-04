@@ -11,6 +11,50 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
 
+## [0.8.0-alpha] — 2026-07-04
+
+### Sprint 8 — Knowledge Runtime
+
+#### Added
+- **Knowledge Runtime Specifications** — Full RFC design for knowledge pack system
+  - Knowledge pack package format and semantic search architecture
+  - Vector embeddings and knowledge graph design
+  - Document lifecycle: Create, Import, Update, Archive, Delete, Restore, Version
+  - Chunk processing with deterministic lifecycle
+  - Abstract index builder with no DB dependency
+  - Retrieval and search orchestrators
+  - Citation management with policy engine
+  - Provider abstraction (plugin-based factory)
+  - Unified KnowledgeRegistry
+  - Resource management (cache tracking, leak prevention)
+  - Health service (6 states)
+  - Security service (7 security layers)
+  - Metrics collector (9 metric types)
+  - Integration bridges: IPC, AI, Vision, Workflow, Scheduler
+- **Knowledge Runtime Architecture** — Full design document
+  - 15 module structure (Common, Document, Chunk, Index, Retrieval, Search, Citation, Provider, Registry, Resource, Health, Security, Metrics, Integration, Runtime)
+  - Frozen dataclass models with slots=True
+  - Dependency injection throughout, no global mutable state
+  - Platform-independent Python reference implementation design
+- **Knowledge Compliance Report** — Full RFC mapping, acceptance criteria, coverage summary
+- **Documentation** — DESIGN_PRINCIPLES.md, MODULE_DEPENDENCIES.md
+
+#### Changed
+- Workspace structure updated with knowledge package
+- Documentation structure updated
+
+#### Security
+- KnowledgeSecurityService with 7 security layers
+- Provider isolation and sandbox enforcement
+- Citation policy validation
+
+#### Documentation
+- Added Knowledge Compliance Report
+- Updated Architecture documentation
+- Added DESIGN_PRINCIPLES.md and MODULE_DEPENDENCIES.md
+
+---
+
 ## [0.7.0-alpha] — 2026-07-04
 
 ### Sprint 7 — AI Runtime
@@ -45,6 +89,21 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 - Workspace structure updated with AI package
 - Documentation structure updated
 
+#### Security
+- Model/tool/prompt validation
+- Provider isolation
+- Input/output validation
+- Sandbox enforcement
+
+#### Performance
+- Deterministic execution (no hash-dependent ordering)
+- LRU cache with leak prevention
+- Async event processing
+
+#### Documentation
+- Added AI Compliance Report
+- Updated Architecture documentation
+
 ---
 
 ## [0.6.0-alpha] — 2026-07-04
@@ -72,6 +131,19 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 #### Changed
 - Workspace structure updated with vision package
+
+#### Security
+- Permission validation and provider isolation
+- 10 security permissions defined
+
+#### Performance
+- Deterministic execution (sorted topological sort)
+- LRU cache with bounded memory
+- Frozen dataclasses (slots=True)
+
+#### Documentation
+- Added Vision Compliance Report
+- Updated Architecture documentation
 
 ---
 ## [0.5.0-alpha] — 2026-07-04

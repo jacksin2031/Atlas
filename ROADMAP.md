@@ -1,9 +1,9 @@
 ﻿# Atlas Roadmap
 
 > **Last Updated**: 2026-07-04
-> **Current Version**: 0.7.0-alpha
-> **Current Sprint**: Sprint 7 (AI Runtime)
-> **Next Milestone**: Sprint 8 — Knowledge Runtime
+> **Current Version**: 0.8.0-alpha
+> **Current Sprint**: Sprint 8 (Knowledge Runtime)
+> **Next Milestone**: Sprint 9 — Project Runtime
 
 ---
 
@@ -52,7 +52,7 @@
 **Version**: 0.4.0-alpha
 **Status**: ✅ Complete
 - Workflow manifest parsing and validation
-- Immutable workflow graph (Kahn\'s algorithm)
+- Immutable workflow graph (Kahn's algorithm)
 - Deterministic execution engine
 - 7 trigger types
 - Plugin bridge integration
@@ -78,10 +78,6 @@
 - Health and metrics
 - Distributed tracing
 - Plugin and workflow bridges
-
----
-
-## Upcoming Sprints
 
 ### Sprint 6 — Vision Runtime
 **Version**: 0.6.0-alpha
@@ -117,13 +113,31 @@
 - Storage: abstract persistence (no DB dependency)
 - Integration: IPC, Workflow, Vision bridges
 - 35 Python source files, 105 tests, 174 exported symbols
+
 ### Sprint 8 — Knowledge Runtime
 **Version**: 0.8.0-alpha
-**Status**: ⬜ Upcoming
-- Knowledge pack system
-- Semantic search
-- Vector embeddings
-- Knowledge graph
+**Status**: ✅ Complete
+- Knowledge pack system design and RFC specifications
+- Document lifecycle: Create, Import, Update, Archive, Delete, Restore, Version
+- Chunk processing with deterministic lifecycle
+- Abstract index builder with no DB dependency
+- Retrieval and search orchestrators
+- Citation management with policy engine
+- Provider abstraction (plugin-based factory)
+- Unified KnowledgeRegistry
+- Resource management (LRU cache, temp buffers, leak prevention)
+- Health service (6 statuses)
+- Security service (7 layers)
+- Metrics collector (9 metric types)
+- Integration bridges: IPC, AI, Vision, Workflow, Scheduler
+- 15 module architecture: Common, Document, Chunk, Index, Retrieval, Search, Citation, Provider, Registry, Resource, Health, Security, Metrics, Integration, Runtime
+- Frozen dataclass models with slots=True
+- Dependency injection throughout, no global mutable state
+- Platform-independent Python reference implementation design
+
+---
+
+## Upcoming Sprints
 
 ### Sprint 9 — Project Runtime
 **Version**: 0.9.0-alpha
@@ -141,14 +155,73 @@
 - Performance benchmarks
 - Security audit
 
----
+### Sprint 11 — Cross Runtime Integration
+**Version**: 0.11.0-alpha
+**Status**: ⬜ Planned
+- Unified event bus across all runtimes
+- Cross-runtime service discovery
+- Integrated health and metrics aggregation
+- End-to-end workflow validation
 
-## Future Milestones
+### Sprint 12 — Performance & Stress
+**Version**: 0.12.0-alpha
+**Status**: ⬜ Planned
+- Load testing and stress testing
+- Memory optimization and leak detection
+- Throughput benchmarks
+- Latency profiling
 
-### Beta Transition
+### Sprint 13 — Desktop Shell
+**Version**: 0.13.0-alpha
+**Status**: ⬜ Planned
+- Desktop integration layer
+- System tray and notifications
+- File association and handlers
+- OS-level automation hooks
+
+### Sprint 14 — Workflow Studio
+**Version**: 0.14.0-alpha
+**Status**: ⬜ Planned
+- Visual workflow designer
+- Drag-and-drop node editing
+- Real-time execution preview
+- Workflow versioning and sharing
+
+### Sprint 15 — Vision Studio
+**Version**: 0.15.0-alpha
+**Status**: ⬜ Planned
+- Visual element recognition editor
+- Template matching studio
+- Camera calibration tools
+- Vision pipeline composer
+
+### Sprint 16 — AI Studio
+**Version**: 0.16.0-alpha
+**Status**: ⬜ Planned
+- Model selection and comparison
+- Prompt engineering workspace
+- Agent behavior editor
+- Capability negotiation visualizer
+
+### Sprint 17 — Marketplace
+**Version**: 0.17.0-alpha
+**Status**: ⬜ Planned
+- Plugin marketplace
+- Knowledge pack distribution
+- Provider marketplace
+- Rating and review system
+
+### Sprint 18 — Beta
+**Version**: 0.x.x-beta
+**Status**: ⬜ Planned
 - All Runtime modules implemented
 - API freeze
 - Focus on stability and performance
+- Community beta testing
+
+---
+
+## Future Milestones
 
 ### RC Phase
 - Conformance tests pass
@@ -172,5 +245,3 @@ Build automation that understands intent instead of recording coordinates.
 - Vision-based interaction
 - Knowledge-driven workflows
 - Marketplace for plugins and knowledge packs
-
-

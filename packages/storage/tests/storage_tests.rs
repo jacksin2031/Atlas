@@ -260,4 +260,3 @@ fn test_provider_lifecycle_illegal_transition_rejected() {
         StorageError::IllegalProviderTransition { .. }
     ));
 }
-

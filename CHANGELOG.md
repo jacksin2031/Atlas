@@ -57,6 +57,40 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
 ## [Unreleased]
+### Sprint 11 — Conformance & Architecture Validation
+
+#### Added
+- **Conformance Runtime** — Complete architecture validation and RFC compliance framework
+  - Core Models: ArchitectureRule, ArchitectureViolation, ArchitectureReport, RFCCompliance, ADRCompliance, DocumentationCoverage, ModuleGraph, TestCoverage, ConformanceReport
+  - Enums: ViolationSeverity, RuleCategory, RFCStatus, ADRStatus, ComplianceLevel
+  - RFCScanner: Parses 121 RFCs from specs/, extracts metadata, requirements, acceptance criteria
+  - ADRScanner: Parses 12 ADRs from docs/adr/
+  - DocumentationScanner: Finds READMEs, compliance reports, architecture docs, cross-references
+  - ModuleScanner: AST-based Python module analysis, import tracking, dependency graph
+  - ArchitectureValidator: 9 rules (layering, dependency direction, circular deps, forbidden imports, provider pattern, DI, immutable models, runtime contracts, project hosting)
+  - RFCValidator: Checks implementation, reference, testing, documentation per RFC
+  - ADRValidator: Finds ADR references in specs, tracks deprecation/supersession
+  - DocumentationValidator: Verifies 13 expected docs, broken references, version/sprint consistency
+  - ModuleValidator: Forbidden imports, naming conventions, required packages, public API
+  - TestCoverageValidator: Scans test files per module, counts unit/integration/architecture tests
+  - RuntimeContractValidator: Validates 7 contract types (service, lifecycle, metrics, health, provider, security, storage)
+  - ArchitectureValidationService: Orchestrates all validators, generates JSON reports
+  - CLI entry point with --repo-root, --output, --format, --quiet flags
+  - Benchmark suite measuring validation time per component
+  - Runtime Contracts: RuntimeContract with 7 sub-contracts
+- **Conformance Compliance Report** — Full validation matrix with architecture rules, RFC coverage, ADR references
+- 46 Python source files in src/atlas_conformance/
+- 10 test files in tests/conformance/
+- 52 conformance tests passing
+- Generated reports: docs/conformance/CONFORMANCE_REPORT.md, conformance_report.json
+
+#### Changed
+- Workspace structure updated with conformance package
+- Documentation structure updated with conformance section
+
+#### Fixed
+- All existing workflow tests (15) still pass
+
 ### Sprint 10 — Cross-Runtime Integration
 
 #### Added

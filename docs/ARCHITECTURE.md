@@ -1,7 +1,7 @@
 ﻿# Atlas Platform Architecture
 
 > **Last Updated**: 2026-07-05
-> **Current Version**: 0.10.0-alpha
+> **Current Version**: 0.11.0-beta
 
 ---
 
@@ -224,6 +224,31 @@ packages/knowledge/src/atlas_knowledge/
 
 ---
 
+
+## Conformance & Architecture Validation (Sprint 11)
+
+Automated validation of the Atlas Architecture, ADS, ADRs, RFCs, Contracts,
+Documentation, Layering Rules, and Runtime Conformance.
+
+### Components
+
+| Component | Description |
+|-----------|-------------|
+| ArchitectureValidator | Validates layering, dependencies, circular deps, provider pattern, DI |
+| RFCValidator | Measures RFC compliance, implementation, testing, documentation |
+| ADRValidator | Tracks ADR references, deprecation, supersession |
+| DocumentationValidator | Verifies README consistency, cross-references, version numbers |
+| ModuleValidator | Checks allowed/forbidden imports, naming conventions, package structure |
+| TestCoverageValidator | Validates unit/integration/architecture tests per module |
+| RuntimeContractValidator | Verifies service, lifecycle, metrics, health, provider, security, storage contracts |
+| ArchitectureValidationService | Central orchestration for all validators |
+
+### Output
+
+Machine-readable JSON reports and human-readable summaries suitable for CI/CD.
+
+See `docs/conformance/CONFORMANCE_REPORT.md` for the full report.
+
 ## Architecture Summary
 
 ```
@@ -240,7 +265,8 @@ Atlas Platform
 ```
 ├── Cross Runtime Integration (Sprint 10) ✅ — Python, 99 tests
 
-**Total Tests**: 1,671 (Rust: 266, Python: 1,405+, Specs: 66 RFCs)
+├── Conformance Runtime (Sprint 11) ✅ — Python, 52 tests
+**Total Tests**: 1,723 (Rust: 266, Python: 1,458+, Specs: 66 RFCs)
 
 
 ---

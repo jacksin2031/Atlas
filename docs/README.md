@@ -23,6 +23,7 @@
 
   - Cross-Runtime Integration (Sprint 10)
 ## Compliance Reports
+  - Conformance Runtime (Sprint 11)
 
 - [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) — Runtime RFC compliance
 - [IPC_COMPLIANCE_REPORT.md](IPC_COMPLIANCE_REPORT.md) — IPC RFC compliance
@@ -33,6 +34,7 @@
 
 - [INTEGRATION_COMPLIANCE_REPORT.md](integration/INTEGRATION_COMPLIANCE_REPORT.md) — Cross-Runtime Integration RFC compliance
 ## Vision
+- [CONFORMANCE_COMPLIANCE_REPORT.md](conformance/CONFORMANCE_COMPLIANCE_REPORT.md) — Conformance Runtime RFC compliance
 
 - [vision/](vision/) — Vision Runtime documentation
   - [VISION_COMPLIANCE_REPORT.md](vision/VISION_COMPLIANCE_REPORT.md)
@@ -54,6 +56,12 @@
 
 - [project/](project/) — Project Runtime documentation
   - [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md)
+
+## Conformance
+
+- [conformance/](conformance/) — Conformance Runtime documentation
+  - [CONFORMANCE_COMPLIANCE_REPORT.md](conformance/CONFORMANCE_COMPLIANCE_REPORT.md)
+  - [CONFORMANCE_REPORT.md](conformance/CONFORMANCE_REPORT.md)
 
 ## Integration
 

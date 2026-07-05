@@ -63,6 +63,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest ruff
 
+      - name: Verify test discovery
+        run: |
+          echo "PYTHONPATH=$PYTHONPATH"
+          python -c "import sys; sys.path.insert(0, 'src'); import atlas_workflow; print('atlas_workflow OK')"
+          python -m pytest --collect-only -q 2>&1 | tail -3
+
       - name: Run unit tests (skip if empty)
         run: |
           if python -m pytest tests/unit/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then

@@ -1,7 +1,7 @@
-﻿//! Workflow integration — ensures workflows use IPC abstractions.
+//! Workflow integration — ensures workflows use IPC abstractions.
 
-pub mod integration;
 pub mod bridge;
+pub mod integration;
 
-pub use integration::*;
 pub use bridge::*;
+pub use integration::*;

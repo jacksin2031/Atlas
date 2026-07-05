@@ -1,4 +1,4 @@
-﻿//! Permission system for IPC access control.
+//! Permission system for IPC access control.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -35,11 +35,15 @@ pub struct PermissionSet {
 
 impl PermissionSet {
     pub fn new() -> Self {
-        Self { permissions: HashSet::new() }
+        Self {
+            permissions: HashSet::new(),
+        }
     }
 
     pub fn with_permissions(perms: Vec<Permission>) -> Self {
-        Self { permissions: perms.into_iter().collect() }
+        Self {
+            permissions: perms.into_iter().collect(),
+        }
     }
 
     pub fn add(&mut self, perm: Permission) {
@@ -71,14 +75,20 @@ impl PermissionValidator {
         perm_set.has(required)
     }
 
-    pub fn validate_non_empty(perm_set: &PermissionSet, principal: &str) -> Result<(), PermissionError> {
+    pub fn validate_non_empty(
+        perm_set: &PermissionSet,
+        principal: &str,
+    ) -> Result<(), PermissionError> {
         if perm_set.is_empty() {
             return Err(PermissionError::NoPermissions(principal.to_string()));
         }
         Ok(())
     }
 
-    pub fn validate_no_admin_for_untrusted(perm_set: &PermissionSet, trusted: bool) -> Result<(), PermissionError> {
+    pub fn validate_no_admin_for_untrusted(
+        perm_set: &PermissionSet,
+        trusted: bool,
+    ) -> Result<(), PermissionError> {
         if !trusted && perm_set.has(&Permission::Admin) {
             return Err(PermissionError::AdminNotAllowedForUntrusted);
         }

@@ -1,12 +1,12 @@
-﻿//! Request client — sends requests and awaits responses.
+//! Request client — sends requests and awaits responses.
 
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
+use super::cancellation::CancellationToken;
+use super::correlator::Correlator;
 use super::request::Request;
 use super::request::Response;
-use super::correlator::Correlator;
-use super::cancellation::CancellationToken;
 
 /// Client for sending requests through the IPC runtime.
 #[derive(Clone)]
@@ -57,7 +57,10 @@ impl RequestClient {
         }
         // Check local responses
         let responses = self.responses.lock().unwrap();
-        responses.iter().find(|r| &r.correlation_id == correlation_id).cloned()
+        responses
+            .iter()
+            .find(|r| &r.correlation_id == correlation_id)
+            .cloned()
     }
 
     /// Cancel all pending requests.
@@ -84,9 +87,3 @@ impl Default for RequestClient {
         Self::new()
     }
 }
-
-
-
-
-
-

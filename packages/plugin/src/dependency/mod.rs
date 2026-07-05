@@ -1,4 +1,4 @@
-﻿//! Plugin dependency resolution (RFC-0226).
+//! Plugin dependency resolution (RFC-0226).
 //!
 //! Builds a dependency graph from a set of plugin manifests, validates required
 //! / optional / soft dependencies, enforces version constraints and capability
@@ -41,9 +41,15 @@ impl DependencyResolver {
     /// dependencies that are missing produce warnings and are skipped.
     /// Capability dependencies require the dependency to declare the capability.
     /// Circular dependencies are detected and rejected.
-    pub fn resolve(&self, manifests: &[PluginManifest]) -> Result<ResolutionResult, DependencyError> {
+    pub fn resolve(
+        &self,
+        manifests: &[PluginManifest],
+    ) -> Result<ResolutionResult, DependencyError> {
         if manifests.is_empty() {
-            return Ok(ResolutionResult { load_order: Vec::new(), warnings: Vec::new() });
+            return Ok(ResolutionResult {
+                load_order: Vec::new(),
+                warnings: Vec::new(),
+            });
         }
 
         let mut seen = HashSet::new();
@@ -56,8 +62,10 @@ impl DependencyResolver {
             }
         }
 
-        let by_id: HashMap<&str, &PluginManifest> =
-            manifests.iter().map(|m| (m.plugin_id.as_str(), m)).collect();
+        let by_id: HashMap<&str, &PluginManifest> = manifests
+            .iter()
+            .map(|m| (m.plugin_id.as_str(), m))
+            .collect();
 
         let mut warnings = Vec::new();
         let mut adj: HashMap<String, Vec<String>> = HashMap::new();
@@ -86,7 +94,10 @@ impl DependencyResolver {
             )));
         }
 
-        Ok(ResolutionResult { load_order: order, warnings })
+        Ok(ResolutionResult {
+            load_order: order,
+            warnings,
+        })
     }
 }
 
@@ -168,7 +179,9 @@ impl DependencyResolver {
             }
         }
 
-        adj.entry(dep.plugin_id.clone()).or_default().push(owner.plugin_id.clone());
+        adj.entry(dep.plugin_id.clone())
+            .or_default()
+            .push(owner.plugin_id.clone());
         *in_degree.entry(owner.plugin_id.clone()).or_insert(0) += 1;
         Ok(())
     }
@@ -224,17 +237,21 @@ impl Default for DependencyResolver {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::capability::{CapabilityDeclaration, PluginCapability};
     use crate::manifest::{
-        DependencyType, PluginCompatibility, PluginDependency, PluginManifest, PluginResourceLimits,
-        PluginType,
+        DependencyType, PluginCompatibility, PluginDependency, PluginManifest,
+        PluginResourceLimits, PluginType,
     };
 
-    fn manifest(id: &str, version: &str, deps: Vec<PluginDependency>, caps: Vec<CapabilityDeclaration>) -> PluginManifest {
+    fn manifest(
+        id: &str,
+        version: &str,
+        deps: Vec<PluginDependency>,
+        caps: Vec<CapabilityDeclaration>,
+    ) -> PluginManifest {
         PluginManifest {
             manifest_version: "1.0.0".to_string(),
             plugin_id: id.to_string(),
@@ -254,13 +271,23 @@ mod tests {
     }
 
     fn dep(id: &str, version: &str, t: DependencyType) -> PluginDependency {
-        PluginDependency { plugin_id: id.to_string(), version: version.to_string(), dependency_type: t, capability: None }
+        PluginDependency {
+            plugin_id: id.to_string(),
+            version: version.to_string(),
+            dependency_type: t,
+            capability: None,
+        }
     }
 
     #[test]
     fn test_linear_order() {
         let a = manifest("a", "1.0.0", vec![], vec![]);
-        let b = manifest("b", "1.0.0", vec![dep("a", "*", DependencyType::Required)], vec![]);
+        let b = manifest(
+            "b",
+            "1.0.0",
+            vec![dep("a", "*", DependencyType::Required)],
+            vec![],
+        );
         let r = DependencyResolver::new().resolve(&[a, b]).unwrap();
         assert_eq!(r.load_order, vec!["a".to_string(), "b".to_string()]);
     }
@@ -269,29 +296,62 @@ mod tests {
     fn test_deterministic_order() {
         let a = manifest("a", "1.0.0", vec![], vec![]);
         let b = manifest("b", "1.0.0", vec![], vec![]);
-        let c = manifest("c", "1.0.0", vec![dep("a", "*", DependencyType::Required), dep("b", "*", DependencyType::Required)], vec![]);
-        let r = DependencyResolver::new().resolve(&[c.clone(), b.clone(), a.clone()]).unwrap();
-        assert_eq!(r.load_order, vec!["a".to_string(), "b".to_string(), "c".to_string()]);
+        let c = manifest(
+            "c",
+            "1.0.0",
+            vec![
+                dep("a", "*", DependencyType::Required),
+                dep("b", "*", DependencyType::Required),
+            ],
+            vec![],
+        );
+        let r = DependencyResolver::new()
+            .resolve(&[c.clone(), b.clone(), a.clone()])
+            .unwrap();
+        assert_eq!(
+            r.load_order,
+            vec!["a".to_string(), "b".to_string(), "c".to_string()]
+        );
     }
 
     #[test]
     fn test_cycle_detected() {
-        let a = manifest("a", "1.0.0", vec![dep("b", "*", DependencyType::Required)], vec![]);
-        let b = manifest("b", "1.0.0", vec![dep("a", "*", DependencyType::Required)], vec![]);
+        let a = manifest(
+            "a",
+            "1.0.0",
+            vec![dep("b", "*", DependencyType::Required)],
+            vec![],
+        );
+        let b = manifest(
+            "b",
+            "1.0.0",
+            vec![dep("a", "*", DependencyType::Required)],
+            vec![],
+        );
         let err = DependencyResolver::new().resolve(&[a, b]).unwrap_err();
         assert!(matches!(err, DependencyError::CircularDependency(_)));
     }
 
     #[test]
     fn test_missing_required() {
-        let a = manifest("a", "1.0.0", vec![dep("missing", "*", DependencyType::Required)], vec![]);
+        let a = manifest(
+            "a",
+            "1.0.0",
+            vec![dep("missing", "*", DependencyType::Required)],
+            vec![],
+        );
         let err = DependencyResolver::new().resolve(&[a]).unwrap_err();
         assert!(matches!(err, DependencyError::MissingDependency(_)));
     }
 
     #[test]
     fn test_optional_missing_produces_warning() {
-        let a = manifest("a", "1.0.0", vec![dep("missing", "*", DependencyType::Optional)], vec![]);
+        let a = manifest(
+            "a",
+            "1.0.0",
+            vec![dep("missing", "*", DependencyType::Optional)],
+            vec![],
+        );
         let r = DependencyResolver::new().resolve(&[a]).unwrap();
         assert_eq!(r.load_order, vec!["a".to_string()]);
         assert!(!r.warnings.is_empty());
@@ -300,7 +360,12 @@ mod tests {
     #[test]
     fn test_version_conflict_required() {
         let a = manifest("a", "1.0.0", vec![], vec![]);
-        let b = manifest("b", "1.0.0", vec![dep("a", ">=2.0.0", DependencyType::Required)], vec![]);
+        let b = manifest(
+            "b",
+            "1.0.0",
+            vec![dep("a", ">=2.0.0", DependencyType::Required)],
+            vec![],
+        );
         let err = DependencyResolver::new().resolve(&[a, b]).unwrap_err();
         assert!(matches!(err, DependencyError::VersionConflict { .. }));
     }
@@ -308,14 +373,24 @@ mod tests {
     #[test]
     fn test_version_satisfied() {
         let a = manifest("a", "1.5.0", vec![], vec![]);
-        let b = manifest("b", "1.0.0", vec![dep("a", "^1.2.0", DependencyType::Required)], vec![]);
+        let b = manifest(
+            "b",
+            "1.0.0",
+            vec![dep("a", "^1.2.0", DependencyType::Required)],
+            vec![],
+        );
         let r = DependencyResolver::new().resolve(&[a, b]).unwrap();
         assert_eq!(r.load_order, vec!["a".to_string(), "b".to_string()]);
     }
 
     #[test]
     fn test_capability_dependency_satisfied() {
-        let a = manifest("a", "1.0.0", vec![], vec![CapabilityDeclaration::new(PluginCapability::OCR)]);
+        let a = manifest(
+            "a",
+            "1.0.0",
+            vec![],
+            vec![CapabilityDeclaration::new(PluginCapability::OCR)],
+        );
         let mut d = dep("a", "*", DependencyType::Required);
         d.capability = Some(PluginCapability::OCR);
         let b = manifest("b", "1.0.0", vec![d], vec![]);
@@ -325,7 +400,12 @@ mod tests {
 
     #[test]
     fn test_capability_dependency_unsatisfied() {
-        let a = manifest("a", "1.0.0", vec![], vec![CapabilityDeclaration::new(PluginCapability::Vision)]);
+        let a = manifest(
+            "a",
+            "1.0.0",
+            vec![],
+            vec![CapabilityDeclaration::new(PluginCapability::Vision)],
+        );
         let mut d = dep("a", "*", DependencyType::Required);
         d.capability = Some(PluginCapability::OCR);
         let b = manifest("b", "1.0.0", vec![d], vec![]);
@@ -347,5 +427,3 @@ mod tests {
         assert!(matches!(err, DependencyError::CircularDependency(_)));
     }
 }
-
-

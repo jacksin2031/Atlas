@@ -1,4 +1,4 @@
-﻿//! Request and response types.
+//! Request and response types.
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -27,7 +27,11 @@ pub struct Request {
 }
 
 impl Request {
-    pub fn new(sender: impl Into<String>, receiver: impl Into<String>, payload: serde_json::Value) -> Self {
+    pub fn new(
+        sender: impl Into<String>,
+        receiver: impl Into<String>,
+        payload: serde_json::Value,
+    ) -> Self {
         Self {
             id: Uuid::new_v4(),
             correlation_id: Uuid::new_v4(),

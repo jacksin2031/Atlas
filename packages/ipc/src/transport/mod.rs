@@ -3,13 +3,13 @@
 //! Defines the `Transport` trait and a reference in-memory implementation.
 //! All transports MUST be platform-independent.
 
-pub mod transport;
-pub mod in_memory_transport;
 pub mod factory;
+pub mod in_memory_transport;
+pub mod transport;
 
-pub use transport::*;
-pub use in_memory_transport::*;
 pub use factory::*;
+pub use in_memory_transport::*;
+pub use transport::*;
 
 pub mod adapters;
 

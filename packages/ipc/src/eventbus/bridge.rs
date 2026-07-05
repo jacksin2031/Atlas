@@ -1,11 +1,11 @@
-﻿//! Event bus bridge — integrates IPC with the Runtime Event Bus.
+//! Event bus bridge — integrates IPC with the Runtime Event Bus.
 
 use std::sync::{Arc, Mutex};
 
-use crate::message::MessageEnvelope;
-use crate::eventbus::events::IpcEventType;
 use super::publisher::EventPublisher;
+use crate::eventbus::events::IpcEventType;
 use crate::eventbus::subscriber::{EventSubscriber, SubscriptionHandle};
+use crate::message::MessageEnvelope;
 
 /// Bridges IPC messages to and from the event bus.
 pub struct EventBusBridge {
@@ -123,5 +123,3 @@ mod tests {
         assert_eq!(bridge.subscription_count(), 1);
     }
 }
-
-

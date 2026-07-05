@@ -1,4 +1,4 @@
-﻿//! Manifest Service.
+//! Manifest Service.
 //!
 //! Implements the Runtime Service Contract (RFC-0003 §9) for the manifest
 //! subsystem (RFC-0010). The Manifest System consists of a Parser, a Schema
@@ -60,8 +60,7 @@ impl ManifestService {
         if !Path::new(path).exists() {
             return Err(ManifestError::FileNotFound(path.to_string()));
         }
-        let bytes =
-            std::fs::read(path).map_err(|e| ManifestError::ParseError(e.to_string()))?;
+        let bytes = std::fs::read(path).map_err(|e| ManifestError::ParseError(e.to_string()))?;
         let manifest: Manifest =
             serde_json::from_slice(&bytes).map_err(|e| ManifestError::ParseError(e.to_string()))?;
         Self::validate(&manifest)?;
@@ -83,9 +82,9 @@ impl ManifestService {
         let cfg = config
             .get()
             .map_err(|e| ManifestError::ParseError(e.to_string()))?;
-        let path = cfg
-            .manifest_path
-            .ok_or(ManifestError::ValidationError("manifest_path not set".to_string()))?;
+        let path = cfg.manifest_path.ok_or(ManifestError::ValidationError(
+            "manifest_path not set".to_string(),
+        ))?;
         self.load_from_path(&path)
     }
 
@@ -96,7 +95,9 @@ impl ManifestService {
             .expect("manifest state mutex poisoned")
             .manifest
             .clone()
-            .ok_or(ManifestError::ValidationError("manifest not loaded".to_string()))
+            .ok_or(ManifestError::ValidationError(
+                "manifest not loaded".to_string(),
+            ))
     }
 
     /// Discover service declarations from the loaded manifest.
@@ -221,7 +222,9 @@ impl ServiceContract for ManifestService {
     fn initialize(&mut self) -> Result<(), ServiceError> {
         let mut state = self.state.lock().expect("manifest state mutex poisoned");
         if state.initialized {
-            return Err(ServiceError::InvalidState("already initialized".to_string()));
+            return Err(ServiceError::InvalidState(
+                "already initialized".to_string(),
+            ));
         }
         state.initialized = true;
         Ok(())

@@ -1,9 +1,9 @@
-﻿//! Error type hierarchy.
+//! Error type hierarchy.
 //!
 //! Re-exports from atlas-contracts and defines composite errors.
 
 pub use atlas_contracts::{
-    ServiceError, EventBusError, SchedulerError, StateTransitionError, MetricsError, StorageError,
+    EventBusError, MetricsError, SchedulerError, ServiceError, StateTransitionError, StorageError,
 };
 use thiserror::Error;
 

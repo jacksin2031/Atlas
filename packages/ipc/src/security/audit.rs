@@ -1,9 +1,9 @@
-﻿//! Audit trail for security events.
+//! Audit trail for security events.
 
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
-use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
 
 /// Types of security events.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

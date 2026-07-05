@@ -1,4 +1,4 @@
-﻿//! Health Service.
+//! Health Service.
 //!
 //! Implements the Runtime Service Contract (RFC-0003 §9) and the
 //! [`HealthChecker`] contract (RFC-0003 §16) for health monitoring.
@@ -16,9 +16,7 @@
 //! shared via dependency injection without global mutable state.
 
 use atlas_common::HealthStatus;
-use atlas_contracts::{
-    HealthChecker, ServiceContract, ServiceError, ServiceId, ServiceName,
-};
+use atlas_contracts::{HealthChecker, ServiceContract, ServiceError, ServiceId, ServiceName};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
@@ -129,7 +127,10 @@ impl HealthChecker for HealthService {
 
     fn record_health(&self, service_id: &ServiceId, status: HealthStatus) {
         let mut map = self.health_map.lock().expect("health map mutex poisoned");
-        let mut counts = self.failure_counts.lock().expect("failure counts mutex poisoned");
+        let mut counts = self
+            .failure_counts
+            .lock()
+            .expect("failure counts mutex poisoned");
         match &status {
             HealthStatus::Healthy => {
                 counts.remove(service_id);
@@ -184,7 +185,9 @@ impl ServiceContract for HealthService {
 
     fn initialize(&mut self) -> Result<(), ServiceError> {
         if self.initialized.swap(true, Ordering::AcqRel) {
-            return Err(ServiceError::InvalidState("already initialized".to_string()));
+            return Err(ServiceError::InvalidState(
+                "already initialized".to_string(),
+            ));
         }
         Ok(())
     }
@@ -219,8 +222,14 @@ impl ServiceContract for HealthService {
     fn dispose(&mut self) {
         self.started.store(false, Ordering::Release);
         self.initialized.store(false, Ordering::Release);
-        self.health_map.lock().expect("health map mutex poisoned").clear();
-        self.failure_counts.lock().expect("failure counts mutex poisoned").clear();
+        self.health_map
+            .lock()
+            .expect("health map mutex poisoned")
+            .clear();
+        self.failure_counts
+            .lock()
+            .expect("failure counts mutex poisoned")
+            .clear();
     }
 }
 
@@ -257,10 +266,7 @@ mod tests {
     fn test_aggregate_worst_case() {
         let svc = HealthService::new();
         svc.record_health(&"a".to_string(), HealthStatus::Healthy);
-        svc.record_health(
-            &"b".to_string(),
-            HealthStatus::Degraded("slow".to_string()),
-        );
+        svc.record_health(&"b".to_string(), HealthStatus::Degraded("slow".to_string()));
         assert!(matches!(svc.aggregate_health(), HealthStatus::Degraded(_)));
 
         svc.record_health(
@@ -336,6 +342,3 @@ mod tests {
         assert_eq!(svc.check_interval_ms(), 2000);
     }
 }
-
-
-

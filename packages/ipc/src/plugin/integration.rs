@@ -1,7 +1,7 @@
-﻿//! Plugin integration — enforces IPC-only communication.
+//! Plugin integration — enforces IPC-only communication.
 
-use std::sync::{Arc, Mutex};
 use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
 
 /// Ensures plugins communicate only through IPC abstractions.
 #[derive(Clone)]
@@ -20,8 +20,10 @@ impl PluginIntegration {
 
     /// Register a plugin for IPC-only communication enforcement.
     pub fn register_plugin(&self, plugin_id: impl Into<String>) {
-        
-        self.registered_plugins.lock().unwrap().insert(plugin_id.into());
+        self.registered_plugins
+            .lock()
+            .unwrap()
+            .insert(plugin_id.into());
     }
 
     /// Check if a plugin is registered.
@@ -32,7 +34,6 @@ impl PluginIntegration {
 
     /// Validate that communication goes through IPC (not direct).
     pub fn validate_ipc_communication(&self, sender: &str, receiver: &str) -> bool {
-        
         let plugins = self.registered_plugins.lock().unwrap();
         // Both must be registered plugins
         let sender_is_plugin = plugins.contains(sender);
@@ -42,7 +43,11 @@ impl PluginIntegration {
             // Plugin-to-plugin communication must go through IPC
             // In the reference implementation, we just log the attempt
             let mut attempts = self.direct_communication_attempts.lock().unwrap();
-            attempts.push((sender.to_string(), receiver.to_string(), std::time::Instant::now()));
+            attempts.push((
+                sender.to_string(),
+                receiver.to_string(),
+                std::time::Instant::now(),
+            ));
             // Return true because we're enforcing via the IPC layer (not direct)
             true
         } else {
@@ -69,12 +74,3 @@ impl Default for PluginIntegration {
         Self::new()
     }
 }
-
-
-
-
-
-
-
-
-

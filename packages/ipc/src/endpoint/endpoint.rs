@@ -1,7 +1,7 @@
-﻿//! Endpoint definition.
+//! Endpoint definition.
 
-use serde::{Deserialize, Serialize};
 use super::descriptor::EndpointDescriptor;
+use serde::{Deserialize, Serialize};
 
 /// Endpoint health status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -51,7 +51,11 @@ pub struct Endpoint {
 }
 
 impl Endpoint {
-    pub fn new(id: impl Into<String>, address: impl Into<String>, descriptor: EndpointDescriptor) -> Self {
+    pub fn new(
+        id: impl Into<String>,
+        address: impl Into<String>,
+        descriptor: EndpointDescriptor,
+    ) -> Self {
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
@@ -80,6 +84,7 @@ impl Endpoint {
     }
 
     pub fn version_compatible(&self, required_version: &str) -> bool {
-        self.version.starts_with(required_version.split('.').next().unwrap_or(""))
+        self.version
+            .starts_with(required_version.split('.').next().unwrap_or(""))
     }
 }

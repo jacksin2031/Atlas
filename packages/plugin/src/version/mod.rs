@@ -70,7 +70,13 @@ impl SemanticVersion {
         let major = parse_num(parts[0], "major", input)?;
         let minor = parse_num(parts[1], "minor", input)?;
         let patch = parse_num(parts[2], "patch", input)?;
-        Ok(Self { major, minor, patch, pre_release, build_metadata })
+        Ok(Self {
+            major,
+            minor,
+            patch,
+            pre_release,
+            build_metadata,
+        })
     }
 
     /// Whether this version has a pre-release identifier.
@@ -92,10 +98,14 @@ impl SemanticVersion {
 
 fn parse_num(s: &str, field: &str, input: &str) -> Result<u64, ManifestError> {
     if s.is_empty() {
-        return Err(ManifestError::InvalidVersion(format!("empty {field} in '{input}'")));
+        return Err(ManifestError::InvalidVersion(format!(
+            "empty {field} in '{input}'"
+        )));
     }
     if !s.chars().all(|c| c.is_ascii_digit()) {
-        return Err(ManifestError::InvalidVersion(format!("non-numeric {field} '{s}' in '{input}'")));
+        return Err(ManifestError::InvalidVersion(format!(
+            "non-numeric {field} '{s}' in '{input}'"
+        )));
     }
     s.parse::<u64>()
         .map_err(|_| ManifestError::InvalidVersion(format!("overflowing {field} in '{input}'")))
@@ -205,7 +215,10 @@ impl VersionConstraint {
     pub fn parse(expr: &str) -> Result<Self, ManifestError> {
         let expr = expr.trim();
         if expr.is_empty() || expr == "*" {
-            return Ok(Self { operator: ConstraintOperator::Any, version: None });
+            return Ok(Self {
+                operator: ConstraintOperator::Any,
+                version: None,
+            });
         }
         let (op_str, ver_str) = split_operator(expr);
         let operator = match op_str {
@@ -228,7 +241,9 @@ impl VersionConstraint {
 
     /// Whether `version` satisfies this constraint.
     pub fn satisfies(&self, version: &SemanticVersion) -> bool {
-        let Some(target) = &self.version else { return true };
+        let Some(target) = &self.version else {
+            return true;
+        };
         match self.operator {
             ConstraintOperator::Any => true,
             ConstraintOperator::Eq => version == target,
@@ -237,7 +252,9 @@ impl VersionConstraint {
             ConstraintOperator::Lte => version <= target,
             ConstraintOperator::Lt => version < target,
             ConstraintOperator::Caret => {
-                if version < target { return false; }
+                if version < target {
+                    return false;
+                }
                 if target.major > 0 {
                     version.major == target.major
                 } else if target.minor > 0 {
@@ -247,7 +264,9 @@ impl VersionConstraint {
                 }
             }
             ConstraintOperator::Tilde => {
-                if version < target { return false; }
+                if version < target {
+                    return false;
+                }
                 version.major == target.major && version.minor == target.minor
             }
         }
@@ -372,6 +391,9 @@ mod tests {
 
     #[test]
     fn test_constraint_display() {
-        assert_eq!(VersionConstraint::parse(">=1.0.0").unwrap().to_string(), ">=1.0.0");
+        assert_eq!(
+            VersionConstraint::parse(">=1.0.0").unwrap().to_string(),
+            ">=1.0.0"
+        );
     }
 }

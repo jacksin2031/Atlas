@@ -51,7 +51,7 @@ impl EndpointDescriptor {
     }
 
     pub fn supports_message_type(&self, msg_type: &str) -> bool {
-        self.supported_message_types.is_empty() ||
-        self.supported_message_types.iter().any(|t| t == msg_type)
+        self.supported_message_types.is_empty()
+            || self.supported_message_types.iter().any(|t| t == msg_type)
     }
 }

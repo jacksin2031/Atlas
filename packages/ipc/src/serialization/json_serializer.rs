@@ -1,6 +1,6 @@
-﻿//! JSON serializer — the default reference implementation.
+//! JSON serializer — the default reference implementation.
 
-use super::serializer::{Serializer, SerializeResult, SerializationError};
+use super::serializer::{SerializationError, SerializeResult, Serializer};
 use crate::message::{MessageEnvelope, MessageValidator};
 
 /// JSON-based message serializer.
@@ -18,9 +18,8 @@ impl JsonSerializer {
 impl Serializer for JsonSerializer {
     fn serialize(&self, envelope: &MessageEnvelope) -> SerializeResult<Vec<u8>> {
         // Validate before serializing.
-        MessageValidator::validate(envelope).map_err(|e| {
-            SerializationError::ValidationFailed(e.to_string())
-        })?;
+        MessageValidator::validate(envelope)
+            .map_err(|e| SerializationError::ValidationFailed(e.to_string()))?;
 
         serde_json::to_vec(envelope).map_err(|e| SerializationError::Serialize(e.to_string()))
     }
@@ -37,7 +36,7 @@ impl Serializer for JsonSerializer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_envelope() -> MessageEnvelope {
         MessageEnvelope {

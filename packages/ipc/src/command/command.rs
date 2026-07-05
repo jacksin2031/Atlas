@@ -1,7 +1,7 @@
-﻿//! Command trait — the basis of the command bus.
+//! Command trait — the basis of the command bus.
 
-use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex};
 
 /// Trait that all commands MUST implement.
 pub trait Command: Send + Sync {
@@ -86,6 +86,3 @@ impl CommandState {
         *self.cancelled.lock().unwrap() = true;
     }
 }
-
-
-

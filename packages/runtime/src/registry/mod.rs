@@ -1,7 +1,7 @@
-﻿//! Service Registry — registration, lookup, dependency management.
+//! Service Registry — registration, lookup, dependency management.
 
-use atlas_contracts::ServiceError;
 use atlas_common::ServiceDeclaration;
+use atlas_contracts::ServiceError;
 use std::collections::HashMap;
 
 #[allow(dead_code)]
@@ -72,7 +72,9 @@ impl ServiceRegistry {
     }
 
     pub fn get(&self, id: &str) -> Result<&ServiceEntry, ServiceError> {
-        self.services.get(id).ok_or_else(|| ServiceError::NotFound(id.to_string()))
+        self.services
+            .get(id)
+            .ok_or_else(|| ServiceError::NotFound(id.to_string()))
     }
 
     pub fn service_ids(&self) -> Vec<&String> {

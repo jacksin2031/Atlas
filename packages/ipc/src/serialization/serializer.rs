@@ -1,4 +1,4 @@
-﻿//! The `Serializer` trait — platform-independent serialization abstraction.
+//! The `Serializer` trait — platform-independent serialization abstraction.
 
 use thiserror::Error;
 
@@ -55,4 +55,3 @@ pub trait Serializer: Send + Sync {
         // Default: no-op. Subtypes may override.
     }
 }
-

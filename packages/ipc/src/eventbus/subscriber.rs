@@ -1,7 +1,7 @@
-﻿//! Event subscriber with pattern matching and priority handling.
+//! Event subscriber with pattern matching and priority handling.
 
-use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 use crate::eventbus::events::IpcEventType;
 

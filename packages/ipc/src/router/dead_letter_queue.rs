@@ -1,8 +1,8 @@
-﻿//! Dead letter queue for undeliverable messages.
+//! Dead letter queue for undeliverable messages.
 
-use std::collections::VecDeque;
-use serde::{Deserialize, Serialize};
 use crate::message::MessageEnvelope;
+use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 /// Epoch-based timestamp for serialization.
 type EpochTime = u64;
@@ -36,7 +36,13 @@ impl DeadLetterQueue {
         }
     }
 
-    pub fn add(&mut self, message: MessageEnvelope, reason: impl Into<String>, retry_count: u32, max_retries: u32) {
+    pub fn add(
+        &mut self,
+        message: MessageEnvelope,
+        reason: impl Into<String>,
+        retry_count: u32,
+        max_retries: u32,
+    ) {
         if self.entries.len() >= self.max_capacity {
             self.entries.pop_front();
         }
@@ -112,7 +118,7 @@ pub struct DlqStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_msg() -> MessageEnvelope {
         MessageEnvelope {

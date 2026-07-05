@@ -3,8 +3,8 @@
 //! Provides SpanContext with trace_id, span_id, and parent_span_id.
 //! The router auto-propagates trace context on every hop.
 
-use uuid::Uuid;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 /// A unique identifier — either a trace_id or span_id.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -17,7 +17,9 @@ impl TraceId {
 }
 
 impl Default for TraceId {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl core::fmt::Display for TraceId {
@@ -37,7 +39,9 @@ impl SpanId {
 }
 
 impl Default for SpanId {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl core::fmt::Display for SpanId {
@@ -81,7 +85,11 @@ impl SpanContext {
     }
 
     /// Extract an existing span context from trace/span strings.
-    pub fn extract(trace_id: impl Into<String>, span_id: impl Into<String>, parent_span_id: Option<impl Into<String>>) -> Self {
+    pub fn extract(
+        trace_id: impl Into<String>,
+        span_id: impl Into<String>,
+        parent_span_id: Option<impl Into<String>>,
+    ) -> Self {
         Self {
             trace_id: TraceId(trace_id.into()),
             span_id: SpanId(span_id.into()),
@@ -97,7 +105,9 @@ impl SpanContext {
 }
 
 impl Default for SpanContext {
-    fn default() -> Self { Self::new_root() }
+    fn default() -> Self {
+        Self::new_root()
+    }
 }
 
 #[cfg(test)]

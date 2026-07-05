@@ -1,7 +1,7 @@
-﻿//! Event Bus implementation.
+//! Event Bus implementation.
 
 use atlas_contracts::{
-    Event, Channel, EventBusStats, SubscriptionHandle, EventBusError, EventPriority,
+    Channel, Event, EventBusError, EventBusStats, EventPriority, SubscriptionHandle,
 };
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -63,20 +63,14 @@ impl EventBusImpl {
     }
 
     pub fn publish_ready(&mut self) -> Result<(), EventBusError> {
-        let event = Event::new(
-            Channel::new("lifecycle"),
-            "Ready",
-            serde_json::json!({}),
-        ).with_priority(EventPriority::Critical);
+        let event = Event::new(Channel::new("lifecycle"), "Ready", serde_json::json!({}))
+            .with_priority(EventPriority::Critical);
         self.publish(Channel::new("lifecycle"), event)
     }
 
     pub fn publish_running(&mut self) -> Result<(), EventBusError> {
-        let event = Event::new(
-            Channel::new("lifecycle"),
-            "Running",
-            serde_json::json!({}),
-        ).with_priority(EventPriority::Critical);
+        let event = Event::new(Channel::new("lifecycle"), "Running", serde_json::json!({}))
+            .with_priority(EventPriority::Critical);
         self.publish(Channel::new("lifecycle"), event)
     }
 
@@ -85,7 +79,8 @@ impl EventBusImpl {
             Channel::new("lifecycle"),
             "ShutdownRequested",
             serde_json::json!({}),
-        ).with_priority(EventPriority::Critical);
+        )
+        .with_priority(EventPriority::Critical);
         self.publish(Channel::new("lifecycle"), event)
     }
 
@@ -94,7 +89,8 @@ impl EventBusImpl {
             Channel::new("lifecycle"),
             "Terminated",
             serde_json::json!({}),
-        ).with_priority(EventPriority::Critical);
+        )
+        .with_priority(EventPriority::Critical);
         self.publish(Channel::new("lifecycle"), event)
     }
 }
@@ -104,5 +100,3 @@ impl Default for EventBusImpl {
         Self::new()
     }
 }
-
-

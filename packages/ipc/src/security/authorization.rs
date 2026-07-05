@@ -1,8 +1,8 @@
-﻿//! Authorization service — channel-permission class enforcement.
+//! Authorization service — channel-permission class enforcement.
 
-use std::collections::HashMap;
-use crate::message::MessageEnvelope;
 use super::permissions::{Permission, PermissionSet};
+use crate::message::MessageEnvelope;
+use std::collections::HashMap;
 
 /// Permission classes for channels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,10 +21,9 @@ impl PermissionClass {
     pub fn to_permissions(&self) -> PermissionSet {
         match self {
             Self::ReceiveOnly => PermissionSet::with_permissions(vec![Permission::Receive]),
-            Self::SendReceive => PermissionSet::with_permissions(vec![
-                Permission::Send,
-                Permission::Receive,
-            ]),
+            Self::SendReceive => {
+                PermissionSet::with_permissions(vec![Permission::Send, Permission::Receive])
+            }
             Self::Manage => PermissionSet::with_permissions(vec![
                 Permission::Send,
                 Permission::Receive,
@@ -84,17 +83,17 @@ impl AuthorizationService {
 
     /// Check if a principal is admin.
     pub fn is_admin(&self, principal: &str) -> bool {
-        self.principal_permissions.get(principal)
+        self.principal_permissions
+            .get(principal)
             .map(|p| p.has(&Permission::Admin))
             .unwrap_or(false)
     }
 
     /// Check if authorization is granted (any permission).
     pub fn authorize(&self, principal: &str, required: &Permission) -> bool {
-        self.principal_permissions.get(principal)
+        self.principal_permissions
+            .get(principal)
             .map(|p| p.has(required))
             .unwrap_or(false)
     }
 }
-
-

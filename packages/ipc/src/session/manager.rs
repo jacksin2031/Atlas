@@ -1,10 +1,10 @@
-﻿//! Session manager — creation, authentication, expiration, renewal, termination.
+//! Session manager — creation, authentication, expiration, renewal, termination.
 
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
-use super::session::{Session, SessionState};
 use super::context::SessionContext;
+use super::session::{Session, SessionState};
 
 /// Results of session operations.
 pub type SessionResult<T> = Result<T, SessionError>;
@@ -40,7 +40,11 @@ impl SessionManager {
     }
 
     /// Create a new session.
-    pub fn create(&self, user_id: impl Into<String>, context: SessionContext) -> SessionResult<Session> {
+    pub fn create(
+        &self,
+        user_id: impl Into<String>,
+        context: SessionContext,
+    ) -> SessionResult<Session> {
         let mut sessions = self.sessions.lock().unwrap();
         let mut session = Session::new(user_id, context);
         session.activate();
@@ -51,7 +55,8 @@ impl SessionManager {
     /// Get a session by ID.
     pub fn get(&self, id: &Uuid) -> SessionResult<Session> {
         let sessions = self.sessions.lock().unwrap();
-        sessions.iter()
+        sessions
+            .iter()
             .find(|s| &s.id == id)
             .cloned()
             .ok_or(SessionError::NotFound(id.to_string()))
@@ -60,7 +65,8 @@ impl SessionManager {
     /// Get a session by user ID (returns the most recent active one).
     pub fn get_by_user(&self, user_id: &str) -> Option<Session> {
         let sessions = self.sessions.lock().unwrap();
-        sessions.iter()
+        sessions
+            .iter()
             .filter(|s| s.user_id == user_id && s.state.is_active())
             .last()
             .cloned()
@@ -69,7 +75,8 @@ impl SessionManager {
     /// Terminate a session.
     pub fn terminate(&self, id: &Uuid) -> SessionResult<()> {
         let mut sessions = self.sessions.lock().unwrap();
-        let session = sessions.iter_mut()
+        let session = sessions
+            .iter_mut()
             .find(|s| &s.id == id)
             .ok_or(SessionError::NotFound(id.to_string()))?;
 
@@ -84,7 +91,8 @@ impl SessionManager {
     /// Renew a session.
     pub fn renew(&self, id: &Uuid) -> SessionResult<()> {
         let mut sessions = self.sessions.lock().unwrap();
-        let session = sessions.iter_mut()
+        let session = sessions
+            .iter_mut()
             .find(|s| &s.id == id)
             .ok_or(SessionError::NotFound(id.to_string()))?;
 
@@ -110,15 +118,18 @@ impl SessionManager {
     /// Get all active sessions.
     pub fn active_sessions(&self) -> Vec<Session> {
         let sessions = self.sessions.lock().unwrap();
-        sessions.iter()
+        sessions
+            .iter()
             .filter(|s| s.state.is_active() && !s.is_expired())
-.cloned().collect()
+            .cloned()
+            .collect()
     }
 
     /// Get the count of active sessions.
     pub fn active_count(&self) -> usize {
         let sessions = self.sessions.lock().unwrap();
-        sessions.iter()
+        sessions
+            .iter()
             .filter(|s| s.state.is_active() && !s.is_expired())
             .count()
     }
@@ -177,4 +188,3 @@ mod tests {
         assert_eq!(mgr.active_count(), 1);
     }
 }
-

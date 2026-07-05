@@ -1,38 +1,37 @@
-﻿/// Atlas shared types for the Runtime Foundation.
-pub mod event;
-pub mod manifest;
-pub mod error;
-pub mod lifecycle;
-pub mod service;
-pub mod scheduler_types;
-pub mod health;
 pub mod config;
+pub mod error;
+/// Atlas shared types for the Runtime Foundation.
+pub mod event;
+pub mod health;
+pub mod lifecycle;
+pub mod manifest;
+pub mod scheduler_types;
+pub mod service;
 
 // Re-export everything from submodules
-pub use event::{Event, Channel, EventPriority, SubscriptionHandle, EventBusStats};
-pub use manifest::{
-    Manifest, ServiceDeclaration, Capability, PackageType, Permission, ResourceLimits,
-    Compatibility,
-};
+pub use atlas_contracts::StateTransitionError;
 pub use config::{
-    Configuration, RuntimeConfig, HealthConfig, SchedulerConfig, MetricsConfig, StorageConfig,
-    ProviderConfig,
+    Configuration, HealthConfig, MetricsConfig, ProviderConfig, RuntimeConfig, SchedulerConfig,
+    StorageConfig,
 };
 pub use error::{
-    AtlasError, ServiceError, EventBusError, SchedulerError,
-    ManifestError, ConfigError, HealthError, DependencyError,
+    AtlasError, ConfigError, DependencyError, EventBusError, HealthError, ManifestError,
+    SchedulerError, ServiceError,
 };
-pub use lifecycle::{RuntimeState, is_legal_transition, LEGAL_TRANSITIONS};
-pub use atlas_contracts::StateTransitionError;
-pub use service::{ServiceId, ServiceName, HealthStatus};
-pub use scheduler_types::{TaskId, TaskDefinition, QueueDepth, WorkerPoolStatus};
+pub use event::{Channel, Event, EventBusStats, EventPriority, SubscriptionHandle};
+pub use lifecycle::{is_legal_transition, RuntimeState, LEGAL_TRANSITIONS};
+pub use manifest::{
+    Capability, Compatibility, Manifest, PackageType, Permission, ResourceLimits,
+    ServiceDeclaration,
+};
+pub use scheduler_types::{QueueDepth, TaskDefinition, TaskId, WorkerPoolStatus};
+pub use service::{HealthStatus, ServiceId, ServiceName};
 // Re-export metrics & storage contracts for downstream crates.
 pub use atlas_contracts::{
-    MetricKind, MetricDescriptor, MetricValue, HistogramBucket, MetricSnapshot,
-    MetricsError, MetricsRecorder,
-    ProviderId, ResourceId, TransactionId, ProviderCapability, ProviderState, ResourceState,
-    IsolationLevel, ReadOptions, WriteOptions, DeleteOptions, QueryFilter, Pagination,
-    ResultSet, ResourceMetadata, Resource, StorageError, StorageProvider, ProviderRegistry,
-    LEGAL_PROVIDER_TRANSITIONS, LEGAL_RESOURCE_TRANSITIONS,
-    is_legal_provider_transition, is_legal_resource_transition,
+    is_legal_provider_transition, is_legal_resource_transition, DeleteOptions, HistogramBucket,
+    IsolationLevel, MetricDescriptor, MetricKind, MetricSnapshot, MetricValue, MetricsError,
+    MetricsRecorder, Pagination, ProviderCapability, ProviderId, ProviderRegistry, ProviderState,
+    QueryFilter, ReadOptions, Resource, ResourceId, ResourceMetadata, ResourceState, ResultSet,
+    StorageError, StorageProvider, TransactionId, WriteOptions, LEGAL_PROVIDER_TRANSITIONS,
+    LEGAL_RESOURCE_TRANSITIONS,
 };

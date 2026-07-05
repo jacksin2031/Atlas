@@ -1,6 +1,6 @@
-﻿//! Binary serializer - hex-encoded JSON representation.
+//! Binary serializer - hex-encoded JSON representation.
 
-use super::serializer::{Serializer, SerializeResult, SerializationError};
+use super::serializer::{SerializationError, SerializeResult, Serializer};
 use crate::message::{MessageEnvelope, MessageValidator};
 
 /// Binary serializer that encodes messages as hex-encoded JSON.
@@ -15,11 +15,11 @@ impl BinarySerializer {
 
 impl Serializer for BinarySerializer {
     fn serialize(&self, envelope: &MessageEnvelope) -> SerializeResult<Vec<u8>> {
-        MessageValidator::validate(envelope).map_err(|e| {
-            SerializationError::ValidationFailed(e.to_string())
-        })?;
+        MessageValidator::validate(envelope)
+            .map_err(|e| SerializationError::ValidationFailed(e.to_string()))?;
 
-        let json = serde_json::to_vec(envelope).map_err(|e| SerializationError::Serialize(e.to_string()))?;
+        let json = serde_json::to_vec(envelope)
+            .map_err(|e| SerializationError::Serialize(e.to_string()))?;
         let hex_str: String = json.iter().map(|b| format!("{:02x}", b)).collect();
         Ok(hex_str.into_bytes())
     }
@@ -27,8 +27,8 @@ impl Serializer for BinarySerializer {
     fn deserialize(&self, bytes: &[u8]) -> SerializeResult<MessageEnvelope> {
         let hex_str = String::from_utf8(bytes.to_vec())
             .map_err(|e| SerializationError::Deserialize(e.to_string()))?;
-        let json_bytes = hex_decode(&hex_str)
-            .map_err(|e| SerializationError::Deserialize(e.to_string()))?;
+        let json_bytes =
+            hex_decode(&hex_str).map_err(|e| SerializationError::Deserialize(e.to_string()))?;
         serde_json::from_slice(&json_bytes)
             .map_err(|e| SerializationError::Deserialize(e.to_string()))
     }
@@ -62,7 +62,7 @@ fn hex_char_to_nibble(c: char) -> Result<u8, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_envelope() -> MessageEnvelope {
         MessageEnvelope {

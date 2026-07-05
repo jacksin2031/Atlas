@@ -1,4 +1,4 @@
-﻿//! Message header containing routing, identification, and lifecycle metadata.
+//! Message header containing routing, identification, and lifecycle metadata.
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -148,4 +148,3 @@ impl core::fmt::Display for MessageHeader {
         )
     }
 }
-

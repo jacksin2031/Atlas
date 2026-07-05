@@ -109,7 +109,9 @@ pub const LEGAL_PLUGIN_TRANSITIONS: &[(PluginState, PluginState)] = &[
 
 /// Whether a transition from `from` to `to` is legal.
 pub fn is_legal_plugin_transition(from: PluginState, to: PluginState) -> bool {
-    LEGAL_PLUGIN_TRANSITIONS.iter().any(|&(f, t)| f == from && t == to)
+    LEGAL_PLUGIN_TRANSITIONS
+        .iter()
+        .any(|&(f, t)| f == from && t == to)
 }
 /// Whether a plugin in `plugin_state` may operate given the runtime is in
 /// `runtime_state`.
@@ -120,7 +122,10 @@ pub fn is_legal_plugin_transition(from: PluginState, to: PluginState) -> bool {
 pub fn is_runtime_compatible(plugin_state: PluginState, runtime_state: RuntimeState) -> bool {
     match plugin_state {
         // Pre-activation plugin states are allowed while the runtime is booting.
-        PluginState::Created | PluginState::Loaded | PluginState::Initialized | PluginState::Started => {
+        PluginState::Created
+        | PluginState::Loaded
+        | PluginState::Initialized
+        | PluginState::Started => {
             matches!(
                 runtime_state,
                 RuntimeState::Created
@@ -164,22 +169,36 @@ pub struct PluginLifecycleManager {
 
 impl PluginLifecycleManager {
     pub fn new() -> Self {
-        Self { state: PluginState::Created, transition_count: 0, last_transition_time: monotonic_now() }
+        Self {
+            state: PluginState::Created,
+            transition_count: 0,
+            last_transition_time: monotonic_now(),
+        }
     }
 
     /// Create a manager whose initial state is `state`.
     pub fn with_state(state: PluginState) -> Self {
-        Self { state, transition_count: 0, last_transition_time: monotonic_now() }
+        Self {
+            state,
+            transition_count: 0,
+            last_transition_time: monotonic_now(),
+        }
     }
 
     /// Transition to `target`, enforcing legality and monotonic time.
     pub fn transition(&mut self, target: PluginState) -> Result<(), LifecycleError> {
         if !is_legal_plugin_transition(self.state, target) {
-            return Err(LifecycleError::IllegalTransition { from: self.state, to: target });
+            return Err(LifecycleError::IllegalTransition {
+                from: self.state,
+                to: target,
+            });
         }
         let now = monotonic_now();
         if now < self.last_transition_time {
-            return Err(LifecycleError::IllegalTransition { from: self.state, to: target });
+            return Err(LifecycleError::IllegalTransition {
+                from: self.state,
+                to: target,
+            });
         }
         self.last_transition_time = now;
         self.state = target;
@@ -241,7 +260,12 @@ mod tests {
     #[test]
     fn test_pause_resume() {
         let mut m = PluginLifecycleManager::new();
-        for t in [PluginState::Loaded, PluginState::Initialized, PluginState::Started, PluginState::Running] {
+        for t in [
+            PluginState::Loaded,
+            PluginState::Initialized,
+            PluginState::Started,
+            PluginState::Running,
+        ] {
             m.transition(t).unwrap();
         }
         m.transition(PluginState::Paused).unwrap();
@@ -253,7 +277,12 @@ mod tests {
     #[test]
     fn test_full_teardown() {
         let mut m = PluginLifecycleManager::new();
-        for t in [PluginState::Loaded, PluginState::Initialized, PluginState::Started, PluginState::Running] {
+        for t in [
+            PluginState::Loaded,
+            PluginState::Initialized,
+            PluginState::Started,
+            PluginState::Running,
+        ] {
             m.transition(t).unwrap();
         }
         m.transition(PluginState::Stopped).unwrap();
@@ -288,11 +317,26 @@ mod tests {
 
     #[test]
     fn test_runtime_compatibility() {
-        assert!(is_runtime_compatible(PluginState::Running, RuntimeState::Running));
-        assert!(!is_runtime_compatible(PluginState::Running, RuntimeState::Created));
-        assert!(is_runtime_compatible(PluginState::Loaded, RuntimeState::Initializing));
-        assert!(is_runtime_compatible(PluginState::Disposed, RuntimeState::Terminated));
-        assert!(!is_runtime_compatible(PluginState::Paused, RuntimeState::Created));
+        assert!(is_runtime_compatible(
+            PluginState::Running,
+            RuntimeState::Running
+        ));
+        assert!(!is_runtime_compatible(
+            PluginState::Running,
+            RuntimeState::Created
+        ));
+        assert!(is_runtime_compatible(
+            PluginState::Loaded,
+            RuntimeState::Initializing
+        ));
+        assert!(is_runtime_compatible(
+            PluginState::Disposed,
+            RuntimeState::Terminated
+        ));
+        assert!(!is_runtime_compatible(
+            PluginState::Paused,
+            RuntimeState::Created
+        ));
     }
 
     #[test]
@@ -304,10 +348,19 @@ mod tests {
 
     #[test]
     fn test_state_categories() {
-        assert_eq!(PluginState::Created.category(), PluginStateCategory::PreActivation);
+        assert_eq!(
+            PluginState::Created.category(),
+            PluginStateCategory::PreActivation
+        );
         assert_eq!(PluginState::Running.category(), PluginStateCategory::Active);
-        assert_eq!(PluginState::Paused.category(), PluginStateCategory::Suspended);
-        assert_eq!(PluginState::Disposed.category(), PluginStateCategory::Teardown);
+        assert_eq!(
+            PluginState::Paused.category(),
+            PluginStateCategory::Suspended
+        );
+        assert_eq!(
+            PluginState::Disposed.category(),
+            PluginStateCategory::Teardown
+        );
         assert_eq!(PluginState::Failed.category(), PluginStateCategory::Error);
     }
 }

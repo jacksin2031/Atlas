@@ -12,7 +12,11 @@ pub struct Version {
 
 impl Version {
     pub fn new(major: u32, minor: u32, patch: u32) -> Self {
-        Self { major, minor, patch }
+        Self {
+            major,
+            minor,
+            patch,
+        }
     }
 
     /// Parse a version string like "1.2.3".
@@ -24,7 +28,11 @@ impl Version {
         let major = parts[0].parse().ok()?;
         let minor = parts[1].parse().ok()?;
         let patch = parts.get(2).and_then(|p| p.parse().ok()).unwrap_or(0);
-        Some(Self { major, minor, patch })
+        Some(Self {
+            major,
+            minor,
+            patch,
+        })
     }
 }
 
@@ -65,12 +73,14 @@ impl VersionRange {
     pub fn contains(&self, version: &Version) -> bool {
         version.major > self.min.major
             || (version.major == self.min.major && version.minor > self.min.minor)
-            || (version.major == self.min.major && version.minor == self.min.minor && version.patch >= self.min.patch)
-            && (
-                version.major < self.max.major
-                || (version.major == self.max.major && version.minor < self.max.minor)
-                || (version.major == self.max.major && version.minor == self.max.minor && version.patch <= self.max.patch)
-            )
+            || (version.major == self.min.major
+                && version.minor == self.min.minor
+                && version.patch >= self.min.patch)
+                && (version.major < self.max.major
+                    || (version.major == self.max.major && version.minor < self.max.minor)
+                    || (version.major == self.max.major
+                        && version.minor == self.max.minor
+                        && version.patch <= self.max.patch))
     }
 
     /// Check backward compatibility: can version N communicate with version N-1?
@@ -120,14 +130,29 @@ mod tests {
 
     #[test]
     fn test_version_compatible() {
-        assert!(VersionMatcher::are_compatible(&Version::new(1, 0, 0), &Version::new(1, 5, 0)));
-        assert!(!VersionMatcher::are_compatible(&Version::new(1, 0, 0), &Version::new(2, 0, 0)));
+        assert!(VersionMatcher::are_compatible(
+            &Version::new(1, 0, 0),
+            &Version::new(1, 5, 0)
+        ));
+        assert!(!VersionMatcher::are_compatible(
+            &Version::new(1, 0, 0),
+            &Version::new(2, 0, 0)
+        ));
     }
 
     #[test]
     fn test_version_gte() {
-        assert!(VersionMatcher::gte(&Version::new(1, 2, 0), &Version::new(1, 1, 0)));
-        assert!(VersionMatcher::gte(&Version::new(2, 0, 0), &Version::new(1, 9, 0)));
-        assert!(!VersionMatcher::gte(&Version::new(1, 0, 0), &Version::new(1, 1, 0)));
+        assert!(VersionMatcher::gte(
+            &Version::new(1, 2, 0),
+            &Version::new(1, 1, 0)
+        ));
+        assert!(VersionMatcher::gte(
+            &Version::new(2, 0, 0),
+            &Version::new(1, 9, 0)
+        ));
+        assert!(!VersionMatcher::gte(
+            &Version::new(1, 0, 0),
+            &Version::new(1, 1, 0)
+        ));
     }
 }

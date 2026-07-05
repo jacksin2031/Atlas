@@ -1,7 +1,7 @@
-﻿//! Rule engine for evaluating routing rules against messages.
+//! Rule engine for evaluating routing rules against messages.
 
-use crate::message::MessageEnvelope;
 use super::routes::{Route, RouteAction};
+use crate::message::MessageEnvelope;
 
 /// Result of a rule evaluation.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,9 +46,7 @@ pub struct RuleEngine {
 impl RuleEngine {
     /// Create a new rule engine.
     pub fn new() -> Self {
-        Self {
-            rules: Vec::new(),
-        }
+        Self { rules: Vec::new() }
     }
 
     /// Add a rule to the engine.
@@ -103,8 +101,7 @@ impl RuleEngine {
                 || message.header.message_type.label().starts_with(prefix);
         }
         // Exact match on receiver or message type
-        *pattern == message.header.receiver
-            || pattern == message.header.message_type.label()
+        *pattern == message.header.receiver || pattern == message.header.message_type.label()
     }
 
     /// Get the resolved action for a matched route.
@@ -142,7 +139,7 @@ impl RuleEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_msg(receiver: &str, msg_type: MessageType) -> MessageEnvelope {
         MessageEnvelope {
@@ -159,7 +156,10 @@ mod tests {
         let msg = sample_msg("endpoint-A", MessageType::Request);
         let eval = engine.evaluate(&msg);
         assert!(eval.matched);
-        assert_eq!(eval.route.as_ref().unwrap().destination, Some("dest-A".into()));
+        assert_eq!(
+            eval.route.as_ref().unwrap().destination,
+            Some("dest-A".into())
+        );
     }
 
     #[test]
@@ -210,7 +210,10 @@ mod tests {
         let msg = sample_msg("endpoint-A", MessageType::Request);
         let eval = engine.evaluate(&msg);
         assert!(eval.matched);
-        assert_eq!(eval.route.as_ref().unwrap().destination, Some("high-dest".into()));
+        assert_eq!(
+            eval.route.as_ref().unwrap().destination,
+            Some("high-dest".into())
+        );
     }
 
     #[test]
@@ -234,4 +237,3 @@ mod tests {
         assert!(eval.matched);
     }
 }
-

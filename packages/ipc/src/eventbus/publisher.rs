@@ -1,9 +1,11 @@
-﻿//! Event publisher for the IPC event bus bridge.
+//! Event publisher for the IPC event bus bridge.
 
 use std::sync::{Arc, Mutex};
 
-use crate::message::{MessageEnvelope, MessageHeader, MessagePayload, MessageMetadata, MessageType};
 use super::events::{IpcEventType, RuntimeEvent, RuntimeEventKind};
+use crate::message::{
+    MessageEnvelope, MessageHeader, MessageMetadata, MessagePayload, MessageType,
+};
 
 /// Published event record.
 #[derive(Debug, Clone)]
@@ -37,7 +39,10 @@ impl EventPublisher {
     ) -> MessageEnvelope {
         let event = RuntimeEvent {
             event_kind: kind,
-            timestamp_epoch: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs(),
+            timestamp_epoch: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
             data: data.clone(),
         };
         let ipc_event = IpcEventType::Runtime(event);
@@ -50,16 +55,16 @@ impl EventPublisher {
         ipc_event: IpcEventType,
         data: serde_json::Value,
     ) -> MessageEnvelope {
-        let envelope = MessageEnvelope::fire_and_forget(
-            "event-bus",
-            &self.channel,
-            MessageType::Event,
-            data,
-        ).unwrap_or_else(|_| MessageEnvelope {
-            header: MessageHeader::new("event-bus", "*", MessageType::Event, 60),
-            payload: MessagePayload::new(serde_json::json!({"event": format!("{:?}", ipc_event)})).unwrap_or_default(),
-            metadata: MessageMetadata::default(),
-        });
+        let envelope =
+            MessageEnvelope::fire_and_forget("event-bus", &self.channel, MessageType::Event, data)
+                .unwrap_or_else(|_| MessageEnvelope {
+                    header: MessageHeader::new("event-bus", "*", MessageType::Event, 60),
+                    payload: MessagePayload::new(
+                        serde_json::json!({"event": format!("{:?}", ipc_event)}),
+                    )
+                    .unwrap_or_default(),
+                    metadata: MessageMetadata::default(),
+                });
 
         let mut events = self.events.lock().unwrap();
         events.push(PublishedEvent {
@@ -84,5 +89,3 @@ impl EventPublisher {
         events.len()
     }
 }
-
-

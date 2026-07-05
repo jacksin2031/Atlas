@@ -1,6 +1,6 @@
-﻿//! Tests for event types.
+//! Tests for event types.
 
-use atlas_contracts::{Event, Channel, EventPriority, SubscriptionHandle, EventBusStats};
+use atlas_contracts::{Channel, Event, EventBusStats, EventPriority, SubscriptionHandle};
 use uuid::Uuid;
 
 #[test]
@@ -17,11 +17,8 @@ fn test_event_creation() {
 
 #[test]
 fn test_event_priority_override() {
-    let event = Event::new(
-        Channel::new("test"),
-        "Test",
-        serde_json::json!({}),
-    ).with_priority(EventPriority::Critical);
+    let event = Event::new(Channel::new("test"), "Test", serde_json::json!({}))
+        .with_priority(EventPriority::Critical);
     assert_eq!(event.priority, EventPriority::Critical);
 }
 

@@ -1,4 +1,4 @@
-﻿//! Plugin context (RFC-0209).
+//! Plugin context (RFC-0209).
 //!
 //! [`PluginContext`] is the only handle a plugin receives to interact with the
 //! platform. It provides a logger, metrics recorder, immutable configuration,
@@ -50,10 +50,15 @@ pub struct CapturingLogger {
 
 impl CapturingLogger {
     pub fn new() -> Self {
-        Self { messages: Mutex::new(Vec::new()) }
+        Self {
+            messages: Mutex::new(Vec::new()),
+        }
     }
     pub fn messages(&self) -> Vec<(String, String, String)> {
-        self.messages.lock().expect("capturing logger mutex poisoned").clone()
+        self.messages
+            .lock()
+            .expect("capturing logger mutex poisoned")
+            .clone()
     }
 }
 
@@ -235,14 +240,20 @@ impl PluginContextBuilder {
             plugin_id: self.plugin_id,
             logger: self.logger.unwrap_or_else(|| Arc::new(TracingLogger)),
             metrics: self.metrics.unwrap_or_else(|| Arc::new(NullMetrics)),
-            config: self.config.unwrap_or_else(|| Arc::new(PluginConfig::new(serde_json::Map::new()))),
+            config: self
+                .config
+                .unwrap_or_else(|| Arc::new(PluginConfig::new(serde_json::Map::new()))),
             capabilities,
             event_bus,
-            health: self.health.unwrap_or_else(|| Arc::new(crate::health::PluginHealthServiceImpl::new())),
+            health: self
+                .health
+                .unwrap_or_else(|| Arc::new(crate::health::PluginHealthServiceImpl::new())),
             storage: self.storage,
-            services: self.services.unwrap_or_else(|| Arc::new(CapabilityServiceDirectory::new(Arc::new(
-                crate::capability::CapabilityRegistryImpl::new(),
-            )))),
+            services: self.services.unwrap_or_else(|| {
+                Arc::new(CapabilityServiceDirectory::new(Arc::new(
+                    crate::capability::CapabilityRegistryImpl::new(),
+                )))
+            }),
         })
     }
 }
@@ -251,10 +262,18 @@ impl PluginContextBuilder {
 struct NullMetrics;
 
 impl MetricsRecorder for NullMetrics {
-    fn register_counter(&self, _name: &str, _description: &str) -> Result<(), atlas_common::MetricsError> {
+    fn register_counter(
+        &self,
+        _name: &str,
+        _description: &str,
+    ) -> Result<(), atlas_common::MetricsError> {
         Ok(())
     }
-    fn register_gauge(&self, _name: &str, _description: &str) -> Result<(), atlas_common::MetricsError> {
+    fn register_gauge(
+        &self,
+        _name: &str,
+        _description: &str,
+    ) -> Result<(), atlas_common::MetricsError> {
         Ok(())
     }
     fn register_histogram(
@@ -300,10 +319,15 @@ mod tests {
     #[test]
     fn test_service_directory() {
         let reg = Arc::new(crate::capability::CapabilityRegistryImpl::new());
-        reg.register(&"p1".to_string(), &[PluginCapability::Vision]).unwrap();
-        reg.register(&"p2".to_string(), &[PluginCapability::OCR]).unwrap();
+        reg.register(&"p1".to_string(), &[PluginCapability::Vision])
+            .unwrap();
+        reg.register(&"p2".to_string(), &[PluginCapability::OCR])
+            .unwrap();
         let dir = CapabilityServiceDirectory::new(reg);
-        assert_eq!(dir.providers_of(&PluginCapability::Vision), vec!["p1".to_string()]);
+        assert_eq!(
+            dir.providers_of(&PluginCapability::Vision),
+            vec!["p1".to_string()]
+        );
         let mut ids = dir.service_ids();
         ids.sort();
         assert_eq!(ids, vec!["p1".to_string(), "p2".to_string()]);
@@ -326,7 +350,3 @@ mod tests {
         assert_eq!(ctx.plugin_id, "p1");
     }
 }
-
-
-
-

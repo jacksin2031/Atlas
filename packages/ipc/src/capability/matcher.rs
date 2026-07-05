@@ -1,16 +1,13 @@
-﻿//! Capability matcher - matches capabilities between endpoints.
+//! Capability matcher - matches capabilities between endpoints.
 
-use super::version::{Version, VersionMatcher};
 use super::resolver::Capability;
+use super::version::{Version, VersionMatcher};
 
 /// Matches capabilities between two endpoints.
 pub struct CapabilityMatcher;
 
 impl CapabilityMatcher {
-    pub fn match_capabilities(
-        local: &Capability,
-        remote: &Capability,
-    ) -> bool {
+    pub fn match_capabilities(local: &Capability, remote: &Capability) -> bool {
         if local.name != remote.name {
             return false;
         }
@@ -37,14 +34,11 @@ impl CapabilityMatcher {
         matches
     }
 
-    pub fn all_required_match(
-        local_caps: &[Capability],
-        remote_caps: &[Capability],
-    ) -> bool {
+    pub fn all_required_match(local_caps: &[Capability], remote_caps: &[Capability]) -> bool {
         for local in local_caps.iter().filter(|c| c.required) {
-            let found = remote_caps.iter().any(|remote| {
-                Self::match_capabilities(local, remote)
-            });
+            let found = remote_caps
+                .iter()
+                .any(|remote| Self::match_capabilities(local, remote));
             if !found {
                 return false;
             }

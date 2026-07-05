@@ -19,8 +19,7 @@ use std::fmt;
 pub const MAX_PLUGIN_NAME_LEN: usize = 256;
 
 /// The primary role a plugin fulfils (RFC-0202, `PT-` prefixed types).
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum PluginType {
     #[default]
     Extension,
@@ -51,11 +50,9 @@ impl fmt::Display for PluginType {
     }
 }
 
-
 /// Six discrete permission levels (RFC-0219 §9), ordered least to most
 /// privileged. The sandbox maps each level to an isolation boundary.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Default)]
 pub enum PermissionLevel {
     Restricted,
     Low,
@@ -65,7 +62,6 @@ pub enum PermissionLevel {
     Privileged,
     Trusted,
 }
-
 
 /// A declared permission (RFC-0219 §10).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -77,8 +73,7 @@ pub struct PluginPermission {
 }
 
 /// The strength of a plugin dependency (RFC-0226 §9).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum DependencyType {
     /// Hard dependency: plugin fails to load if missing or incompatible.
     #[default]
@@ -88,7 +83,6 @@ pub enum DependencyType {
     /// Soft dependency: plugin loads with degraded function if missing.
     Soft,
 }
-
 
 /// A declared plugin dependency (RFC-0226).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -213,7 +207,10 @@ impl PluginManifest {
 
 fn is_dotted_triple(s: &str) -> bool {
     let parts: Vec<&str> = s.split('.').collect();
-    parts.len() == 3 && parts.iter().all(|p| !p.is_empty() && p.chars().all(|c| c.is_ascii_digit()))
+    parts.len() == 3
+        && parts
+            .iter()
+            .all(|p| !p.is_empty() && p.chars().all(|c| c.is_ascii_digit()))
 }
 
 /// Immutable plugin metadata view (RFC-0209 PluginMetadata).
@@ -229,7 +226,6 @@ pub struct PluginMetadata {
     pub entry_point: String,
 }
 
-
 impl PluginManifest {
     /// Validate the manifest against RFC-0202 acceptance criteria.
     pub fn validate(&self) -> Result<(), ManifestError> {
@@ -240,7 +236,9 @@ impl PluginManifest {
             )));
         }
         if self.plugin_id.trim().is_empty() {
-            return Err(ManifestError::ValidationError("plugin_id must not be empty".to_string()));
+            return Err(ManifestError::ValidationError(
+                "plugin_id must not be empty".to_string(),
+            ));
         }
         if self.plugin_name.chars().count() > MAX_PLUGIN_NAME_LEN {
             return Err(ManifestError::ValidationError(format!(
@@ -249,7 +247,9 @@ impl PluginManifest {
         }
         let _ = SemanticVersion::parse(&self.version)?;
         if self.license.trim().is_empty() {
-            return Err(ManifestError::ValidationError("license must not be empty".to_string()));
+            return Err(ManifestError::ValidationError(
+                "license must not be empty".to_string(),
+            ));
         }
         // No duplicate capabilities.
         let mut seen: Vec<&PluginCapability> = Vec::new();
@@ -279,7 +279,11 @@ impl PluginManifest {
             }
             dep_ids.push(dep.plugin_id.as_str());
         }
-        if self.dependencies.iter().any(|d| d.plugin_id == self.plugin_id) {
+        if self
+            .dependencies
+            .iter()
+            .any(|d| d.plugin_id == self.plugin_id)
+        {
             return Err(ManifestError::ValidationError(format!(
                 "plugin '{}' depends on itself",
                 self.plugin_id
@@ -325,7 +329,6 @@ impl PluginManifest {
         Ok(())
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -413,7 +416,8 @@ mod tests {
     #[test]
     fn test_rejects_duplicate_capability() {
         let mut m = valid_manifest();
-        m.capabilities.push(CapabilityDeclaration::new(PluginCapability::Vision));
+        m.capabilities
+            .push(CapabilityDeclaration::new(PluginCapability::Vision));
         assert!(m.validate().is_err());
     }
 
@@ -490,4 +494,3 @@ mod tests {
         assert_eq!(m.provided_capabilities(), vec![PluginCapability::Vision]);
     }
 }
-

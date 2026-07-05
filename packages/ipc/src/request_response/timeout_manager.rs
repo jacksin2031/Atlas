@@ -1,4 +1,4 @@
-﻿//! Timeout manager for tracking outstanding requests.
+//! Timeout manager for tracking outstanding requests.
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -27,7 +27,8 @@ impl TimeoutManager {
     pub fn check_timeouts(&self) -> Vec<Uuid> {
         let pending = self.pending.lock().unwrap();
         // default 30s timeout
-        pending.iter()
+        pending
+            .iter()
             .filter(|(_, created_at)| created_at.elapsed().as_secs() > 30) // default 30s timeout
             .map(|(id, _)| *id)
             .collect()
@@ -45,6 +46,3 @@ impl TimeoutManager {
         pending.clear();
     }
 }
-
-
-

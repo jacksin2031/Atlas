@@ -1,7 +1,9 @@
-﻿//! Plugin bridge — translates plugin events to/from IPC messages.
+//! Plugin bridge — translates plugin events to/from IPC messages.
 
-use crate::message::{MessageEnvelope, MessageHeader, MessagePayload, MessageMetadata, MessageType};
 use super::integration::PluginIntegration;
+use crate::message::{
+    MessageEnvelope, MessageHeader, MessageMetadata, MessagePayload, MessageType,
+};
 
 /// Translates plugin events into IPC messages.
 pub struct PluginBridge {
@@ -33,7 +35,8 @@ impl PluginBridge {
 
     /// Validate that a plugin message came through IPC.
     pub fn validate_plugin_message(&self, sender: &str) -> bool {
-        self.plugin_integration.validate_ipc_communication(sender, "runtime")
+        self.plugin_integration
+            .validate_ipc_communication(sender, "runtime")
     }
 
     /// Register a plugin for IPC enforcement.

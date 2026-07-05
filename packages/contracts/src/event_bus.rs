@@ -1,4 +1,4 @@
-﻿//! Event Bus trait definitions.
+//! Event Bus trait definitions.
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -38,7 +38,11 @@ pub struct Event {
 }
 
 impl Event {
-    pub fn new(channel: Channel, event_type: impl Into<String>, payload: serde_json::Value) -> Self {
+    pub fn new(
+        channel: Channel,
+        event_type: impl Into<String>,
+        payload: serde_json::Value,
+    ) -> Self {
         Self {
             event_id: Uuid::new_v4(),
             correlation_id: Uuid::new_v4(),
@@ -88,7 +92,11 @@ pub enum EventBusError {
 /// Uses boxed closures for subscribe to ensure `dyn` compatibility.
 pub trait EventBus: Send + Sync {
     fn publish(&self, channel: Channel, event: Event) -> Result<(), EventBusError>;
-    fn subscribe(&self, pattern: String, handler: Box<dyn Fn(&Event) + Send + Sync>) -> SubscriptionHandle;
+    fn subscribe(
+        &self,
+        pattern: String,
+        handler: Box<dyn Fn(&Event) + Send + Sync>,
+    ) -> SubscriptionHandle;
     fn unsubscribe(&self, handle: &SubscriptionHandle) -> Result<(), EventBusError>;
     fn get_stats(&self) -> EventBusStats;
 }

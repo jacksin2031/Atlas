@@ -1,4 +1,4 @@
-﻿//! Plugin API contracts (RFC-0209).
+//! Plugin API contracts (RFC-0209).
 //!
 //! Defines the interfaces every plugin runtime component implements:
 //! [`Plugin`], [`PluginFactory`], [`PluginMetadata`], [`PluginProvider`],
@@ -145,24 +145,18 @@ pub trait PluginManager: Send + Sync {
     fn registry(&self) -> Arc<dyn PluginRegistry>;
 }
 
-
-
-
-
-
-
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
-        use crate::context::PluginContext;
+    use crate::context::PluginContext;
     use crate::error::PluginError;
     use crate::health::PluginHealthState;
     use crate::lifecycle::PluginState;
-    use crate::manifest::{PluginManifest, PluginMetadata, PluginResourceLimits, PluginType, PluginCompatibility};
+    use crate::manifest::{
+        PluginCompatibility, PluginManifest, PluginMetadata, PluginResourceLimits, PluginType,
+    };
     use crate::registry::PluginRegistryImpl;
-        use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     struct StubPlugin {
         meta: PluginMetadata,
@@ -171,23 +165,43 @@ mod tests {
     }
 
     impl Plugin for StubPlugin {
-        fn metadata(&self) -> &PluginMetadata { &self.meta }
+        fn metadata(&self) -> &PluginMetadata {
+            &self.meta
+        }
         fn state(&self) -> PluginState {
-            if self.started.load(Ordering::Acquire) { PluginState::Running }
-            else if self.init.load(Ordering::Acquire) { PluginState::Initialized }
-            else { PluginState::Created }
+            if self.started.load(Ordering::Acquire) {
+                PluginState::Running
+            } else if self.init.load(Ordering::Acquire) {
+                PluginState::Initialized
+            } else {
+                PluginState::Created
+            }
         }
         fn initialize(&self, _ctx: &PluginContext) -> Result<(), PluginError> {
             self.init.store(true, Ordering::Release);
             Ok(())
         }
-        fn start(&self) -> Result<(), PluginError> { self.started.store(true, Ordering::Release); Ok(()) }
-        fn pause(&self) -> Result<(), PluginError> { Ok(()) }
-        fn resume(&self) -> Result<(), PluginError> { Ok(()) }
-        fn stop(&self) -> Result<(), PluginError> { self.started.store(false, Ordering::Release); Ok(()) }
-        fn shutdown(&self) -> Result<(), PluginError> { Ok(()) }
+        fn start(&self) -> Result<(), PluginError> {
+            self.started.store(true, Ordering::Release);
+            Ok(())
+        }
+        fn pause(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
+        fn resume(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
+        fn stop(&self) -> Result<(), PluginError> {
+            self.started.store(false, Ordering::Release);
+            Ok(())
+        }
+        fn shutdown(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
         fn dispose(&self) {}
-        fn health_check(&self) -> PluginHealthState { PluginHealthState::Healthy }
+        fn health_check(&self) -> PluginHealthState {
+            PluginHealthState::Healthy
+        }
     }
 
     fn stub_manifest(id: &str) -> PluginManifest {
@@ -293,7 +307,3 @@ mod tests {
         assert_eq!(reg.list().len(), 2);
     }
 }
-
-
-
-

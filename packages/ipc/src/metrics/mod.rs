@@ -1,7 +1,7 @@
-﻿//! Metrics integration — message counts, latency, queue sizes, errors.
+//! Metrics integration — message counts, latency, queue sizes, errors.
 
-pub mod service;
 pub mod recorders;
+pub mod service;
 
-pub use service::*;
 pub use recorders::*;
+pub use service::*;

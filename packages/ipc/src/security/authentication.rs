@@ -1,7 +1,7 @@
-﻿//! Authentication abstraction - no hardcoded auth mechanisms.
+//! Authentication abstraction - no hardcoded auth mechanisms.
 
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Authentication result.
 #[derive(Debug, Clone, PartialEq, Eq)]

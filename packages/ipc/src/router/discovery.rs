@@ -1,7 +1,7 @@
-﻿//! Endpoint discovery for automatic registration and lookup.
+//! Endpoint discovery for automatic registration and lookup.
 
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Epoch-based timestamp.
 type EpochTime = u64;
@@ -166,8 +166,7 @@ mod tests {
                 .with_capabilities(vec!["compute".into(), "storage".into()]),
         );
         discovery.register(
-            DiscoveredEndpoint::new("ep-2", "addr-2")
-                .with_capabilities(vec!["compute".into()]),
+            DiscoveredEndpoint::new("ep-2", "addr-2").with_capabilities(vec!["compute".into()]),
         );
         let results = discovery.find_by_capability("compute");
         assert_eq!(results.len(), 2);

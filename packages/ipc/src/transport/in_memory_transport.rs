@@ -1,4 +1,4 @@
-﻿//! In-memory reference transport implementation.
+//! In-memory reference transport implementation.
 //!
 //! Provides a thread-safe, single-process transport suitable for testing
 //! and for the reference implementation.  Messages are delivered via
@@ -8,7 +8,7 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 
 use super::transport::{
-    Transport, TransportError, TransportResult, TransportHealth, ConnectionState,
+    ConnectionState, Transport, TransportError, TransportHealth, TransportResult,
 };
 use crate::message::MessageEnvelope;
 
@@ -46,8 +46,6 @@ impl MessageStore {
         let mut store = self.inbound.lock().unwrap();
         store.pop_front()
     }
-
-
 }
 
 impl InMemoryTransport {
@@ -170,7 +168,7 @@ mod tests {
     use super::*;
 
     fn sample_msg() -> MessageEnvelope {
-        use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+        use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
         MessageEnvelope {
             header: MessageHeader::new("sender", "receiver", MessageType::Request, 60),
             payload: MessagePayload::new(serde_json::json!({"test": true})).unwrap(),
@@ -249,4 +247,3 @@ mod tests {
         assert_eq!(msg, received);
     }
 }
-

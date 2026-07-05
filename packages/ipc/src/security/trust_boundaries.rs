@@ -1,4 +1,4 @@
-﻿//! Trust boundary enforcement.
+//! Trust boundary enforcement.
 
 use serde::{Deserialize, Serialize};
 
@@ -27,7 +27,10 @@ impl TrustBoundary {
 
     /// Returns true if messages crossing this boundary require validation.
     pub fn requires_validation(&self) -> bool {
-        matches!(self, Self::Plugin | Self::External | Self::EncryptedCrossProcess)
+        matches!(
+            self,
+            Self::Plugin | Self::External | Self::EncryptedCrossProcess
+        )
     }
 
     /// Returns true if messages require encryption across this boundary.
@@ -52,7 +55,9 @@ impl TrustBoundaryValidator {
         receiver_boundary: TrustBoundary,
     ) -> bool {
         // Internal can communicate with anyone
-        if sender_boundary == TrustBoundary::Internal || receiver_boundary == TrustBoundary::Internal {
+        if sender_boundary == TrustBoundary::Internal
+            || receiver_boundary == TrustBoundary::Internal
+        {
             return true;
         }
         // Same boundary types can communicate
@@ -81,5 +86,8 @@ impl TrustBoundaryValidator {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum TrustBoundaryError {
     #[error("cross-boundary communication forbidden: {from:?} -> {to:?}")]
-    CrossBoundaryForbidden { from: TrustBoundary, to: TrustBoundary },
+    CrossBoundaryForbidden {
+        from: TrustBoundary,
+        to: TrustBoundary,
+    },
 }

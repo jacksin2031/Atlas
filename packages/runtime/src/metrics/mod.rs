@@ -8,7 +8,10 @@
 //! service uses interior mutability so it is [`Send`] + [`Sync`] and can be
 //! shared via dependency injection without global mutable state.
 
-use atlas_common::{HealthStatus, MetricDescriptor, MetricKind, MetricSnapshot, MetricValue, HistogramBucket, MetricsError, MetricsRecorder};
+use atlas_common::{
+    HealthStatus, HistogramBucket, MetricDescriptor, MetricKind, MetricSnapshot, MetricValue,
+    MetricsError, MetricsRecorder,
+};
 use atlas_contracts::{ServiceContract, ServiceError, ServiceId, ServiceName};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -118,7 +121,10 @@ impl MetricsRecorder for MetricsService {
         }
         let mut hist_buckets: Vec<HistogramBucket> = buckets
             .into_iter()
-            .map(|ub| HistogramBucket { upper_bound: ub, count: 0 })
+            .map(|ub| HistogramBucket {
+                upper_bound: ub,
+                count: 0,
+            })
             .collect();
         hist_buckets.sort_by(|a, b| {
             a.upper_bound
@@ -191,7 +197,11 @@ impl MetricsRecorder for MetricsService {
             .get_mut(name)
             .ok_or(MetricsError::NotFound(name.to_string()))?;
         match &mut entry.value {
-            MetricValue::Histogram { count, sum, buckets } => {
+            MetricValue::Histogram {
+                count,
+                sum,
+                buckets,
+            } => {
                 *count += 1;
                 *sum += value;
                 for b in buckets.iter_mut() {
@@ -267,7 +277,9 @@ impl ServiceContract for MetricsService {
 
     fn initialize(&mut self) -> Result<(), ServiceError> {
         if self.initialized.swap(true, Ordering::AcqRel) {
-            return Err(ServiceError::InvalidState("already initialized".to_string()));
+            return Err(ServiceError::InvalidState(
+                "already initialized".to_string(),
+            ));
         }
         Ok(())
     }
@@ -313,7 +325,8 @@ mod tests {
     #[test]
     fn test_counter_register_and_increment() {
         let svc = MetricsService::new();
-        svc.register_counter("events.total", "total events").unwrap();
+        svc.register_counter("events.total", "total events")
+            .unwrap();
         svc.increment("events.total", 5).unwrap();
         svc.increment("events.total", 3).unwrap();
         let snap = svc.snapshot();
@@ -346,7 +359,11 @@ mod tests {
         svc.observe("latency", 2.0).unwrap();
         let snap = svc.snapshot();
         match &snap[0].value {
-            MetricValue::Histogram { count, sum, buckets } => {
+            MetricValue::Histogram {
+                count,
+                sum,
+                buckets,
+            } => {
                 assert_eq!(*count, 3);
                 assert!((sum - 2.35).abs() < 1e-9);
                 // bucket <=0.1: 1 observation (0.05)
@@ -414,5 +431,3 @@ mod tests {
         assert!(svc.snapshot().is_empty());
     }
 }
-
-

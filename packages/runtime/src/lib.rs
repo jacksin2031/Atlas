@@ -1,27 +1,27 @@
-﻿#[allow(dead_code)]
+pub mod config;
+pub mod dependency;
+pub mod error;
+pub mod eventbus;
+pub mod health;
+#[allow(dead_code)]
 /// Atlas Runtime — the core execution engine.
 pub mod lifecycle;
-pub mod registry;
-pub mod dependency;
-pub mod eventbus;
-pub mod scheduler;
-pub mod health;
-pub mod config;
 pub mod manifest;
 pub mod metrics;
-pub mod error;
+pub mod registry;
+pub mod scheduler;
 
 use atlas_common::{AtlasError, HealthStatus};
 use atlas_contracts::{RuntimeState, ServiceContract};
-use registry::ServiceRegistry;
-use lifecycle::LifecycleManager;
-use eventbus::EventBusImpl;
-use scheduler::SchedulerImpl;
-use health::HealthService;
 use config::ConfigService;
+use dependency::DependencyResolver;
+use eventbus::EventBusImpl;
+use health::HealthService;
+use lifecycle::LifecycleManager;
 use manifest::ManifestService;
 use metrics::MetricsService;
-use dependency::DependencyResolver;
+use registry::ServiceRegistry;
+use scheduler::SchedulerImpl;
 
 /// The Atlas Runtime — central coordinator for all core services.
 pub struct AtlasRuntime {
@@ -183,6 +183,3 @@ pub struct RuntimeHealth {
     pub runtime_state: RuntimeState,
     pub services: Vec<(String, HealthStatus)>,
 }
-
-
-

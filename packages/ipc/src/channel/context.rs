@@ -1,7 +1,7 @@
-﻿//! Channel context — ownership, permissions, and state tracking.
+//! Channel context — ownership, permissions, and state tracking.
 
-use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 use super::channel::Channel;
 
@@ -51,7 +51,11 @@ impl ChannelContext {
     }
 
     /// Check if a participant is authorized.
-    pub fn is_authorized(&self, participant_id: &str, required_permission: &ChannelPermission) -> bool {
+    pub fn is_authorized(
+        &self,
+        participant_id: &str,
+        required_permission: &ChannelPermission,
+    ) -> bool {
         if !self.participants.contains(participant_id) {
             return false;
         }
@@ -62,11 +66,15 @@ impl ChannelContext {
         // Check specific permission hierarchy
         match required_permission {
             ChannelPermission::Admin => self.permissions.contains(&ChannelPermission::Admin),
-            ChannelPermission::Manage => self.permissions.contains(&ChannelPermission::Manage)
-                || self.permissions.contains(&ChannelPermission::Admin),
-            ChannelPermission::Write => self.permissions.contains(&ChannelPermission::Write)
-                || self.permissions.contains(&ChannelPermission::Manage)
-                || self.permissions.contains(&ChannelPermission::Admin),
+            ChannelPermission::Manage => {
+                self.permissions.contains(&ChannelPermission::Manage)
+                    || self.permissions.contains(&ChannelPermission::Admin)
+            }
+            ChannelPermission::Write => {
+                self.permissions.contains(&ChannelPermission::Write)
+                    || self.permissions.contains(&ChannelPermission::Manage)
+                    || self.permissions.contains(&ChannelPermission::Admin)
+            }
             ChannelPermission::Read => true, // Everyone in participants can read
         }
     }
@@ -82,4 +90,3 @@ impl ChannelContext {
         self.channel.is_active() && !self.participants.is_empty()
     }
 }
-

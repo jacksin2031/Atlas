@@ -1,4 +1,4 @@
-﻿//! Message type enumeration.
+//! Message type enumeration.
 //!
 //! Defines the eight canonical message types used throughout the Atlas IPC runtime.
 
@@ -34,10 +34,7 @@ impl MessageType {
 
     /// Returns true if this message type is fire-and-forget.
     pub fn is_fire_and_forget(self) -> bool {
-        matches!(
-            self,
-            Self::Notification | Self::Broadcast | Self::Heartbeat
-        )
+        matches!(self, Self::Notification | Self::Broadcast | Self::Heartbeat)
     }
 
     /// Returns a human-readable label for telemetry and logging.

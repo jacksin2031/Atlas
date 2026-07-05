@@ -24,11 +24,18 @@ pub struct PluginConfig {
 impl PluginConfig {
     /// Create a new configuration from a JSON object map.
     pub fn new(values: serde_json::Map<String, Value>) -> Self {
-        Self { values: Mutex::new(values), required_keys: HashSet::new(), frozen: AtomicBool::new(false) }
+        Self {
+            values: Mutex::new(values),
+            required_keys: HashSet::new(),
+            frozen: AtomicBool::new(false),
+        }
     }
 
     /// Create a configuration declaring `required_keys` that must be present.
-    pub fn with_required(values: serde_json::Map<String, Value>, required_keys: Vec<String>) -> Self {
+    pub fn with_required(
+        values: serde_json::Map<String, Value>,
+        required_keys: Vec<String>,
+    ) -> Self {
         Self {
             values: Mutex::new(values),
             required_keys: required_keys.into_iter().collect(),
@@ -43,10 +50,12 @@ impl PluginConfig {
         for key in &self.required_keys {
             match values.get(key) {
                 None => return Err(ConfigError::MissingKey(key.clone())),
-                Some(Value::Null) => return Err(ConfigError::InvalidValue {
-                    key: key.clone(),
-                    value: "null".to_string(),
-                }),
+                Some(Value::Null) => {
+                    return Err(ConfigError::InvalidValue {
+                        key: key.clone(),
+                        value: "null".to_string(),
+                    })
+                }
                 _ => {}
             }
         }
@@ -66,7 +75,11 @@ impl PluginConfig {
 
     /// Get a configuration value. Returns a clone (immutable access).
     pub fn get(&self, key: &str) -> Option<Value> {
-        self.values.lock().expect("plugin config mutex poisoned").get(key).cloned()
+        self.values
+            .lock()
+            .expect("plugin config mutex poisoned")
+            .get(key)
+            .cloned()
     }
 
     /// Set a configuration value. Rejected once frozen.
@@ -74,13 +87,19 @@ impl PluginConfig {
         if self.is_frozen() {
             return Err(ConfigError::Frozen);
         }
-        self.values.lock().expect("plugin config mutex poisoned").insert(key.to_string(), value);
+        self.values
+            .lock()
+            .expect("plugin config mutex poisoned")
+            .insert(key.to_string(), value);
         Ok(())
     }
 
     /// The number of configuration entries.
     pub fn len(&self) -> usize {
-        self.values.lock().expect("plugin config mutex poisoned").len()
+        self.values
+            .lock()
+            .expect("plugin config mutex poisoned")
+            .len()
     }
 
     /// Whether the configuration contains no entries.
@@ -90,7 +109,12 @@ impl PluginConfig {
 
     /// Serialize the configuration to a JSON object.
     pub fn to_json(&self) -> Value {
-        Value::Object(self.values.lock().expect("plugin config mutex poisoned").clone())
+        Value::Object(
+            self.values
+                .lock()
+                .expect("plugin config mutex poisoned")
+                .clone(),
+        )
     }
 }
 
@@ -105,7 +129,11 @@ impl PluginConfig {
     /// Export an immutable snapshot of the configuration.
     pub fn snapshot(&self) -> PluginConfigSnapshot {
         PluginConfigSnapshot {
-            values: self.values.lock().expect("plugin config mutex poisoned").clone(),
+            values: self
+                .values
+                .lock()
+                .expect("plugin config mutex poisoned")
+                .clone(),
             required_keys: self.required_keys.iter().cloned().collect(),
         }
     }
@@ -137,13 +165,19 @@ mod tests {
         assert!(!cfg.is_frozen());
         cfg.freeze();
         assert!(cfg.is_frozen());
-        assert!(matches!(cfg.set("x", json!(1)).unwrap_err(), ConfigError::Frozen));
+        assert!(matches!(
+            cfg.set("x", json!(1)).unwrap_err(),
+            ConfigError::Frozen
+        ));
     }
 
     #[test]
     fn test_validate_missing_required_key() {
         let cfg = PluginConfig::with_required(map(), vec!["missing".to_string()]);
-        assert!(matches!(cfg.validate().unwrap_err(), ConfigError::MissingKey(_)));
+        assert!(matches!(
+            cfg.validate().unwrap_err(),
+            ConfigError::MissingKey(_)
+        ));
     }
 
     #[test]
@@ -151,7 +185,10 @@ mod tests {
         let mut m = map();
         m.insert("k".to_string(), Value::Null);
         let cfg = PluginConfig::with_required(m, vec!["k".to_string()]);
-        assert!(matches!(cfg.validate().unwrap_err(), ConfigError::InvalidValue { .. }));
+        assert!(matches!(
+            cfg.validate().unwrap_err(),
+            ConfigError::InvalidValue { .. }
+        ));
     }
 
     #[test]
@@ -183,4 +220,3 @@ mod tests {
         assert!(v.is_object());
     }
 }
-

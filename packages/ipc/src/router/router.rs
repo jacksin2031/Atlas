@@ -1,13 +1,13 @@
 //! The IPC Router - deterministic message routing engine.
 
-use std::sync::{Arc, Mutex};
 use crate::message::{MessageEnvelope, MessageValidator};
+use crate::router::dead_letter_queue::DeadLetterQueue;
+use crate::router::discovery::{DiscoveredEndpoint, EndpointDiscovery};
+use crate::router::priority_queue::PriorityMessageQueue;
 use crate::router::routes::{Route, RouteAction};
 use crate::router::rule_engine::{RuleEngine, RuleEvaluation};
-use crate::router::priority_queue::PriorityMessageQueue;
-use crate::router::dead_letter_queue::DeadLetterQueue;
-use crate::router::discovery::{EndpointDiscovery, DiscoveredEndpoint};
 use crate::tracing::SpanContext;
+use std::sync::{Arc, Mutex};
 /// Routing result describing what happened to a message.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RoutingResult {
@@ -95,7 +95,9 @@ impl Router {
 
     pub fn remove_route(&mut self, route_id: &str) -> bool {
         let result = self.rule_engine.remove_rule(route_id);
-        if result { self.increment_version(); }
+        if result {
+            self.increment_version();
+        }
         result
     }
 
@@ -118,7 +120,9 @@ impl Router {
     pub fn route(&self, mut message: MessageEnvelope) -> RoutingResult {
         if let Err(e) = MessageValidator::validate(&message) {
             tracing::warn!(error = %e, "routing failed: validation error");
-            return RoutingResult::DeadLetterQueued { reason: e.to_string() };
+            return RoutingResult::DeadLetterQueued {
+                reason: e.to_string(),
+            };
         }
 
         if self.config.enforce_ttl && message.is_expired() {
@@ -134,14 +138,21 @@ impl Router {
         let eval = self.rule_engine.evaluate(&message);
 
         match eval {
-            RuleEvaluation { matched: true, route: Some(route), .. } => {
+            RuleEvaluation {
+                matched: true,
+                route: Some(route),
+                ..
+            } => {
                 match &route.action {
                     RouteAction::Forward { destination } => {
                         message.metadata.increment_hop();
                         // Propagate trace context on each hop
                         if message.metadata.trace_id.is_none() {
                             let ctx = SpanContext::new_root();
-                            message.metadata = message.metadata.with_trace(ctx.trace_id.to_string()).with_span(ctx.span_id.to_string());
+                            message.metadata = message
+                                .metadata
+                                .with_trace(ctx.trace_id.to_string())
+                                .with_span(ctx.span_id.to_string());
                         } else {
                             let ctx = SpanContext::new_root();
                             message.metadata = message.metadata.with_span(ctx.span_id.to_string());
@@ -150,11 +161,14 @@ impl Router {
                             let mut m = self.metrics.lock().unwrap();
                             m.messages_routed += 1;
                         }
-                        RoutingResult::Forwarded { destination: destination.clone() }
+                        RoutingResult::Forwarded {
+                            destination: destination.clone(),
+                        }
                     }
                     RouteAction::Broadcast => {
                         let endpoints = self.discovery.all_endpoints();
-                        let fanout = std::cmp::min(endpoints.len(), self.config.max_broadcast_fanout);
+                        let fanout =
+                            std::cmp::min(endpoints.len(), self.config.max_broadcast_fanout);
                         {
                             let mut m = self.metrics.lock().unwrap();
                             m.broadcasts_sent += 1;
@@ -163,7 +177,9 @@ impl Router {
                     }
                     RouteAction::DeadLetterQueue => {
                         self.dead_letter(message, "explicit DLQ route".into());
-                        RoutingResult::DeadLetterQueued { reason: "explicit DLQ route".into() }
+                        RoutingResult::DeadLetterQueued {
+                            reason: "explicit DLQ route".into(),
+                        }
                     }
                     RouteAction::Drop => {
                         {
@@ -178,7 +194,9 @@ impl Router {
                             let mut m = self.metrics.lock().unwrap();
                             m.messages_routed += 1;
                         }
-                        RoutingResult::Forwarded { destination: action_name.clone() }
+                        RoutingResult::Forwarded {
+                            destination: action_name.clone(),
+                        }
                     }
                 }
             }
@@ -254,7 +272,7 @@ impl Default for Router {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_msg(receiver: &str, msg_type: MessageType) -> MessageEnvelope {
         MessageEnvelope {
@@ -307,17 +325,24 @@ mod tests {
         let router = Router::new();
         let critical = sample_msg("dest", MessageType::Command);
         let critical = MessageEnvelope {
-            metadata: critical.metadata.with_priority(crate::message::MessagePriority::Critical),
+            metadata: critical
+                .metadata
+                .with_priority(crate::message::MessagePriority::Critical),
             ..critical
         };
         let low = sample_msg("dest", MessageType::Notification);
         let low = MessageEnvelope {
-            metadata: low.metadata.with_priority(crate::message::MessagePriority::Low),
+            metadata: low
+                .metadata
+                .with_priority(crate::message::MessagePriority::Low),
             ..low
         };
         router.queue_message(low);
         router.queue_message(critical);
         let next = router.dequeue_message().unwrap();
-        assert_eq!(next.metadata.priority, crate::message::MessagePriority::Critical);
+        assert_eq!(
+            next.metadata.priority,
+            crate::message::MessagePriority::Critical
+        );
     }
 }

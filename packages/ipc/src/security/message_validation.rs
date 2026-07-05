@@ -1,7 +1,7 @@
-﻿//! Message integrity validation — signature, tampering detection.
+//! Message integrity validation — signature, tampering detection.
 
-use std::collections::HashMap;
 use crate::message::MessageEnvelope;
+use std::collections::HashMap;
 
 /// Validates message integrity.
 #[derive(Clone, Default)]

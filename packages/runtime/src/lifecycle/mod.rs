@@ -1,6 +1,6 @@
-﻿//! Lifecycle manager — deterministic FSM per RFC-0002 §8.
+//! Lifecycle manager — deterministic FSM per RFC-0002 §8.
 
-use atlas_contracts::{RuntimeState, StateTransitionError, is_legal_transition};
+use atlas_contracts::{is_legal_transition, RuntimeState, StateTransitionError};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn monotonic_now() -> u64 {

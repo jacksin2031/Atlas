@@ -1,7 +1,9 @@
-﻿//! Workflow bridge — translates workflow events to/from IPC messages.
+//! Workflow bridge — translates workflow events to/from IPC messages.
 
-use crate::message::{MessageEnvelope, MessageHeader, MessagePayload, MessageMetadata, MessageType};
 use super::integration::WorkflowIntegration;
+use crate::message::{
+    MessageEnvelope, MessageHeader, MessageMetadata, MessagePayload, MessageType,
+};
 
 /// Translates workflow events into IPC messages.
 pub struct WorkflowBridge {
@@ -10,7 +12,9 @@ pub struct WorkflowBridge {
 
 impl WorkflowBridge {
     pub fn new(workflow_integration: WorkflowIntegration) -> Self {
-        Self { workflow_integration }
+        Self {
+            workflow_integration,
+        }
     }
 
     /// Create an IPC message from a workflow event.
@@ -33,6 +37,7 @@ impl WorkflowBridge {
 
     /// Validate that a workflow uses IPC for external communication.
     pub fn validate_workflow_communication(&self, workflow_id: &str, target: &str) -> bool {
-        self.workflow_integration.validate_external_communication(workflow_id, target)
+        self.workflow_integration
+            .validate_external_communication(workflow_id, target)
     }
 }

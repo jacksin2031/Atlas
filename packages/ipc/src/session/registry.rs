@@ -1,7 +1,7 @@
-﻿//! Session registry — stores and queries active sessions.
+//! Session registry — stores and queries active sessions.
 
-use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
 use super::session::Session;

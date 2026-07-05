@@ -1,6 +1,6 @@
-﻿//! Command handler trait.
+//! Command handler trait.
 
-use super::command::{Command, CommandResult, CommandError};
+use super::command::{Command, CommandError, CommandResult};
 
 /// Trait that command handlers MUST implement.
 pub trait CommandHandler: Send + Sync {

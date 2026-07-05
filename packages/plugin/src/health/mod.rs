@@ -92,7 +92,9 @@ pub struct PluginHealthServiceImpl {
 
 impl PluginHealthServiceImpl {
     pub fn new() -> Self {
-        Self { states: Mutex::new(HashMap::new()) }
+        Self {
+            states: Mutex::new(HashMap::new()),
+        }
     }
 }
 
@@ -129,7 +131,9 @@ impl PluginHealthMonitor for PluginHealthServiceImpl {
             }
             match &worst {
                 None => worst = Some(state.clone()),
-                Some(current) if state.severity() > current.severity() => worst = Some(state.clone()),
+                Some(current) if state.severity() > current.severity() => {
+                    worst = Some(state.clone())
+                }
                 _ => {}
             }
         }
@@ -159,8 +163,12 @@ mod tests {
     #[test]
     fn test_record_and_query() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"p1".to_string(), PluginHealthState::Healthy).unwrap();
-        assert_eq!(mon.health_of(&"p1".to_string()), Some(PluginHealthState::Healthy));
+        mon.record(&"p1".to_string(), PluginHealthState::Healthy)
+            .unwrap();
+        assert_eq!(
+            mon.health_of(&"p1".to_string()),
+            Some(PluginHealthState::Healthy)
+        );
         assert!(mon.health_of(&"p2".to_string()).is_none());
     }
 
@@ -173,26 +181,45 @@ mod tests {
     #[test]
     fn test_aggregate_worst_case() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"a".to_string(), PluginHealthState::Healthy).unwrap();
-        mon.record(&"b".to_string(), PluginHealthState::Degraded("slow".to_string())).unwrap();
+        mon.record(&"a".to_string(), PluginHealthState::Healthy)
+            .unwrap();
+        mon.record(
+            &"b".to_string(),
+            PluginHealthState::Degraded("slow".to_string()),
+        )
+        .unwrap();
         assert!(matches!(mon.aggregate(), PluginHealthState::Degraded(_)));
-        mon.record(&"c".to_string(), PluginHealthState::Failed("down".to_string())).unwrap();
+        mon.record(
+            &"c".to_string(),
+            PluginHealthState::Failed("down".to_string()),
+        )
+        .unwrap();
         assert!(matches!(mon.aggregate(), PluginHealthState::Failed(_)));
     }
 
     #[test]
     fn test_aggregate_skips_disabled() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"a".to_string(), PluginHealthState::Disabled).unwrap();
-        mon.record(&"b".to_string(), PluginHealthState::Disabled).unwrap();
+        mon.record(&"a".to_string(), PluginHealthState::Disabled)
+            .unwrap();
+        mon.record(&"b".to_string(), PluginHealthState::Disabled)
+            .unwrap();
         assert_eq!(mon.aggregate(), PluginHealthState::Healthy);
     }
 
     #[test]
     fn test_aggregate_recovering_beats_degraded() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"a".to_string(), PluginHealthState::Recovering("retry".to_string())).unwrap();
-        mon.record(&"b".to_string(), PluginHealthState::Degraded("slow".to_string())).unwrap();
+        mon.record(
+            &"a".to_string(),
+            PluginHealthState::Recovering("retry".to_string()),
+        )
+        .unwrap();
+        mon.record(
+            &"b".to_string(),
+            PluginHealthState::Degraded("slow".to_string()),
+        )
+        .unwrap();
         assert!(matches!(mon.aggregate(), PluginHealthState::Degraded(_)));
     }
 
@@ -203,13 +230,17 @@ mod tests {
             to_runtime_status(&PluginHealthState::Failed("x".to_string())),
             HealthStatus::Unhealthy(_)
         ));
-        assert_eq!(to_runtime_status(&PluginHealthState::Disabled), HealthStatus::Disabled);
+        assert_eq!(
+            to_runtime_status(&PluginHealthState::Disabled),
+            HealthStatus::Disabled
+        );
     }
 
     #[test]
     fn test_remove() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"p1".to_string(), PluginHealthState::Healthy).unwrap();
+        mon.record(&"p1".to_string(), PluginHealthState::Healthy)
+            .unwrap();
         mon.remove(&"p1".to_string());
         assert!(mon.health_of(&"p1".to_string()).is_none());
     }
@@ -217,14 +248,22 @@ mod tests {
     #[test]
     fn test_all_returns_pairs() {
         let mon = PluginHealthServiceImpl::new();
-        mon.record(&"a".to_string(), PluginHealthState::Healthy).unwrap();
-        mon.record(&"b".to_string(), PluginHealthState::Failed("e".to_string())).unwrap();
+        mon.record(&"a".to_string(), PluginHealthState::Healthy)
+            .unwrap();
+        mon.record(&"b".to_string(), PluginHealthState::Failed("e".to_string()))
+            .unwrap();
         assert_eq!(mon.all().len(), 2);
     }
 
     #[test]
     fn test_severity_ordering() {
-        assert!(PluginHealthState::Failed("x".to_string()).severity() > PluginHealthState::Degraded("y".to_string()).severity());
-        assert!(PluginHealthState::Healthy.severity() < PluginHealthState::Recovering("z".to_string()).severity());
+        assert!(
+            PluginHealthState::Failed("x".to_string()).severity()
+                > PluginHealthState::Degraded("y".to_string()).severity()
+        );
+        assert!(
+            PluginHealthState::Healthy.severity()
+                < PluginHealthState::Recovering("z".to_string()).severity()
+        );
     }
 }

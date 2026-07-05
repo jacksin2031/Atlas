@@ -1,7 +1,7 @@
-﻿//! Channel types and core channel definition.
+//! Channel types and core channel definition.
 
-use serde::{Deserialize, Serialize};
 use super::state_machine::ChannelState;
+use serde::{Deserialize, Serialize};
 
 /// Channel types supported by the IPC runtime.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -48,7 +48,13 @@ impl Channel {
     }
 
     pub fn broadcast(id: impl Into<String>, owner: impl Into<String>) -> Self {
-        Self::new(id, owner, ChannelType::Broadcast, DEFAULT_MAX_BROADCAST_FANOUT, false)
+        Self::new(
+            id,
+            owner,
+            ChannelType::Broadcast,
+            DEFAULT_MAX_BROADCAST_FANOUT,
+            false,
+        )
     }
 
     pub fn private(id: impl Into<String>, owner: impl Into<String>) -> Self {
@@ -59,7 +65,13 @@ impl Channel {
         Self::new(id, "system", ChannelType::System, 0, false)
     }
 
-    fn new(id: impl Into<String>, owner: impl Into<String>, channel_type: ChannelType, max_fanout: usize, requires_auth: bool) -> Self {
+    fn new(
+        id: impl Into<String>,
+        owner: impl Into<String>,
+        channel_type: ChannelType,
+        max_fanout: usize,
+        requires_auth: bool,
+    ) -> Self {
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
@@ -86,7 +98,12 @@ impl Channel {
             (Paused, Closing) => {}
             (Closing, Closed) => {}
             (Active, Closed) => {}
-            _ => return Err(ChannelError::IllegalStateTransition { from: current, to: new_state }),
+            _ => {
+                return Err(ChannelError::IllegalStateTransition {
+                    from: current,
+                    to: new_state,
+                })
+            }
         }
         self.state = new_state;
         Ok(())
@@ -109,7 +126,10 @@ impl Channel {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ChannelError {
     #[error("illegal state transition: {from:?} -> {to:?}")]
-    IllegalStateTransition { from: ChannelState, to: ChannelState },
+    IllegalStateTransition {
+        from: ChannelState,
+        to: ChannelState,
+    },
     #[error("channel not found: {0}")]
     NotFound(String),
     #[error("owner mismatch: expected {expected}, got {got}")]

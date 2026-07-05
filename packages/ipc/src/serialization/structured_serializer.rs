@@ -1,6 +1,6 @@
-﻿//! Structured serializer - separates header, payload, and metadata into distinct sections.
+//! Structured serializer - separates header, payload, and metadata into distinct sections.
 
-use super::serializer::{Serializer, SerializeResult, SerializationError};
+use super::serializer::{SerializationError, SerializeResult, Serializer};
 use crate::message::{MessageEnvelope, MessageValidator};
 
 /// Structured serializer that produces a delimited format.
@@ -19,9 +19,8 @@ impl StructuredSerializer {
 
 impl Serializer for StructuredSerializer {
     fn serialize(&self, envelope: &MessageEnvelope) -> SerializeResult<Vec<u8>> {
-        MessageValidator::validate(envelope).map_err(|e| {
-            SerializationError::ValidationFailed(e.to_string())
-        })?;
+        MessageValidator::validate(envelope)
+            .map_err(|e| SerializationError::ValidationFailed(e.to_string()))?;
 
         let mut buf = Vec::new();
 
@@ -47,8 +46,7 @@ impl Serializer for StructuredSerializer {
     }
 
     fn deserialize(&self, bytes: &[u8]) -> SerializeResult<MessageEnvelope> {
-        serde_json::from_slice(bytes)
-            .map_err(|e| SerializationError::Deserialize(e.to_string()))
+        serde_json::from_slice(bytes).map_err(|e| SerializationError::Deserialize(e.to_string()))
     }
 
     fn format_name(&self) -> &str {
@@ -59,7 +57,7 @@ impl Serializer for StructuredSerializer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_envelope() -> MessageEnvelope {
         MessageEnvelope {

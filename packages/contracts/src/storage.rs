@@ -402,10 +402,7 @@ pub trait StorageProvider: Send + Sync {
     fn exists(&self, id: &ResourceId) -> Result<bool, StorageError>;
 
     /// Begin a new transaction at the given isolation level (RFC-0403 §4.2).
-    fn begin_transaction(
-        &self,
-        isolation: IsolationLevel,
-    ) -> Result<TransactionId, StorageError>;
+    fn begin_transaction(&self, isolation: IsolationLevel) -> Result<TransactionId, StorageError>;
     /// Commit an open transaction (RFC-0403 §4.2).
     fn commit_transaction(&self, tx: &TransactionId) -> Result<u64, StorageError>;
     /// Roll back an open transaction (RFC-0403 §4.2).
@@ -459,6 +456,3 @@ pub trait ProviderRegistry: Send + Sync {
     /// Aggregate health across all running providers.
     fn health_check(&self) -> HealthStatus;
 }
-
-
-

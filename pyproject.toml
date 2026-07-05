@@ -1,7 +1,7 @@
 [project]
 name = "atlas-workflow"
 version = "1.0.0"
-description = "Atlas Workflow Runtime — Python Reference Implementation. The architecture is platform-independent; production targets Rust."
+description = "Atlas Workflow Runtime ? Python Reference Implementation. The architecture is platform-independent; production targets Rust."
 requires-python = ">=3.10"
 license = {text = "MIT"}
 
@@ -21,3 +21,6 @@ markers = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[project.scripts]
+atlas-conformance = "atlas_conformance.cli:main"

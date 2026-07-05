@@ -1,4 +1,4 @@
-﻿//! Message envelope — the complete, immutable container for every IPC message.
+//! Message envelope — the complete, immutable container for every IPC message.
 //!
 //! Combines a [MessageHeader](crate::message::header::MessageHeader),
 //! [MessagePayload](crate::message::payload::MessagePayload), and
@@ -9,10 +9,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::header::MessageHeader;
-use super::payload::MessagePayload;
 use super::metadata::MessageMetadata;
-use super::types::MessageType;
+use super::payload::MessagePayload;
 use super::priority::MessagePriority;
+use super::types::MessageType;
 
 /// The complete, immutable message envelope used throughout the Atlas IPC runtime.
 ///
@@ -32,11 +32,7 @@ pub struct MessageEnvelope {
 
 impl MessageEnvelope {
     /// Create a new envelope from constituent parts.
-    pub fn new(
-        header: MessageHeader,
-        payload: MessagePayload,
-        metadata: MessageMetadata,
-    ) -> Self {
+    pub fn new(header: MessageHeader, payload: MessagePayload, metadata: MessageMetadata) -> Self {
         Self {
             header,
             payload,
@@ -54,7 +50,13 @@ impl MessageEnvelope {
         payload_value: T,
     ) -> Result<Self, super::payload::PayloadError> {
         Ok(Self {
-            header: MessageHeader::with_correlation(sender, receiver, message_type, correlation_id, ttl),
+            header: MessageHeader::with_correlation(
+                sender,
+                receiver,
+                message_type,
+                correlation_id,
+                ttl,
+            ),
             payload: MessagePayload::new(payload_value)?,
             metadata: MessageMetadata::default(),
         })
@@ -67,7 +69,14 @@ impl MessageEnvelope {
         message_type: MessageType,
         payload_value: impl serde::Serialize,
     ) -> Result<Self, super::payload::PayloadError> {
-        Self::with_payload(sender, receiver, message_type, Uuid::new_v4(), 60, payload_value)
+        Self::with_payload(
+            sender,
+            receiver,
+            message_type,
+            Uuid::new_v4(),
+            60,
+            payload_value,
+        )
     }
 
     /// Convenience constructor for a heartbeat.
@@ -87,7 +96,13 @@ impl MessageEnvelope {
     ) -> Result<Self, super::payload::PayloadError> {
         let corr = Uuid::new_v4();
         Ok(Self {
-            header: MessageHeader::with_correlation(sender, receiver, MessageType::Request, corr, 30),
+            header: MessageHeader::with_correlation(
+                sender,
+                receiver,
+                MessageType::Request,
+                corr,
+                30,
+            ),
             payload: MessagePayload::new(payload_value)?,
             metadata: MessageMetadata::default(),
         })
@@ -101,7 +116,13 @@ impl MessageEnvelope {
         payload_value: impl serde::Serialize,
     ) -> Result<Self, super::payload::PayloadError> {
         Ok(Self {
-            header: MessageHeader::with_correlation(sender, receiver, MessageType::Response, correlation_id, 60),
+            header: MessageHeader::with_correlation(
+                sender,
+                receiver,
+                MessageType::Response,
+                correlation_id,
+                60,
+            ),
             payload: MessagePayload::new(payload_value)?,
             metadata: MessageMetadata::default(),
         })
@@ -121,7 +142,11 @@ impl MessageEnvelope {
         });
         Self {
             header: MessageHeader::with_correlation(
-                sender, receiver, MessageType::Error, correlation_id, 60,
+                sender,
+                receiver,
+                MessageType::Error,
+                correlation_id,
+                60,
             ),
             payload: MessagePayload::from_value(payload),
             metadata: MessageMetadata::default(),

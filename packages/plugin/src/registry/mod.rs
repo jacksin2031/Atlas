@@ -36,7 +36,10 @@ impl PluginRegistryImpl {
 
     /// The number of registered plugins.
     pub fn len(&self) -> usize {
-        self.manifests.lock().expect("registry manifests mutex poisoned").len()
+        self.manifests
+            .lock()
+            .expect("registry manifests mutex poisoned")
+            .len()
     }
 
     /// Whether the registry is empty.
@@ -54,14 +57,23 @@ impl Default for PluginRegistryImpl {
 impl PluginRegistry for PluginRegistryImpl {
     fn register(&self, manifest: PluginManifest) -> Result<(), PluginError> {
         manifest.validate().map_err(PluginError::from)?;
-        let mut manifests = self.manifests.lock().expect("registry manifests mutex poisoned");
+        let mut manifests = self
+            .manifests
+            .lock()
+            .expect("registry manifests mutex poisoned");
         if manifests.contains_key(&manifest.plugin_id) {
             return Err(RegistryError::AlreadyRegistered(manifest.plugin_id.clone()).into());
         }
         let id = manifest.plugin_id.clone();
         manifests.insert(id.clone(), manifest);
-        self.order.lock().expect("registry order mutex poisoned").push(id.clone());
-        self.enabled.lock().expect("registry enabled mutex poisoned").insert(id);
+        self.order
+            .lock()
+            .expect("registry order mutex poisoned")
+            .push(id.clone());
+        self.enabled
+            .lock()
+            .expect("registry enabled mutex poisoned")
+            .insert(id);
         Ok(())
     }
 
@@ -74,45 +86,82 @@ impl PluginRegistry for PluginRegistryImpl {
     }
 
     fn discovery(&self) -> Vec<PluginManifest> {
-        let order = self.order.lock().expect("registry order mutex poisoned").clone();
-        let manifests = self.manifests.lock().expect("registry manifests mutex poisoned");
-        order.iter().filter_map(|id| manifests.get(id).cloned()).collect()
+        let order = self
+            .order
+            .lock()
+            .expect("registry order mutex poisoned")
+            .clone();
+        let manifests = self
+            .manifests
+            .lock()
+            .expect("registry manifests mutex poisoned");
+        order
+            .iter()
+            .filter_map(|id| manifests.get(id).cloned())
+            .collect()
     }
 
     fn list(&self) -> Vec<String> {
-        self.order.lock().expect("registry order mutex poisoned").clone()
+        self.order
+            .lock()
+            .expect("registry order mutex poisoned")
+            .clone()
     }
 
     fn enable(&self, plugin_id: &str) -> Result<(), PluginError> {
-        let manifests = self.manifests.lock().expect("registry manifests mutex poisoned");
+        let manifests = self
+            .manifests
+            .lock()
+            .expect("registry manifests mutex poisoned");
         if !manifests.contains_key(plugin_id) {
             return Err(RegistryError::NotFound(plugin_id.to_string()).into());
         }
-        self.enabled.lock().expect("registry enabled mutex poisoned").insert(plugin_id.to_string());
+        self.enabled
+            .lock()
+            .expect("registry enabled mutex poisoned")
+            .insert(plugin_id.to_string());
         Ok(())
     }
 
     fn disable(&self, plugin_id: &str) -> Result<(), PluginError> {
-        let manifests = self.manifests.lock().expect("registry manifests mutex poisoned");
+        let manifests = self
+            .manifests
+            .lock()
+            .expect("registry manifests mutex poisoned");
         if !manifests.contains_key(plugin_id) {
             return Err(RegistryError::NotFound(plugin_id.to_string()).into());
         }
-        self.enabled.lock().expect("registry enabled mutex poisoned").remove(plugin_id);
+        self.enabled
+            .lock()
+            .expect("registry enabled mutex poisoned")
+            .remove(plugin_id);
         Ok(())
     }
 
     fn unload(&self, plugin_id: &str) -> Result<(), PluginError> {
-        let mut manifests = self.manifests.lock().expect("registry manifests mutex poisoned");
+        let mut manifests = self
+            .manifests
+            .lock()
+            .expect("registry manifests mutex poisoned");
         if manifests.remove(plugin_id).is_none() {
             return Err(RegistryError::NotFound(plugin_id.to_string()).into());
         }
-        self.enabled.lock().expect("registry enabled mutex poisoned").remove(plugin_id);
-        self.order.lock().expect("registry order mutex poisoned").retain(|id| id != plugin_id);
+        self.enabled
+            .lock()
+            .expect("registry enabled mutex poisoned")
+            .remove(plugin_id);
+        self.order
+            .lock()
+            .expect("registry order mutex poisoned")
+            .retain(|id| id != plugin_id);
         Ok(())
     }
 
     fn is_enabled(&self, plugin_id: &str) -> bool {
-        self.enabled.lock().expect("registry enabled mutex poisoned").contains(plugin_id)
+        self.enabled
+            .lock()
+            .expect("registry enabled mutex poisoned")
+            .contains(plugin_id)
     }
 
     fn dependency_order(&self) -> Result<Vec<String>, PluginError> {
@@ -208,7 +257,11 @@ mod tests {
         let reg = PluginRegistryImpl::new();
         reg.register(manifest("a")).unwrap();
         reg.register(manifest("b")).unwrap();
-        let ids: Vec<String> = reg.discovery().iter().map(|m| m.plugin_id.clone()).collect();
+        let ids: Vec<String> = reg
+            .discovery()
+            .iter()
+            .map(|m| m.plugin_id.clone())
+            .collect();
         assert_eq!(ids, vec!["a".to_string(), "b".to_string()]);
         assert_eq!(reg.list(), vec!["a".to_string(), "b".to_string()]);
     }
@@ -229,4 +282,3 @@ mod tests {
         assert_eq!(order, vec!["a".to_string(), "b".to_string()]);
     }
 }
-

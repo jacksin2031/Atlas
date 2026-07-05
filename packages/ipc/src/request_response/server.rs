@@ -1,11 +1,11 @@
-﻿//! Request server — handles incoming requests and sends responses.
+//! Request server — handles incoming requests and sends responses.
 
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
+use super::correlator::Correlator;
 use super::request::Request;
 use super::request::Response;
-use super::correlator::Correlator;
 
 /// Server for handling incoming requests through the IPC runtime.
 #[derive(Clone)]

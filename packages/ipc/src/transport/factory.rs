@@ -1,7 +1,7 @@
-﻿//! Transport factory.
+//! Transport factory.
 
-use super::transport::{Transport, TransportFactory};
 use super::in_memory_transport::InMemoryTransport;
+use super::transport::{Transport, TransportFactory};
 
 /// Factory for creating transport instances.
 #[derive(Debug, Clone, Default)]

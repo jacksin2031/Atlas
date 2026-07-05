@@ -1,7 +1,7 @@
-﻿//! Capability resolver — resolves required and optional capabilities.
+//! Capability resolver — resolves required and optional capabilities.
 
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Capability declaration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,7 +49,8 @@ pub struct CapabilityResolver {
 impl CapabilityResolver {
     /// Register a declared capability.
     pub fn register_capability(&mut self, capability: Capability) {
-        self.capabilities.insert(capability.name.clone(), capability);
+        self.capabilities
+            .insert(capability.name.clone(), capability);
     }
 
     /// Register an available (remote) capability.
@@ -59,14 +60,13 @@ impl CapabilityResolver {
 
     /// Resolve all required capabilities.
     pub fn resolve_required(&self) -> Vec<&Capability> {
-        self.capabilities.values()
-            .filter(|c| c.required)
-            .collect()
+        self.capabilities.values().filter(|c| c.required).collect()
     }
 
     /// Resolve all optional capabilities that are available.
     pub fn resolve_optional_available(&self) -> Vec<&Capability> {
-        self.capabilities.values()
+        self.capabilities
+            .values()
             .filter(|c| !c.required && self.available.contains_key(&c.name))
             .collect()
     }
@@ -92,7 +92,8 @@ impl CapabilityResolver {
 
     /// Get fallback capabilities for missing optional ones.
     pub fn get_fallbacks(&self) -> Vec<String> {
-        self.capabilities.values()
+        self.capabilities
+            .values()
             .filter(|c| !c.required && !self.available.contains_key(&c.name))
             .map(|c| c.name.clone())
             .collect()

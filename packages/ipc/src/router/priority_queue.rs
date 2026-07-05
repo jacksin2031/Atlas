@@ -77,7 +77,13 @@ impl PriorityMessageQueue {
             total_enqueued: self.total_sent,
             total_dequeued: self.total_sent - self.len() as u64 + self.total_dropped,
             total_dropped: self.total_dropped,
-            by_priority: self.queues.iter().map(|q| q.len() as u64).collect::<Vec<_>>().try_into().unwrap_or([0; 5]),
+            by_priority: self
+                .queues
+                .iter()
+                .map(|q| q.len() as u64)
+                .collect::<Vec<_>>()
+                .try_into()
+                .unwrap_or([0; 5]),
             current_size: self.len(),
             max_size: self.max_size,
         }
@@ -121,7 +127,7 @@ pub struct QueueStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn make_msg(priority: MessagePriority) -> MessageEnvelope {
         MessageEnvelope {
@@ -161,4 +167,3 @@ mod tests {
         assert_eq!(stats.current_size, 1);
     }
 }
-

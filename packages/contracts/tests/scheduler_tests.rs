@@ -1,11 +1,15 @@
-﻿//! Tests for scheduler types.
+//! Tests for scheduler types.
 
-use atlas_contracts::{QueueDepth, WorkerPoolStatus, SchedulerError};
+use atlas_contracts::{QueueDepth, SchedulerError, WorkerPoolStatus};
 
 #[test]
 fn test_queue_depth_defaults() {
     let qd = QueueDepth {
-        critical: 0, high: 0, normal: 0, low: 0, background: 0,
+        critical: 0,
+        high: 0,
+        normal: 0,
+        low: 0,
+        background: 0,
     };
     assert_eq!(qd.critical, 0);
 }
@@ -26,4 +30,3 @@ fn test_scheduler_errors_display() {
     let err = SchedulerError::QueueFull;
     assert_eq!(format!("{}", err), "queue full");
 }
-

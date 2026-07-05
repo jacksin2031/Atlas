@@ -1,4 +1,4 @@
-﻿//! Retry policy with configurable backoff strategies.
+//! Retry policy with configurable backoff strategies.
 
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -16,10 +16,7 @@ pub enum BackoffStrategy {
         jitter: bool,
     },
     /// Linear backoff.
-    Linear {
-        step: Duration,
-        max_delay: Duration,
-    },
+    Linear { step: Duration, max_delay: Duration },
 }
 
 impl Default for BackoffStrategy {
@@ -62,7 +59,12 @@ impl RetryPolicy {
     pub fn delay_for_attempt(&self, attempt: u32) -> Duration {
         match &self.backoff {
             BackoffStrategy::Fixed { interval } => *interval,
-            BackoffStrategy::Exponential { base, multiplier, max_delay, jitter } => {
+            BackoffStrategy::Exponential {
+                base,
+                multiplier,
+                max_delay,
+                jitter,
+            } => {
                 let mut delay = (*base).as_millis() as f64 * multiplier.powi(attempt as i32);
                 if *jitter {
                     let seed = std::time::SystemTime::now()
@@ -72,11 +74,19 @@ impl RetryPolicy {
                     delay *= 0.5 + (seed % 1_000_000_000.0) / 1_000_000_000.0;
                 }
                 let delay = delay as u64;
-                Duration::from_millis(if delay > max_delay.as_millis() as u64 { max_delay.as_millis() as u64 } else { delay })
+                Duration::from_millis(if delay > max_delay.as_millis() as u64 {
+                    max_delay.as_millis() as u64
+                } else {
+                    delay
+                })
             }
             BackoffStrategy::Linear { step, max_delay } => {
                 let delay: u64 = (step.as_millis() as u64) * (attempt as u64);
-                Duration::from_millis(if delay > max_delay.as_millis() as u64 { max_delay.as_millis() as u64 } else { delay })
+                Duration::from_millis(if delay > max_delay.as_millis() as u64 {
+                    max_delay.as_millis() as u64
+                } else {
+                    delay
+                })
             }
         }
     }
@@ -139,5 +149,3 @@ mod tests {
         assert!(!policy.should_retry(3));
     }
 }
-
-

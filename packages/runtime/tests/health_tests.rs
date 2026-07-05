@@ -1,8 +1,8 @@
-﻿//! Health Service tests.
+//! Health Service tests.
 
-use atlas_runtime::health::HealthService;
 use atlas_common::HealthStatus;
 use atlas_contracts::HealthChecker;
+use atlas_runtime::health::HealthService;
 
 #[test]
 fn test_health_service_empty() {

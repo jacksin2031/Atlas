@@ -1,4 +1,4 @@
-﻿//! Delivery guarantees — AtMostOnce, AtLeastOnce, ExactlyOnce.
+//! Delivery guarantees — AtMostOnce, AtLeastOnce, ExactlyOnce.
 
 use serde::{Deserialize, Serialize};
 
@@ -46,7 +46,8 @@ pub struct DeliveryGuaranteeEnforcer {
     /// For ExactlyOnce: tracks sent message IDs for deduplication.
     sent_ids: std::sync::Arc<std::sync::Mutex<std::collections::HashSet<String>>>,
     /// For AtLeastOnce: tracks unacknowledged messages.
-    unacked: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, std::time::Instant>>>,
+    unacked:
+        std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, std::time::Instant>>>,
 }
 
 impl DeliveryGuaranteeEnforcer {

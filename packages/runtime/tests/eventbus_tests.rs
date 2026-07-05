@@ -1,7 +1,7 @@
-﻿//! Event Bus implementation tests.
+//! Event Bus implementation tests.
 
+use atlas_contracts::{Channel, Event};
 use atlas_runtime::eventbus::EventBusImpl;
-use atlas_contracts::{Event, Channel};
 use std::sync::{Arc, Mutex};
 
 #[test]
@@ -19,7 +19,10 @@ fn test_publish_and_subscribe() {
     let received_clone = received.clone();
 
     bus.subscribe("test".to_string(), move |event: &Event| {
-        received_clone.lock().unwrap().push(event.event_type.clone());
+        received_clone
+            .lock()
+            .unwrap()
+            .push(event.event_type.clone());
     });
 
     let event = Event::new(Channel::new("test"), "Hello", serde_json::json!({}));
@@ -64,7 +67,10 @@ fn test_wildcard_channel_matching() {
     let received_clone = received.clone();
 
     bus.subscribe("runtime.*".to_string(), move |event: &Event| {
-        received_clone.lock().unwrap().push(event.event_type.clone());
+        received_clone
+            .lock()
+            .unwrap()
+            .push(event.event_type.clone());
     });
 
     let event = Event::new(Channel::new("runtime.*"), "Test", serde_json::json!({}));
@@ -72,4 +78,3 @@ fn test_wildcard_channel_matching() {
 
     assert_eq!(received.lock().unwrap().len(), 1);
 }
-

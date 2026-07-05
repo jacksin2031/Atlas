@@ -1,9 +1,9 @@
 //! Correlator - matches responses to requests by correlation ID.
 
+use super::request::Response;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
-use super::request::Response;
 
 /// Matches responses to their originating requests.
 #[derive(Clone, Default)]
@@ -88,4 +88,3 @@ mod tests {
         assert!(!corr.is_pending(&id));
     }
 }
-

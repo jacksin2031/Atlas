@@ -1,4 +1,4 @@
-﻿//! Plugin manager — orchestrates the plugin runtime (RFC-0204/0205/0203/0210).
+//! Plugin manager — orchestrates the plugin runtime (RFC-0204/0205/0203/0210).
 //!
 //! [`PluginManagerImpl`] ties together the registry, loader, capability
 //! registry, event bus, and health monitor. It owns the authoritative plugin
@@ -10,8 +10,12 @@
 //! the manager instance shared via [`Arc`].
 
 use crate::capability::{CapabilityRegistry, CapabilityRegistryImpl};
-use crate::context::{PluginContext, PluginLogger, PluginServiceDirectory, CapabilityServiceDirectory, TracingLogger};
-use crate::contracts::{Plugin, PluginHost, PluginManager, PluginProvider, PluginRegistry, PluginLoader};
+use crate::context::{
+    CapabilityServiceDirectory, PluginContext, PluginLogger, PluginServiceDirectory, TracingLogger,
+};
+use crate::contracts::{
+    Plugin, PluginHost, PluginLoader, PluginManager, PluginProvider, PluginRegistry,
+};
 use crate::error::{LifecycleError, PluginError, RegistryError};
 use crate::events::{PluginEvent, PluginEventBusImpl};
 use crate::health::{PluginHealthMonitor, PluginHealthServiceImpl, PluginHealthState};
@@ -50,7 +54,12 @@ impl PluginManagerImpl {
         runtime_version: SemanticVersion,
         api_version: SemanticVersion,
     ) -> Arc<Self> {
-        Self::with_logger(provider, runtime_version, api_version, Arc::new(TracingLogger))
+        Self::with_logger(
+            provider,
+            runtime_version,
+            api_version,
+            Arc::new(TracingLogger),
+        )
     }
 
     /// Construct a manager with a custom logger.
@@ -84,7 +93,10 @@ impl PluginManagerImpl {
             provider,
             manager.clone() as Arc<dyn PluginHost>,
         ));
-        *manager.loader.lock().expect("manager loader mutex poisoned") = Some(loader);
+        *manager
+            .loader
+            .lock()
+            .expect("manager loader mutex poisoned") = Some(loader);
         manager
     }
 
@@ -98,12 +110,18 @@ impl PluginManagerImpl {
 
     /// Update the manager's view of the runtime lifecycle state.
     pub fn set_runtime_state(&self, state: RuntimeState) {
-        *self.runtime_state.lock().expect("manager runtime state mutex poisoned") = state;
+        *self
+            .runtime_state
+            .lock()
+            .expect("manager runtime state mutex poisoned") = state;
     }
 
     /// The current runtime state known to the manager.
     pub fn runtime_state(&self) -> RuntimeState {
-        *self.runtime_state.lock().expect("manager runtime state mutex poisoned")
+        *self
+            .runtime_state
+            .lock()
+            .expect("manager runtime state mutex poisoned")
     }
 
     /// The event bus used for plugin events.
@@ -140,8 +158,9 @@ impl PluginManagerImpl {
 
 impl PluginHost for PluginManagerImpl {
     fn context_for(&self, plugin_id: &str) -> Result<PluginContext, PluginError> {
-        let services: Arc<dyn PluginServiceDirectory> =
-            Arc::new(CapabilityServiceDirectory::new(self.capability_registry.clone() as Arc<dyn CapabilityRegistry>));
+        let services: Arc<dyn PluginServiceDirectory> = Arc::new(CapabilityServiceDirectory::new(
+            self.capability_registry.clone() as Arc<dyn CapabilityRegistry>,
+        ));
         PluginContext::builder(plugin_id)
             .logger(self.logger.clone())
             .capabilities(self.capability_registry.clone() as Arc<dyn CapabilityRegistry>)
@@ -185,7 +204,10 @@ impl PluginManager for PluginManagerImpl {
 
         // Advance the authoritative lifecycle to Initialized (activate did init).
         {
-            let mut lcs = self.lifecycles.lock().expect("manager lifecycles mutex poisoned");
+            let mut lcs = self
+                .lifecycles
+                .lock()
+                .expect("manager lifecycles mutex poisoned");
             let lc = lcs.entry(plugin_id.to_string()).or_default();
             if lc.current_state() == PluginState::Created {
                 lc.transition(PluginState::Loaded)?;
@@ -202,7 +224,10 @@ impl PluginManager for PluginManagerImpl {
 
         // Advance lifecycle to Running.
         {
-            let mut lcs = self.lifecycles.lock().expect("manager lifecycles mutex poisoned");
+            let mut lcs = self
+                .lifecycles
+                .lock()
+                .expect("manager lifecycles mutex poisoned");
             let lc = lcs.get_mut(plugin_id).expect("lifecycle must exist");
             lc.transition(PluginState::Started)?;
             lc.transition(PluginState::Running)?;
@@ -214,7 +239,8 @@ impl PluginManager for PluginManagerImpl {
             self.capability_registry.register(plugin_id, &caps)?;
         }
         // Record health and publish.
-        self.health.record(&plugin_id.to_string(), PluginHealthState::Healthy)?;
+        self.health
+            .record(&plugin_id.to_string(), PluginHealthState::Healthy)?;
         self.publish(&PluginEvent::started(plugin_id));
         Ok(())
     }
@@ -223,7 +249,8 @@ impl PluginManager for PluginManagerImpl {
         let plugin = self.active_plugin(plugin_id)?;
         plugin.stop()?;
         self.transition_lifecycle(plugin_id, PluginState::Stopped)?;
-        self.health.record(&plugin_id.to_string(), PluginHealthState::Healthy)?;
+        self.health
+            .record(&plugin_id.to_string(), PluginHealthState::Healthy)?;
         self.publish(&PluginEvent::stopped(plugin_id));
         Ok(())
     }
@@ -255,7 +282,10 @@ impl PluginManager for PluginManagerImpl {
         }
         self.capability_registry.deregister(plugin_id);
         self.health.remove(&plugin_id.to_string());
-        self.lifecycles.lock().expect("manager lifecycles mutex poisoned").remove(plugin_id);
+        self.lifecycles
+            .lock()
+            .expect("manager lifecycles mutex poisoned")
+            .remove(plugin_id);
         self.registry.unload(plugin_id)?;
         self.publish(&PluginEvent::removed(plugin_id));
         Ok(())
@@ -289,11 +319,17 @@ impl PluginManager for PluginManagerImpl {
 impl PluginManagerImpl {
     /// Force a plugin into the `Failed` state and record failed health.
     fn force_failed(&self, plugin_id: &str) {
-        let mut lcs = self.lifecycles.lock().expect("manager lifecycles mutex poisoned");
+        let mut lcs = self
+            .lifecycles
+            .lock()
+            .expect("manager lifecycles mutex poisoned");
         if let Some(lc) = lcs.get_mut(plugin_id) {
             lc.force(PluginState::Failed);
         }
-        let _ = self.health.record(&plugin_id.to_string(), PluginHealthState::Failed("start failed".to_string()));
+        let _ = self.health.record(
+            &plugin_id.to_string(),
+            PluginHealthState::Failed("start failed".to_string()),
+        );
     }
 
     /// Return the active plugin instance for `plugin_id`, if any.
@@ -304,8 +340,15 @@ impl PluginManagerImpl {
     }
 
     /// Transition a plugin's lifecycle.
-    fn transition_lifecycle(&self, plugin_id: &str, target: PluginState) -> Result<(), PluginError> {
-        let mut lcs = self.lifecycles.lock().expect("manager lifecycles mutex poisoned");
+    fn transition_lifecycle(
+        &self,
+        plugin_id: &str,
+        target: PluginState,
+    ) -> Result<(), PluginError> {
+        let mut lcs = self
+            .lifecycles
+            .lock()
+            .expect("manager lifecycles mutex poisoned");
         let lc = lcs
             .get_mut(plugin_id)
             .ok_or_else(|| RegistryError::NotFound(plugin_id.to_string()))?;
@@ -313,20 +356,10 @@ impl PluginManagerImpl {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::contracts::{Plugin, PluginProvider, PluginFactory};
+    use crate::contracts::{Plugin, PluginFactory, PluginProvider};
     use crate::health::PluginHealthState;
     use crate::lifecycle::PluginState;
     use crate::manifest::{
@@ -361,11 +394,17 @@ mod tests {
     }
 
     impl Plugin for TestPlugin {
-        fn metadata(&self) -> &PluginMetadata { &self.metadata }
+        fn metadata(&self) -> &PluginMetadata {
+            &self.metadata
+        }
         fn state(&self) -> PluginState {
-            if self.started.load(Ordering::Acquire) { PluginState::Running }
-            else if self.initialized.load(Ordering::Acquire) { PluginState::Initialized }
-            else { PluginState::Created }
+            if self.started.load(Ordering::Acquire) {
+                PluginState::Running
+            } else if self.initialized.load(Ordering::Acquire) {
+                PluginState::Initialized
+            } else {
+                PluginState::Created
+            }
         }
         fn initialize(&self, _ctx: &crate::context::PluginContext) -> Result<(), PluginError> {
             self.initialized.store(true, Ordering::Release);
@@ -375,15 +414,23 @@ mod tests {
             self.started.store(true, Ordering::Release);
             Ok(())
         }
-        fn pause(&self) -> Result<(), PluginError> { Ok(()) }
-        fn resume(&self) -> Result<(), PluginError> { Ok(()) }
+        fn pause(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
+        fn resume(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
         fn stop(&self) -> Result<(), PluginError> {
             self.started.store(false, Ordering::Release);
             Ok(())
         }
-        fn shutdown(&self) -> Result<(), PluginError> { Ok(()) }
+        fn shutdown(&self) -> Result<(), PluginError> {
+            Ok(())
+        }
         fn dispose(&self) {}
-        fn health_check(&self) -> PluginHealthState { PluginHealthState::Healthy }
+        fn health_check(&self) -> PluginHealthState {
+            PluginHealthState::Healthy
+        }
     }
 
     struct TestFactory;
@@ -395,7 +442,9 @@ mod tests {
                 started: AtomicBool::new(false),
             }))
         }
-        fn supports(&self, _plugin_id: &str) -> bool { true }
+        fn supports(&self, _plugin_id: &str) -> bool {
+            true
+        }
     }
 
     struct TestProvider {
@@ -411,8 +460,14 @@ mod tests {
     }
 
     fn make_manager(manifests: Vec<PluginManifest>) -> Arc<PluginManagerImpl> {
-        let provider = Arc::new(TestProvider { manifests: manifests.clone() });
-        PluginManagerImpl::new(provider, SemanticVersion::parse("1.5.0").unwrap(), SemanticVersion::parse("1.0.0").unwrap())
+        let provider = Arc::new(TestProvider {
+            manifests: manifests.clone(),
+        });
+        PluginManagerImpl::new(
+            provider,
+            SemanticVersion::parse("1.5.0").unwrap(),
+            SemanticVersion::parse("1.0.0").unwrap(),
+        )
     }
 
     #[test]
@@ -441,7 +496,7 @@ mod tests {
         let mgr = make_manager(vec![make_manifest("p1", vec![])]);
         mgr.install(make_manifest("p1", vec![])).unwrap();
         mgr.set_runtime_state(atlas_contracts::RuntimeState::Running);
-        
+
         mgr.start_plugin("p1").unwrap();
         assert_eq!(mgr.runtime_state(), RuntimeState::Running);
         mgr.stop_plugin("p1").unwrap();
@@ -458,7 +513,7 @@ mod tests {
         let mgr = make_manager(vec![make_manifest("p1", vec![])]);
         mgr.install(make_manifest("p1", vec![])).unwrap();
         mgr.set_runtime_state(atlas_contracts::RuntimeState::Running);
-        
+
         mgr.start_plugin("p1").unwrap();
         mgr.pause_plugin("p1").unwrap();
         mgr.resume_plugin("p1").unwrap();
@@ -469,7 +524,7 @@ mod tests {
         let mgr = make_manager(vec![make_manifest("p1", vec![])]);
         mgr.install(make_manifest("p1", vec![])).unwrap();
         mgr.set_runtime_state(atlas_contracts::RuntimeState::Running);
-        
+
         mgr.start_plugin("p1").unwrap();
         mgr.unload_plugin("p1").unwrap();
         assert!(mgr.registry().lookup("p1").is_none());
@@ -481,7 +536,7 @@ mod tests {
         mgr.install(make_manifest("a", vec![])).unwrap();
         mgr.install(make_manifest("b", vec![])).unwrap();
         mgr.set_runtime_state(atlas_contracts::RuntimeState::Running);
-        
+
         mgr.start_plugin("a").unwrap();
         mgr.start_plugin("b").unwrap();
         mgr.shutdown_all().unwrap();
@@ -530,8 +585,3 @@ mod tests {
         assert_eq!(reg.list().len(), 0);
     }
 }
-
-
-
-
-

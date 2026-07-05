@@ -1,7 +1,6 @@
-﻿//! Negotiation result — outcome of capability negotiation.
+//! Negotiation result — outcome of capability negotiation.
 
 use serde::{Deserialize, Serialize};
-
 
 /// Result of a capability negotiation handshake.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -47,5 +46,3 @@ impl NegotiationResult {
         self.success
     }
 }
-
-

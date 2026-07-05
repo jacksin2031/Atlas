@@ -1,4 +1,4 @@
-﻿//! The `Transport` trait — platform-independent transport abstraction.
+//! The `Transport` trait — platform-independent transport abstraction.
 
 use thiserror::Error;
 
@@ -115,4 +115,3 @@ pub trait TransportFactory: Send + Sync {
     /// Get the factory name.
     fn factory_name(&self) -> &str;
 }
-

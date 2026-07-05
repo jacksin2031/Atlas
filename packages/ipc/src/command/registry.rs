@@ -1,4 +1,4 @@
-﻿//! Command registry — stores command-handler mappings.
+//! Command registry — stores command-handler mappings.
 
 use std::sync::{Arc, Mutex};
 
@@ -16,7 +16,8 @@ impl CommandRegistry {
     pub fn register(&self, name: impl Into<String>, handler: Arc<dyn CommandHandler>) {
         let mut handlers = self.handlers.lock().unwrap();
         // Remove existing handler with same name if any
-        let name_str = name.into(); handlers.retain(|(n, _)| n != &name_str);
+        let name_str = name.into();
+        handlers.retain(|(n, _)| n != &name_str);
         handlers.push((name_str.clone(), handler));
     }
 
@@ -51,5 +52,3 @@ impl CommandRegistry {
         handlers.len()
     }
 }
-
-

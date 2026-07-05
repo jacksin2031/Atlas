@@ -1,8 +1,8 @@
-﻿//! Scheduler tests.
+//! Scheduler tests.
 
-use atlas_runtime::scheduler::SchedulerImpl;
-use atlas_contracts::{TaskDefinition, SchedulerError};
+use atlas_contracts::{SchedulerError, TaskDefinition};
 use atlas_runtime::eventbus::EventBusImpl;
+use atlas_runtime::scheduler::SchedulerImpl;
 
 fn make_scheduler() -> (SchedulerImpl, EventBusImpl) {
     let event_bus = EventBusImpl::new();
@@ -65,7 +65,10 @@ fn test_pause_and_resume() {
         max_retries: 0,
         payload: serde_json::json!({}),
     };
-    assert_eq!(scheduler.submit_task(task).unwrap_err(), SchedulerError::Backpressure);
+    assert_eq!(
+        scheduler.submit_task(task).unwrap_err(),
+        SchedulerError::Backpressure
+    );
 
     scheduler.resume().unwrap();
     assert!(!scheduler.is_paused());
@@ -79,4 +82,3 @@ fn test_worker_pool_defaults() {
     assert_eq!(status.idle_workers, 4);
     assert_eq!(status.active_workers, 0);
 }
-

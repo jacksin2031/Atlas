@@ -14,8 +14,8 @@
 
 pub mod capability;
 pub mod config;
-pub mod contracts;
 pub mod context;
+pub mod contracts;
 pub mod dependency;
 pub mod error;
 pub mod events;
@@ -29,13 +29,18 @@ pub mod sandbox;
 pub mod version;
 
 // Re-export the primary public API.
-pub use capability::{CapabilityDeclaration, CapabilityRegistry, CapabilityRegistryImpl, PluginCapability, PluginId};
+pub use capability::{
+    CapabilityDeclaration, CapabilityRegistry, CapabilityRegistryImpl, PluginCapability, PluginId,
+};
 pub use config::{PluginConfig, PluginConfigSnapshot};
+pub use context::{
+    CapabilityServiceDirectory, CapturingLogger, PluginContext, PluginContextBuilder, PluginLogger,
+    PluginServiceDirectory, TracingLogger,
+};
 pub use contracts::{
     Plugin, PluginFactory, PluginHost, PluginLoader, PluginManager, PluginMetadata, PluginProvider,
     PluginRegistry,
 };
-pub use context::{CapturingLogger, CapabilityServiceDirectory, PluginContext, PluginContextBuilder, PluginLogger, PluginServiceDirectory, TracingLogger};
 pub use dependency::{DependencyResolver, ResolutionResult};
 pub use error::PluginError;
 pub use events::{PluginEvent, PluginEventBusImpl, PluginEventType, PLUGIN_CHANNEL};
@@ -51,5 +56,7 @@ pub use manifest::{
     PluginPermission, PluginResourceLimits, PluginType,
 };
 pub use registry::PluginRegistryImpl;
-pub use sandbox::{NoopSandboxExecutor, ResourceUsage, SandboxBoundary, SandboxExecutor, SandboxPolicy};
+pub use sandbox::{
+    NoopSandboxExecutor, ResourceUsage, SandboxBoundary, SandboxExecutor, SandboxPolicy,
+};
 pub use version::{ConstraintOperator, SemanticVersion, VersionConstraint};

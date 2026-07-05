@@ -1,8 +1,8 @@
-﻿//! Serializer factory — creates serializers by format name.
+//! Serializer factory — creates serializers by format name.
 
-use super::serializer::{Serializer, SerializationError};
-use super::json_serializer::JsonSerializer;
 use super::binary_serializer::BinarySerializer;
+use super::json_serializer::JsonSerializer;
+use super::serializer::{SerializationError, Serializer};
 use super::structured_serializer::StructuredSerializer;
 
 /// The supported serialization formats.
@@ -108,7 +108,10 @@ mod tests {
 
     #[test]
     fn test_format_from_name() {
-        assert_eq!(SerializerFormat::from_name("json").unwrap(), SerializerFormat::Json);
+        assert_eq!(
+            SerializerFormat::from_name("json").unwrap(),
+            SerializerFormat::Json
+        );
         assert!(SerializerFormat::from_name("foobar").is_err());
     }
 }

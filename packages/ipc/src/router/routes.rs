@@ -1,7 +1,6 @@
-﻿//! Route definition and action types.
+//! Route definition and action types.
 
 use serde::{Deserialize, Serialize};
-
 
 /// Actions the router can take when a rule matches.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -15,7 +14,10 @@ pub enum RouteAction {
     /// Drop the message silently.
     Drop,
     /// Apply a custom action identified by name.
-    Custom { action_name: String, params: serde_json::Value },
+    Custom {
+        action_name: String,
+        params: serde_json::Value,
+    },
 }
 
 /// A single routing rule.
@@ -31,7 +33,11 @@ pub struct Route {
 }
 
 impl Route {
-    pub fn forward(id: impl Into<String>, pattern: impl Into<String>, destination: impl Into<String>) -> Self {
+    pub fn forward(
+        id: impl Into<String>,
+        pattern: impl Into<String>,
+        destination: impl Into<String>,
+    ) -> Self {
         let dest = destination.into();
         Self {
             id: id.into(),
@@ -114,4 +120,3 @@ impl RuleGroup {
         self.routes.is_empty()
     }
 }
-

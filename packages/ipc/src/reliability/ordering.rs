@@ -1,4 +1,4 @@
-﻿//! Ordering guarantees — FIFO, PartialOrder, Unordered.
+//! Ordering guarantees — FIFO, PartialOrder, Unordered.
 
 use serde::{Deserialize, Serialize};
 
@@ -33,9 +33,8 @@ impl MessageOrdering {
 #[derive(Clone, Default)]
 pub struct OrderingEnforcer {
     /// Last sequence number seen per (sender, channel) pair.
-    last_sequence: std::sync::Arc<std::sync::Mutex<
-        std::collections::HashMap<(String, String), u64>,
-    >>,
+    last_sequence:
+        std::sync::Arc<std::sync::Mutex<std::collections::HashMap<(String, String), u64>>>,
     ordering: MessageOrdering,
 }
 

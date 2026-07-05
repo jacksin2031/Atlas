@@ -206,7 +206,10 @@ fn test_health_check_aggregate() {
     registry.activate(&"p1".to_string()).unwrap();
     assert_eq!(registry.health_check(), HealthStatus::Healthy);
     p1.healthy.store(false, Ordering::Release);
-    assert!(matches!(registry.health_check(), HealthStatus::Unhealthy(_)));
+    assert!(matches!(
+        registry.health_check(),
+        HealthStatus::Unhealthy(_)
+    ));
 }
 
 #[test]

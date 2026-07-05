@@ -1,4 +1,4 @@
-﻿//! Message validation - contract enforcement for every IPC message.
+//! Message validation - contract enforcement for every IPC message.
 
 use std::collections::HashSet;
 use thiserror::Error;
@@ -90,7 +90,10 @@ impl MessageValidator {
                     }
                 }
             }
-            MessageType::Notification | MessageType::Broadcast | MessageType::Heartbeat | MessageType::Event => {}
+            MessageType::Notification
+            | MessageType::Broadcast
+            | MessageType::Heartbeat
+            | MessageType::Event => {}
         }
         Ok(())
     }
@@ -98,15 +101,17 @@ impl MessageValidator {
     pub fn validate_full(envelope: &MessageEnvelope) -> ValidationResult {
         Self::validate(envelope)?;
         if envelope.metadata.hop_count > Self::MAX_HOP_COUNT {
-            return Err(ValidationError::HopCountExceeded(envelope.metadata.hop_count));
+            return Err(ValidationError::HopCountExceeded(
+                envelope.metadata.hop_count,
+            ));
         }
         Ok(())
     }
 
     pub fn validate_message_type(mt: &str) -> ValidationResult {
         match mt {
-            "Request" | "Response" | "Command" | "Event" | "Notification"
-            | "Broadcast" | "Heartbeat" | "Error" => Ok(()),
+            "Request" | "Response" | "Command" | "Event" | "Notification" | "Broadcast"
+            | "Heartbeat" | "Error" => Ok(()),
             _ => Err(ValidationError::InvalidMessageType(mt.to_string())),
         }
     }
@@ -123,5 +128,3 @@ impl MessageValidator {
         Ok(())
     }
 }
-
-

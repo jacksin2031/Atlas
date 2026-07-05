@@ -1,9 +1,9 @@
-﻿//! Endpoint registry — registration, lookup, discovery, health, permissions.
+//! Endpoint registry — registration, lookup, discovery, health, permissions.
 
+pub mod descriptor;
 pub mod endpoint;
 pub mod registry;
-pub mod descriptor;
 
+pub use descriptor::*;
 pub use endpoint::*;
 pub use registry::*;
-pub use descriptor::*;

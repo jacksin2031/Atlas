@@ -1,7 +1,7 @@
-﻿//! IPC metrics service — collects all IPC-related metrics.
+//! IPC metrics service — collects all IPC-related metrics.
 
-use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex};
 
 /// Individual metric values.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -113,7 +113,8 @@ impl IpcMetricsService {
         // Simple average update
         let total = snap.messages_sent + snap.messages_received;
         if total > 0 {
-            snap.avg_latency_ms = (snap.avg_latency_ms * ((total - 1) as f64) + latency_ms) / total as f64;
+            snap.avg_latency_ms =
+                (snap.avg_latency_ms * ((total - 1) as f64) + latency_ms) / total as f64;
         }
     }
 

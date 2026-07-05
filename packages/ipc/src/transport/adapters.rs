@@ -4,10 +4,12 @@
 //! The reference implementation ships InMemoryTransport via the main transport module;
 //! named-pipe and network adapters plug in here.
 
-use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex};
 
-use super::transport::{Transport, TransportError, TransportResult, TransportHealth, ConnectionState};
+use super::transport::{
+    ConnectionState, Transport, TransportError, TransportHealth, TransportResult,
+};
 use crate::message::MessageEnvelope;
 
 /// Supported transport adapter kinds.
@@ -44,7 +46,12 @@ pub struct TransportAdapterInfo {
 }
 
 impl TransportAdapterInfo {
-    pub fn new(kind: TransportKind, name: impl Into<String>, version: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn new(
+        kind: TransportKind,
+        name: impl Into<String>,
+        version: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
         Self {
             kind,
             name: name.into(),
@@ -108,7 +115,10 @@ impl TransportAdapter for NamedPipeTransport {
 
     fn create(id: impl Into<String>) -> Box<dyn TransportAdapter> {
         let id_str = id.into();
-        Box::new(Self::new(id_str.clone(), format!("\\\\.\\pipe\\atlas-{id_str}")))
+        Box::new(Self::new(
+            id_str.clone(),
+            format!("\\\\.\\pipe\\atlas-{id_str}"),
+        ))
     }
 }
 
@@ -215,33 +225,53 @@ impl TransportAdapter for TcpTransport {
 impl Transport for TcpTransport {
     fn connect(&mut self) -> TransportResult<()> {
         let mut state = self.state.lock().unwrap();
-        if state.connected { return Err(TransportError::AlreadyConnected); }
+        if state.connected {
+            return Err(TransportError::AlreadyConnected);
+        }
         state.connected = true;
         state.health = TransportHealth::Healthy;
         Ok(())
     }
     fn disconnect(&mut self) -> TransportResult<()> {
         let mut state = self.state.lock().unwrap();
-        if !state.connected { return Err(TransportError::NotConnected); }
+        if !state.connected {
+            return Err(TransportError::NotConnected);
+        }
         state.connected = false;
         state.health = TransportHealth::Disconnected;
         Ok(())
     }
-    fn is_connected(&self) -> bool { let s = self.state.lock().unwrap(); s.connected }
+    fn is_connected(&self) -> bool {
+        let s = self.state.lock().unwrap();
+        s.connected
+    }
     fn send(&mut self, _envelope: MessageEnvelope) -> TransportResult<()> {
-        if !self.is_connected() { return Err(TransportError::NotConnected); }
+        if !self.is_connected() {
+            return Err(TransportError::NotConnected);
+        }
         Ok(())
     }
     fn try_receive(&mut self) -> TransportResult<Option<MessageEnvelope>> {
-        if !self.is_connected() { return Err(TransportError::NotConnected); }
+        if !self.is_connected() {
+            return Err(TransportError::NotConnected);
+        }
         Ok(None)
     }
-    fn health(&self) -> TransportHealth { let s = self.state.lock().unwrap(); s.health }
+    fn health(&self) -> TransportHealth {
+        let s = self.state.lock().unwrap();
+        s.health
+    }
     fn connection_state(&self) -> ConnectionState {
         let s = self.state.lock().unwrap();
-        if s.connected { ConnectionState::Connected } else { ConnectionState::Disconnected }
+        if s.connected {
+            ConnectionState::Connected
+        } else {
+            ConnectionState::Disconnected
+        }
     }
-    fn transport_id(&self) -> &str { &self.id }
+    fn transport_id(&self) -> &str {
+        &self.id
+    }
 }
 
 /// WebSocket transport adapter — implements the TransportAdapter trait for WebSocket.
@@ -254,13 +284,25 @@ pub struct WebSocketTransport {
 
 impl WebSocketTransport {
     pub fn new(id: impl Into<String>, url: impl Into<String>) -> Self {
-        Self { id: id.into(), url: url.into(), state: Arc::new(Mutex::new(TransportState { connected: false, health: TransportHealth::Disconnected })) }
+        Self {
+            id: id.into(),
+            url: url.into(),
+            state: Arc::new(Mutex::new(TransportState {
+                connected: false,
+                health: TransportHealth::Disconnected,
+            })),
+        }
     }
 }
 
 impl TransportAdapter for WebSocketTransport {
     fn adapter_info(&self) -> TransportAdapterInfo {
-        TransportAdapterInfo::new(TransportKind::WebSocket, &self.id, "0.1.0", format!("WS to {}", self.url))
+        TransportAdapterInfo::new(
+            TransportKind::WebSocket,
+            &self.id,
+            "0.1.0",
+            format!("WS to {}", self.url),
+        )
     }
     fn create(id: impl Into<String>) -> Box<dyn TransportAdapter>
     where
@@ -271,14 +313,55 @@ impl TransportAdapter for WebSocketTransport {
 }
 
 impl Transport for WebSocketTransport {
-    fn connect(&mut self) -> TransportResult<()> { let mut s = self.state.lock().unwrap(); if s.connected { return Err(TransportError::AlreadyConnected); } s.connected = true; s.health = TransportHealth::Healthy; Ok(()) }
-    fn disconnect(&mut self) -> TransportResult<()> { let mut s = self.state.lock().unwrap(); if !s.connected { return Err(TransportError::NotConnected); } s.connected = false; s.health = TransportHealth::Disconnected; Ok(()) }
-    fn is_connected(&self) -> bool { let s = self.state.lock().unwrap(); s.connected }
-    fn send(&mut self, _envelope: MessageEnvelope) -> TransportResult<()> { if !self.is_connected() { return Err(TransportError::NotConnected); } Ok(()) }
-    fn try_receive(&mut self) -> TransportResult<Option<MessageEnvelope>> { if !self.is_connected() { return Err(TransportError::NotConnected); } Ok(None) }
-    fn health(&self) -> TransportHealth { let s = self.state.lock().unwrap(); s.health }
-    fn connection_state(&self) -> ConnectionState { let s = self.state.lock().unwrap(); if s.connected { ConnectionState::Connected } else { ConnectionState::Disconnected } }
-    fn transport_id(&self) -> &str { &self.id }
+    fn connect(&mut self) -> TransportResult<()> {
+        let mut s = self.state.lock().unwrap();
+        if s.connected {
+            return Err(TransportError::AlreadyConnected);
+        }
+        s.connected = true;
+        s.health = TransportHealth::Healthy;
+        Ok(())
+    }
+    fn disconnect(&mut self) -> TransportResult<()> {
+        let mut s = self.state.lock().unwrap();
+        if !s.connected {
+            return Err(TransportError::NotConnected);
+        }
+        s.connected = false;
+        s.health = TransportHealth::Disconnected;
+        Ok(())
+    }
+    fn is_connected(&self) -> bool {
+        let s = self.state.lock().unwrap();
+        s.connected
+    }
+    fn send(&mut self, _envelope: MessageEnvelope) -> TransportResult<()> {
+        if !self.is_connected() {
+            return Err(TransportError::NotConnected);
+        }
+        Ok(())
+    }
+    fn try_receive(&mut self) -> TransportResult<Option<MessageEnvelope>> {
+        if !self.is_connected() {
+            return Err(TransportError::NotConnected);
+        }
+        Ok(None)
+    }
+    fn health(&self) -> TransportHealth {
+        let s = self.state.lock().unwrap();
+        s.health
+    }
+    fn connection_state(&self) -> ConnectionState {
+        let s = self.state.lock().unwrap();
+        if s.connected {
+            ConnectionState::Connected
+        } else {
+            ConnectionState::Disconnected
+        }
+    }
+    fn transport_id(&self) -> &str {
+        &self.id
+    }
 }
 
 #[cfg(test)]

@@ -3,8 +3,9 @@
 use std::sync::{Arc, Mutex};
 use thiserror::Error;
 
-use super::channel::{Channel, ChannelError}; use super::context::ChannelPermission;
+use super::channel::{Channel, ChannelError};
 use super::context::ChannelContext;
+use super::context::ChannelPermission;
 
 /// Results of channel operations.
 pub type ChannelResult<T> = Result<T, ChannelRegistryError>;
@@ -35,9 +36,13 @@ impl From<ChannelError> for ChannelRegistryError {
                 ChannelRegistryError::StateTransition(format!("{:?} -> {:?}", from, to))
             }
             ChannelError::NotFound(id) => ChannelRegistryError::NotFound(id),
-            ChannelError::OwnerMismatch { expected, .. } => ChannelRegistryError::OwnerMismatch(expected),
+            ChannelError::OwnerMismatch { expected, .. } => {
+                ChannelRegistryError::OwnerMismatch(expected)
+            }
             ChannelError::ChannelClosed => ChannelRegistryError::ChannelClosed("closed".into()),
-            ChannelError::FanOutExceeded(n) => ChannelRegistryError::FanOutExceeded(format!("{}", n)),
+            ChannelError::FanOutExceeded(n) => {
+                ChannelRegistryError::FanOutExceeded(format!("{}", n))
+            }
             ChannelError::AuthenticationRequired => ChannelRegistryError::Unauthorized("".into()),
         }
     }
@@ -75,12 +80,17 @@ impl ChannelRegistry {
 
     pub fn get(&self, id: &str) -> ChannelResult<Channel> {
         let chans = self.channels.lock().unwrap();
-        chans.get(id).cloned().ok_or(ChannelRegistryError::NotFound(id.to_string()))
+        chans
+            .get(id)
+            .cloned()
+            .ok_or(ChannelRegistryError::NotFound(id.to_string()))
     }
 
     pub fn get_context(&self, id: &str) -> ChannelResult<ChannelContext> {
         let ctxs = self.contexts.lock().unwrap();
-        ctxs.get(id).cloned().ok_or(ChannelRegistryError::NotFound(id.to_string()))
+        ctxs.get(id)
+            .cloned()
+            .ok_or(ChannelRegistryError::NotFound(id.to_string()))
     }
 
     pub fn exists(&self, id: &str) -> bool {
@@ -90,7 +100,9 @@ impl ChannelRegistry {
 
     pub fn close(&self, id: &str, owner_id: &str) -> ChannelResult<()> {
         let mut chans = self.channels.lock().unwrap();
-        let channel = chans.get_mut(id).ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
+        let channel = chans
+            .get_mut(id)
+            .ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
 
         if !channel.validate_owner(owner_id) {
             return Err(ChannelRegistryError::OwnerMismatch(id.to_string()));
@@ -107,7 +119,9 @@ impl ChannelRegistry {
 
     pub fn pause(&self, id: &str, owner_id: &str) -> ChannelResult<()> {
         let mut chans = self.channels.lock().unwrap();
-        let channel = chans.get_mut(id).ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
+        let channel = chans
+            .get_mut(id)
+            .ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
 
         if !channel.validate_owner(owner_id) {
             return Err(ChannelRegistryError::OwnerMismatch(id.to_string()));
@@ -119,7 +133,9 @@ impl ChannelRegistry {
 
     pub fn resume(&self, id: &str, owner_id: &str) -> ChannelResult<()> {
         let mut chans = self.channels.lock().unwrap();
-        let channel = chans.get_mut(id).ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
+        let channel = chans
+            .get_mut(id)
+            .ok_or(ChannelRegistryError::NotFound(id.to_string()))?;
 
         if !channel.validate_owner(owner_id) {
             return Err(ChannelRegistryError::OwnerMismatch(id.to_string()));
@@ -131,14 +147,20 @@ impl ChannelRegistry {
 
     pub fn add_participant(&self, channel_id: &str, participant_id: &str) -> ChannelResult<()> {
         let mut ctxs = self.contexts.lock().unwrap();
-        let ctx = ctxs.get_mut(channel_id)
+        let ctx = ctxs
+            .get_mut(channel_id)
             .ok_or(ChannelRegistryError::NotFound(channel_id.to_string()))?;
 
         ctx.add_participant(participant_id);
         Ok(())
     }
 
-    pub fn is_authorized(&self, channel_id: &str, participant_id: &str, permission: &ChannelPermission) -> bool {
+    pub fn is_authorized(
+        &self,
+        channel_id: &str,
+        participant_id: &str,
+        permission: &ChannelPermission,
+    ) -> bool {
         let ctxs = self.contexts.lock().unwrap();
         ctxs.get(channel_id)
             .map(|ctx| ctx.is_authorized(participant_id, permission))
@@ -158,7 +180,8 @@ impl ChannelRegistry {
     pub fn cleanup_closed(&self) -> Vec<String> {
         let mut chans = self.channels.lock().unwrap();
         let mut ctxs = self.contexts.lock().unwrap();
-        let closed_ids: Vec<String> = chans.iter()
+        let closed_ids: Vec<String> = chans
+            .iter()
             .filter(|(_, c)| c.is_closed())
             .map(|(k, _)| k.clone())
             .collect();
@@ -232,5 +255,3 @@ mod tests {
         assert!(!reg.exists("ch-1"));
     }
 }
-
-

@@ -1,8 +1,8 @@
-﻿//! Session types and lifecycle.
+//! Session types and lifecycle.
 
+use super::context::SessionContext;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use super::context::SessionContext;
 
 /// Session lifecycle states.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-﻿//! Configuration Service.
+//! Configuration Service.
 //!
 //! Implements the Runtime Service Contract (RFC-0003 §9) for the configuration
 //! subsystem (RFC-0010 §9). The service loads, parses, and validates a runtime
@@ -153,7 +153,9 @@ impl ServiceContract for ConfigService {
     fn initialize(&mut self) -> Result<(), ServiceError> {
         let mut state = self.state.lock().expect("config state mutex poisoned");
         if state.initialized {
-            return Err(ServiceError::InvalidState("already initialized".to_string()));
+            return Err(ServiceError::InvalidState(
+                "already initialized".to_string(),
+            ));
         }
         state.initialized = true;
         Ok(())

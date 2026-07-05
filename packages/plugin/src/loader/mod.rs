@@ -41,7 +41,11 @@ impl PluginLoaderImpl {
 
     /// Return the currently active plugin instance, if any.
     pub fn get_active(&self, plugin_id: &str) -> Option<Arc<dyn Plugin>> {
-        self.active.lock().expect("loader active mutex poisoned").get(plugin_id).cloned()
+        self.active
+            .lock()
+            .expect("loader active mutex poisoned")
+            .get(plugin_id)
+            .cloned()
     }
 }
 
@@ -205,7 +209,10 @@ mod tests {
         fn discover(&self) -> Result<Vec<PluginManifest>, PluginError> {
             Ok(self.manifests.clone())
         }
-        fn factory_for(&self, _plugin_id: &str) -> Result<Arc<dyn crate::contracts::PluginFactory>, PluginError> {
+        fn factory_for(
+            &self,
+            _plugin_id: &str,
+        ) -> Result<Arc<dyn crate::contracts::PluginFactory>, PluginError> {
             Ok(Arc::new(MockFactory))
         }
     }
@@ -233,8 +240,12 @@ mod tests {
         for m in manifests {
             registry.register(m).unwrap();
         }
-        let provider = Arc::new(MockProvider { manifests: registry.discovery() });
-        let host = Arc::new(MockHost { caps: Arc::new(crate::capability::CapabilityRegistryImpl::new()) });
+        let provider = Arc::new(MockProvider {
+            manifests: registry.discovery(),
+        });
+        let host = Arc::new(MockHost {
+            caps: Arc::new(crate::capability::CapabilityRegistryImpl::new()),
+        });
         let loader = Arc::new(PluginLoaderImpl::new(registry.clone(), provider, host));
         (registry, loader)
     }
@@ -242,12 +253,15 @@ mod tests {
     #[test]
     fn test_load_order() {
         let (reg, loader) = setup(vec![
-            manifest("a", vec![PluginDependency {
-                plugin_id: "b".to_string(),
-                version: "*".to_string(),
-                dependency_type: DependencyType::Required,
-                capability: None,
-            }]),
+            manifest(
+                "a",
+                vec![PluginDependency {
+                    plugin_id: "b".to_string(),
+                    version: "*".to_string(),
+                    dependency_type: DependencyType::Required,
+                    capability: None,
+                }],
+            ),
             manifest("b", vec![]),
         ]);
         let order = loader.load_order().unwrap();
@@ -291,4 +305,3 @@ mod tests {
         assert!(loader.deactivate("nope").is_err());
     }
 }
-

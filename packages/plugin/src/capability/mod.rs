@@ -1,4 +1,4 @@
-﻿//! Plugin capability model and registry (RFC-0206).
+//! Plugin capability model and registry (RFC-0206).
 //!
 //! Defines the set of capabilities a plugin MAY declare, the
 //! [`CapabilityDeclaration`] used in manifests, and the central
@@ -99,7 +99,11 @@ fn default_enabled() -> bool {
 
 impl CapabilityDeclaration {
     pub fn new(capability: PluginCapability) -> Self {
-        Self { capability, required: false, enabled: true }
+        Self {
+            capability,
+            required: false,
+            enabled: true,
+        }
     }
 
     pub fn required(mut self) -> Self {
@@ -119,7 +123,11 @@ impl CapabilityDeclaration {
 /// plugin's capabilities). Implementations MUST be [`Send`] + [`Sync`].
 pub trait CapabilityRegistry: Send + Sync {
     /// Register the capabilities a plugin provides.
-    fn register(&self, plugin_id: &str, capabilities: &[PluginCapability]) -> Result<(), CapabilityError>;
+    fn register(
+        &self,
+        plugin_id: &str,
+        capabilities: &[PluginCapability],
+    ) -> Result<(), CapabilityError>;
     /// Remove all capability registrations for a plugin.
     fn deregister(&self, plugin_id: &str);
     /// Return the IDs of every plugin that provides `capability`.
@@ -142,7 +150,9 @@ pub struct CapabilityRegistryImpl {
 
 impl CapabilityRegistryImpl {
     pub fn new() -> Self {
-        Self { by_plugin: Mutex::new(HashMap::new()) }
+        Self {
+            by_plugin: Mutex::new(HashMap::new()),
+        }
     }
 }
 
@@ -153,8 +163,15 @@ impl Default for CapabilityRegistryImpl {
 }
 
 impl CapabilityRegistry for CapabilityRegistryImpl {
-    fn register(&self, plugin_id: &str, capabilities: &[PluginCapability]) -> Result<(), CapabilityError> {
-        let mut map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+    fn register(
+        &self,
+        plugin_id: &str,
+        capabilities: &[PluginCapability],
+    ) -> Result<(), CapabilityError> {
+        let mut map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         let entry = map.entry(plugin_id.to_string()).or_default();
         for cap in capabilities {
             entry.insert(cap.clone());
@@ -163,12 +180,18 @@ impl CapabilityRegistry for CapabilityRegistryImpl {
     }
 
     fn deregister(&self, plugin_id: &str) {
-        let mut map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+        let mut map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         map.remove(plugin_id);
     }
 
     fn providers(&self, capability: &PluginCapability) -> Vec<PluginId> {
-        let map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+        let map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         let mut result: Vec<PluginId> = map
             .iter()
             .filter(|(_, caps)| caps.contains(capability))
@@ -179,7 +202,10 @@ impl CapabilityRegistry for CapabilityRegistryImpl {
     }
 
     fn capabilities(&self, plugin_id: &str) -> Vec<PluginCapability> {
-        let map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+        let map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         map.get(plugin_id)
             .map(|caps| {
                 let mut v: Vec<PluginCapability> = caps.iter().cloned().collect();
@@ -190,12 +216,18 @@ impl CapabilityRegistry for CapabilityRegistryImpl {
     }
 
     fn has(&self, capability: &PluginCapability) -> bool {
-        let map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+        let map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         map.values().any(|caps| caps.contains(capability))
     }
 
     fn list_all(&self) -> Vec<PluginCapability> {
-        let map = self.by_plugin.lock().expect("capability registry mutex poisoned");
+        let map = self
+            .by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned");
         let mut all: HashSet<PluginCapability> = HashSet::new();
         for caps in map.values() {
             all.extend(caps.iter().cloned());
@@ -206,7 +238,10 @@ impl CapabilityRegistry for CapabilityRegistryImpl {
     }
 
     fn plugin_count(&self) -> usize {
-        self.by_plugin.lock().expect("capability registry mutex poisoned").len()
+        self.by_plugin
+            .lock()
+            .expect("capability registry mutex poisoned")
+            .len()
     }
 }
 #[cfg(test)]
@@ -240,7 +275,10 @@ mod tests {
 
     #[test]
     fn test_capability_case_insensitive() {
-        assert_eq!(PluginCapability::from_str("VISION").unwrap(), PluginCapability::Vision);
+        assert_eq!(
+            PluginCapability::from_str("VISION").unwrap(),
+            PluginCapability::Vision
+        );
     }
 
     #[test]
@@ -251,7 +289,8 @@ mod tests {
             &[PluginCapability::Vision, PluginCapability::OCR],
         )
         .unwrap();
-        reg.register(&"p2".to_string(), &[PluginCapability::Vision]).unwrap();
+        reg.register(&"p2".to_string(), &[PluginCapability::Vision])
+            .unwrap();
 
         let mut providers = reg.providers(&PluginCapability::Vision);
         providers.sort();
@@ -268,7 +307,8 @@ mod tests {
     #[test]
     fn test_registry_deregister() {
         let reg = CapabilityRegistryImpl::new();
-        reg.register(&"p1".to_string(), &[PluginCapability::AI]).unwrap();
+        reg.register(&"p1".to_string(), &[PluginCapability::AI])
+            .unwrap();
         assert!(reg.has(&PluginCapability::AI));
         reg.deregister(&"p1".to_string());
         assert!(!reg.has(&PluginCapability::AI));
@@ -278,15 +318,22 @@ mod tests {
     #[test]
     fn test_registry_list_all() {
         let reg = CapabilityRegistryImpl::new();
-        reg.register(&"p1".to_string(), &[PluginCapability::Vision]).unwrap();
-        reg.register(&"p2".to_string(), &[PluginCapability::Storage, PluginCapability::IPC]).unwrap();
+        reg.register(&"p1".to_string(), &[PluginCapability::Vision])
+            .unwrap();
+        reg.register(
+            &"p2".to_string(),
+            &[PluginCapability::Storage, PluginCapability::IPC],
+        )
+        .unwrap();
         let all = reg.list_all();
         assert_eq!(all.len(), 3);
     }
 
     #[test]
     fn test_capability_declaration_builder() {
-        let d = CapabilityDeclaration::new(PluginCapability::Vision).required().disabled();
+        let d = CapabilityDeclaration::new(PluginCapability::Vision)
+            .required()
+            .disabled();
         assert!(d.required);
         assert!(!d.enabled);
         assert_eq!(d.capability, PluginCapability::Vision);

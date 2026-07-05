@@ -1,10 +1,9 @@
-﻿//! Endpoint registry — registration, lookup, discovery, health checks.
+//! Endpoint registry — registration, lookup, discovery, health checks.
 
-use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 use super::endpoint::{Endpoint, EndpointHealth};
-
 
 /// Registry for IPC endpoints.
 #[derive(Clone)]
@@ -34,7 +33,8 @@ impl EndpointRegistry {
     /// Discover endpoints by capability.
     pub fn discover_by_capability(&self, capability: &str) -> Vec<Endpoint> {
         let endpoints = self.endpoints.lock().unwrap();
-        endpoints.values()
+        endpoints
+            .values()
             .filter(|e| e.descriptor.has_capability(capability))
             .cloned()
             .collect()
@@ -43,7 +43,8 @@ impl EndpointRegistry {
     /// Discover endpoints by health status.
     pub fn discover_by_health(&self, health: EndpointHealth) -> Vec<Endpoint> {
         let endpoints = self.endpoints.lock().unwrap();
-        endpoints.values()
+        endpoints
+            .values()
             .filter(|e| e.health_status == health)
             .cloned()
             .collect()
@@ -52,7 +53,8 @@ impl EndpointRegistry {
     /// Discover all available endpoints.
     pub fn discover_all(&self) -> Vec<Endpoint> {
         let endpoints = self.endpoints.lock().unwrap();
-        endpoints.values()
+        endpoints
+            .values()
             .filter(|e| e.is_available())
             .cloned()
             .collect()
@@ -136,10 +138,12 @@ mod tests {
     #[test]
     fn test_deregister() {
         let reg = EndpointRegistry::new();
-        reg.register(Endpoint::new("ep-1", "addr-1", EndpointDescriptor::new("ep1")));
+        reg.register(Endpoint::new(
+            "ep-1",
+            "addr-1",
+            EndpointDescriptor::new("ep1"),
+        ));
         assert!(reg.deregister("ep-1"));
         assert!(!reg.deregister("ep-1")); // Already removed
     }
 }
-
-

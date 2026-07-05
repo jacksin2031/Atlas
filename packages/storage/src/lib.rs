@@ -96,7 +96,10 @@ impl ResourceManager {
 
     /// Number of tracked resources.
     pub fn len(&self) -> usize {
-        self.states.lock().expect("resource states mutex poisoned").len()
+        self.states
+            .lock()
+            .expect("resource states mutex poisoned")
+            .len()
     }
 
     /// Whether no resources are tracked.
@@ -231,9 +234,7 @@ impl ProviderRegistryImpl {
 
     /// Whether a provider declares all `required` capabilities.
     fn has_capabilities(entry: &ProviderEntry, required: &[ProviderCapability]) -> bool {
-        required
-            .iter()
-            .all(|r| entry.capabilities.contains(r))
+        required.iter().all(|r| entry.capabilities.contains(r))
     }
 }
 
@@ -381,5 +382,3 @@ impl ProviderRegistry for ProviderRegistryImpl {
         }
     }
 }
-
-

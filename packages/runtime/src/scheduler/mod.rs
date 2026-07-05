@@ -1,9 +1,7 @@
-﻿//! Scheduler implementation.
+//! Scheduler implementation.
 
-use atlas_contracts::{
-    TaskDefinition, TaskId, QueueDepth, WorkerPoolStatus, SchedulerError,
-};
 use crate::eventbus::EventBusImpl;
+use atlas_contracts::{QueueDepth, SchedulerError, TaskDefinition, TaskId, WorkerPoolStatus};
 
 #[allow(dead_code)]
 /// Task scheduler.
@@ -21,7 +19,11 @@ impl SchedulerImpl {
                 event_bus: std::mem::transmute(event_bus),
                 paused: false,
                 queue_depth: QueueDepth {
-                    critical: 0, high: 0, normal: 0, low: 0, background: 0,
+                    critical: 0,
+                    high: 0,
+                    normal: 0,
+                    low: 0,
+                    background: 0,
                 },
                 worker_pool: WorkerPoolStatus {
                     active_workers: 0,

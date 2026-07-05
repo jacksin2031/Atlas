@@ -1,7 +1,7 @@
-﻿//! Lifecycle manager tests.
+//! Lifecycle manager tests.
 
-use atlas_runtime::lifecycle::LifecycleManager;
 use atlas_common::{RuntimeState, StateTransitionError};
+use atlas_runtime::lifecycle::LifecycleManager;
 
 #[test]
 fn test_initial_state_is_created() {

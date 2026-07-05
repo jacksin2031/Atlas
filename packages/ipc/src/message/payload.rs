@@ -13,21 +13,35 @@ pub struct MessagePayload {
 
 impl MessagePayload {
     pub fn new<T: Serialize>(value: T) -> Result<Self, PayloadError> {
-        let data = serde_json::to_value(value).map_err(|e| PayloadError::Serialization(e.to_string()))?;
-        Ok(Self { data, schema_version: None })
+        let data =
+            serde_json::to_value(value).map_err(|e| PayloadError::Serialization(e.to_string()))?;
+        Ok(Self {
+            data,
+            schema_version: None,
+        })
     }
 
     pub fn empty() -> Self {
-        Self { data: Value::Null, schema_version: None }
+        Self {
+            data: Value::Null,
+            schema_version: None,
+        }
     }
 
     pub fn from_value(value: Value) -> Self {
-        Self { data: value, schema_version: None }
+        Self {
+            data: value,
+            schema_version: None,
+        }
     }
 
     pub fn from_str(json: &str) -> Result<Self, PayloadError> {
-        let value = serde_json::from_str(json).map_err(|e| PayloadError::Deserialize(e.to_string()))?;
-        Ok(Self { data: value, schema_version: None })
+        let value =
+            serde_json::from_str(json).map_err(|e| PayloadError::Deserialize(e.to_string()))?;
+        Ok(Self {
+            data: value,
+            schema_version: None,
+        })
     }
 
     pub fn with_schema_version(mut self, version: impl Into<String>) -> Self {
@@ -77,7 +91,8 @@ impl MessagePayload {
     }
 
     pub fn deserialize<T: for<'de> Deserialize<'de>>(&self) -> Result<T, PayloadError> {
-        serde_json::from_value(self.data.clone()).map_err(|e| PayloadError::Deserialize(e.to_string()))
+        serde_json::from_value(self.data.clone())
+            .map_err(|e| PayloadError::Deserialize(e.to_string()))
     }
 }
 
@@ -95,13 +110,19 @@ impl From<Value> for MessagePayload {
 
 impl From<&str> for MessagePayload {
     fn from(s: &str) -> Self {
-        Self { data: Value::String(s.to_string()), schema_version: None }
+        Self {
+            data: Value::String(s.to_string()),
+            schema_version: None,
+        }
     }
 }
 
 impl From<String> for MessagePayload {
     fn from(s: String) -> Self {
-        Self { data: Value::String(s), schema_version: None }
+        Self {
+            data: Value::String(s),
+            schema_version: None,
+        }
     }
 }
 

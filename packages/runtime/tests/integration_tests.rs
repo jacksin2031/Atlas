@@ -1,7 +1,7 @@
-﻿//! Integration tests for the full runtime lifecycle.
+//! Integration tests for the full runtime lifecycle.
 
-use atlas_runtime::lifecycle::LifecycleManager;
 use atlas_common::RuntimeState;
+use atlas_runtime::lifecycle::LifecycleManager;
 
 #[test]
 fn test_lifecycle_manager_full_boot() {

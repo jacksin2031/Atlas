@@ -1,4 +1,4 @@
-﻿//! Dead letter queue manager — capacity limits, retention, inspection.
+//! Dead letter queue manager — capacity limits, retention, inspection.
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
@@ -42,7 +42,13 @@ impl DeadLetterQueueManager {
     }
 
     /// Add an entry to the DLQ.
-    pub fn add(&self, message: MessageEnvelope, reason: impl Into<String>, retry_count: u32, max_retries: u32) {
+    pub fn add(
+        &self,
+        message: MessageEnvelope,
+        reason: impl Into<String>,
+        retry_count: u32,
+        max_retries: u32,
+    ) {
         let mut entries = self.entries.lock().unwrap();
 
         // Evict oldest if at capacity
@@ -142,7 +148,7 @@ pub struct DlqManagerStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::{MessageHeader, MessagePayload, MessageMetadata, MessageType};
+    use crate::message::{MessageHeader, MessageMetadata, MessagePayload, MessageType};
 
     fn sample_msg() -> MessageEnvelope {
         MessageEnvelope {
@@ -179,4 +185,3 @@ mod tests {
         assert_eq!(stats.utilization, 0.01);
     }
 }
-

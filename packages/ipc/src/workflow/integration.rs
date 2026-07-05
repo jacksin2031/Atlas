@@ -1,7 +1,7 @@
-﻿//! Workflow integration — enforces IPC-only external communication.
+//! Workflow integration — enforces IPC-only external communication.
 
-use std::sync::{Arc, Mutex};
 use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
 
 /// Ensures workflows use IPC abstractions for external communication.
 #[derive(Clone)]
@@ -33,11 +33,18 @@ impl WorkflowIntegration {
         let workflows = self.registered_workflows.lock().unwrap();
         if workflows.contains(workflow_id) {
             // External communication must go through IPC
-            tracing::info!(workflow = workflow_id, target, "workflow external communication via IPC");
+            tracing::info!(
+                workflow = workflow_id,
+                target,
+                "workflow external communication via IPC"
+            );
             true
         } else {
             // Unregistered workflow — allow but warn
-            tracing::warn!(workflow = workflow_id, "unregistered workflow communicating externally");
+            tracing::warn!(
+                workflow = workflow_id,
+                "unregistered workflow communicating externally"
+            );
             true
         }
     }

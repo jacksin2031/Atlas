@@ -1,8 +1,8 @@
-﻿//! Command dispatcher — routes commands to handlers with timeout, retry, cancellation.
+//! Command dispatcher — routes commands to handlers with timeout, retry, cancellation.
 
 use std::time::Duration;
 
-use super::command::{Command, CommandResult, CommandError};
+use super::command::{Command, CommandError, CommandResult};
 use super::registry::CommandRegistry;
 use crate::reliability::RetryPolicy;
 
@@ -146,8 +146,8 @@ impl Default for CommandDispatcher {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::{Arc, Mutex};
     use crate::CommandHandler;
+    use std::sync::{Arc, Mutex};
 
     // A simple test command
     struct TestCommand {
@@ -167,14 +167,24 @@ mod tests {
     }
 
     impl Command for TestCommand {
-        fn name(&self) -> &str { &self.name }
+        fn name(&self) -> &str {
+            &self.name
+        }
         fn execute(&self) -> Result<CommandResult, CommandError> {
             Ok(CommandResult::success("done"))
         }
-        fn is_cancelled(&self) -> bool { *self.cancelled.lock().unwrap() }
-        fn cancel(&self) { *self.cancelled.lock().unwrap() = true; }
-        fn timeout(&self) -> u64 { 0 }
-        fn payload(&self) -> &serde_json::Value { &self.payload }
+        fn is_cancelled(&self) -> bool {
+            *self.cancelled.lock().unwrap()
+        }
+        fn cancel(&self) {
+            *self.cancelled.lock().unwrap() = true;
+        }
+        fn timeout(&self) -> u64 {
+            0
+        }
+        fn payload(&self) -> &serde_json::Value {
+            &self.payload
+        }
     }
 
     #[test]
@@ -208,5 +218,3 @@ mod tests {
         }
     }
 }
-
-

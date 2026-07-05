@@ -201,7 +201,9 @@ pub struct NoopSandboxExecutor {
 
 impl NoopSandboxExecutor {
     pub fn new() -> Self {
-        Self { policies: Mutex::new(HashMap::new()) }
+        Self {
+            policies: Mutex::new(HashMap::new()),
+        }
     }
 }
 
@@ -222,10 +224,13 @@ impl SandboxExecutor for NoopSandboxExecutor {
     }
 
     fn check_permission(&self, plugin_id: &str, permission: &str) -> Result<(), SandboxError> {
-        let policies = self.policies.lock().expect("sandbox policies mutex poisoned");
-        let policy = policies
-            .get(plugin_id)
-            .ok_or_else(|| SandboxError::LifecycleViolation(format!("no sandbox for {plugin_id}")))?;
+        let policies = self
+            .policies
+            .lock()
+            .expect("sandbox policies mutex poisoned");
+        let policy = policies.get(plugin_id).ok_or_else(|| {
+            SandboxError::LifecycleViolation(format!("no sandbox for {plugin_id}"))
+        })?;
         if policy.allows(permission) {
             Ok(())
         } else {
@@ -236,10 +241,13 @@ impl SandboxExecutor for NoopSandboxExecutor {
     }
 
     fn check_resource(&self, plugin_id: &str, usage: &ResourceUsage) -> Result<(), SandboxError> {
-        let policies = self.policies.lock().expect("sandbox policies mutex poisoned");
-        let policy = policies
-            .get(plugin_id)
-            .ok_or_else(|| SandboxError::LifecycleViolation(format!("no sandbox for {plugin_id}")))?;
+        let policies = self
+            .policies
+            .lock()
+            .expect("sandbox policies mutex poisoned");
+        let policy = policies.get(plugin_id).ok_or_else(|| {
+            SandboxError::LifecycleViolation(format!("no sandbox for {plugin_id}"))
+        })?;
         usage.check_against(&policy.resource_limits)
     }
 
@@ -260,7 +268,6 @@ impl SandboxExecutor for NoopSandboxExecutor {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -270,7 +277,10 @@ mod tests {
         PluginResourceLimits, PluginType,
     };
 
-    fn manifest_with_perms(perms: Vec<PluginPermission>, limits: PluginResourceLimits) -> PluginManifest {
+    fn manifest_with_perms(
+        perms: Vec<PluginPermission>,
+        limits: PluginResourceLimits,
+    ) -> PluginManifest {
         PluginManifest {
             manifest_version: "1.0.0".to_string(),
             plugin_id: "p1".to_string(),
@@ -296,17 +306,34 @@ mod tests {
 
     #[test]
     fn test_boundary_mapping() {
-        assert_eq!(SandboxBoundary::from_permission_level(PermissionLevel::Restricted), SandboxBoundary::Maximal);
-        assert_eq!(SandboxBoundary::from_permission_level(PermissionLevel::Normal), SandboxBoundary::Standard);
-        assert_eq!(SandboxBoundary::from_permission_level(PermissionLevel::Trusted), SandboxBoundary::None);
+        assert_eq!(
+            SandboxBoundary::from_permission_level(PermissionLevel::Restricted),
+            SandboxBoundary::Maximal
+        );
+        assert_eq!(
+            SandboxBoundary::from_permission_level(PermissionLevel::Normal),
+            SandboxBoundary::Standard
+        );
+        assert_eq!(
+            SandboxBoundary::from_permission_level(PermissionLevel::Trusted),
+            SandboxBoundary::None
+        );
     }
 
     #[test]
     fn test_policy_from_manifest_takes_max_level() {
         let m = manifest_with_perms(
             vec![
-                PluginPermission { name: "a".to_string(), level: PermissionLevel::Low, required: false },
-                PluginPermission { name: "b".to_string(), level: PermissionLevel::Elevated, required: false },
+                PluginPermission {
+                    name: "a".to_string(),
+                    level: PermissionLevel::Low,
+                    required: false,
+                },
+                PluginPermission {
+                    name: "b".to_string(),
+                    level: PermissionLevel::Elevated,
+                    required: false,
+                },
             ],
             PluginResourceLimits::default(),
         );
@@ -336,7 +363,10 @@ mod tests {
         let policy = SandboxPolicy {
             permission_level: PermissionLevel::Normal,
             permissions: vec![],
-            resource_limits: PluginResourceLimits { max_memory_mb: Some(0), ..Default::default() },
+            resource_limits: PluginResourceLimits {
+                max_memory_mb: Some(0),
+                ..Default::default()
+            },
         };
         assert!(policy.validate().is_err());
     }
@@ -348,9 +378,16 @@ mod tests {
             max_threads: Some(4),
             ..Default::default()
         };
-        let usage = ResourceUsage { memory_mb: 1024, ..Default::default() };
+        let usage = ResourceUsage {
+            memory_mb: 1024,
+            ..Default::default()
+        };
         assert!(usage.check_against(&limits).is_err());
-        let ok = ResourceUsage { memory_mb: 256, threads: 2, ..Default::default() };
+        let ok = ResourceUsage {
+            memory_mb: 256,
+            threads: 2,
+            ..Default::default()
+        };
         assert!(ok.check_against(&limits).is_ok());
     }
 
@@ -364,14 +401,33 @@ mod tests {
                 level: PermissionLevel::Normal,
                 required: false,
             }],
-            resource_limits: PluginResourceLimits { max_memory_mb: Some(256), ..Default::default() },
+            resource_limits: PluginResourceLimits {
+                max_memory_mb: Some(256),
+                ..Default::default()
+            },
         };
         exec.prepare("p1", &policy).unwrap();
         assert_eq!(exec.boundary("p1"), Some(SandboxBoundary::Standard));
         assert!(exec.check_permission("p1", "screen.capture").is_ok());
         assert!(exec.check_permission("p1", "network").is_err());
-        assert!(exec.check_resource("p1", &ResourceUsage { memory_mb: 100, ..Default::default() }).is_ok());
-        assert!(exec.check_resource("p1", &ResourceUsage { memory_mb: 999, ..Default::default() }).is_err());
+        assert!(exec
+            .check_resource(
+                "p1",
+                &ResourceUsage {
+                    memory_mb: 100,
+                    ..Default::default()
+                }
+            )
+            .is_ok());
+        assert!(exec
+            .check_resource(
+                "p1",
+                &ResourceUsage {
+                    memory_mb: 999,
+                    ..Default::default()
+                }
+            )
+            .is_err());
         exec.teardown("p1").unwrap();
         assert!(exec.boundary("p1").is_none());
     }
@@ -382,4 +438,3 @@ mod tests {
         assert!(exec.check_permission("none", "x").is_err());
     }
 }
-

@@ -1,36 +1,93 @@
-﻿//! Tests for the runtime state machine.
+//! Tests for the runtime state machine.
 
-use atlas_contracts::{RuntimeState, is_legal_transition, LEGAL_TRANSITIONS};
+use atlas_contracts::{is_legal_transition, RuntimeState, LEGAL_TRANSITIONS};
 
 #[test]
 fn test_initial_state_is_created() {
-    assert_eq!(is_legal_transition(RuntimeState::Created, RuntimeState::Initializing), true);
+    assert_eq!(
+        is_legal_transition(RuntimeState::Created, RuntimeState::Initializing),
+        true
+    );
 }
 
 #[test]
 fn test_legal_transitions() {
-    assert!(is_legal_transition(RuntimeState::Created, RuntimeState::Initializing));
-    assert!(is_legal_transition(RuntimeState::Initializing, RuntimeState::Ready));
-    assert!(is_legal_transition(RuntimeState::Initializing, RuntimeState::Failed));
-    assert!(is_legal_transition(RuntimeState::Ready, RuntimeState::Running));
-    assert!(is_legal_transition(RuntimeState::Ready, RuntimeState::ShuttingDown));
-    assert!(is_legal_transition(RuntimeState::Running, RuntimeState::Paused));
-    assert!(is_legal_transition(RuntimeState::Running, RuntimeState::ShuttingDown));
-    assert!(is_legal_transition(RuntimeState::Paused, RuntimeState::Running));
-    assert!(is_legal_transition(RuntimeState::Paused, RuntimeState::ShuttingDown));
-    assert!(is_legal_transition(RuntimeState::ShuttingDown, RuntimeState::Terminated));
-    assert!(is_legal_transition(RuntimeState::Failed, RuntimeState::Terminated));
+    assert!(is_legal_transition(
+        RuntimeState::Created,
+        RuntimeState::Initializing
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Initializing,
+        RuntimeState::Ready
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Initializing,
+        RuntimeState::Failed
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Ready,
+        RuntimeState::Running
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Ready,
+        RuntimeState::ShuttingDown
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Running,
+        RuntimeState::Paused
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Running,
+        RuntimeState::ShuttingDown
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Paused,
+        RuntimeState::Running
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Paused,
+        RuntimeState::ShuttingDown
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::ShuttingDown,
+        RuntimeState::Terminated
+    ));
+    assert!(is_legal_transition(
+        RuntimeState::Failed,
+        RuntimeState::Terminated
+    ));
 }
 
 #[test]
 fn test_illegal_transitions() {
-    assert!(!is_legal_transition(RuntimeState::Created, RuntimeState::Running));
-    assert!(!is_legal_transition(RuntimeState::Created, RuntimeState::Ready));
-    assert!(!is_legal_transition(RuntimeState::Running, RuntimeState::Created));
-    assert!(!is_legal_transition(RuntimeState::Paused, RuntimeState::Created));
-    assert!(!is_legal_transition(RuntimeState::Terminated, RuntimeState::Running));
-    assert!(!is_legal_transition(RuntimeState::Failed, RuntimeState::Ready));
-    assert!(!is_legal_transition(RuntimeState::ShuttingDown, RuntimeState::Running));
+    assert!(!is_legal_transition(
+        RuntimeState::Created,
+        RuntimeState::Running
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::Created,
+        RuntimeState::Ready
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::Running,
+        RuntimeState::Created
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::Paused,
+        RuntimeState::Created
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::Terminated,
+        RuntimeState::Running
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::Failed,
+        RuntimeState::Ready
+    ));
+    assert!(!is_legal_transition(
+        RuntimeState::ShuttingDown,
+        RuntimeState::Running
+    ));
 }
 
 #[test]
@@ -53,4 +110,3 @@ fn test_display() {
 fn test_transition_count_matches_legal_transitions() {
     assert_eq!(LEGAL_TRANSITIONS.len(), 14);
 }
-

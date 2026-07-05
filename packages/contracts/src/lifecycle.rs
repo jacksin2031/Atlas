@@ -1,4 +1,4 @@
-﻿//! Lifecycle transition trait definitions.
+//! Lifecycle transition trait definitions.
 //!
 //! See RFC-0002 §8 (Runtime State Machine).
 
@@ -65,7 +65,10 @@ pub fn is_legal_transition(from: RuntimeState, to: RuntimeState) -> bool {
 #[derive(Error, Debug, PartialEq, Clone)]
 pub enum StateTransitionError {
     #[error("cannot transition from {from:?} to {to:?}")]
-    IllegalTransition { from: RuntimeState, to: RuntimeState },
+    IllegalTransition {
+        from: RuntimeState,
+        to: RuntimeState,
+    },
 }
 
 /// Lifecycle manager trait.

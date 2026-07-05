@@ -1,4 +1,4 @@
-﻿//! Semantic version matching for capability negotiation.
+//! Semantic version matching for capability negotiation.
 
 use serde::{Deserialize, Serialize};
 
@@ -26,11 +26,6 @@ impl Version {
         let patch = parts.get(2).and_then(|p| p.parse().ok()).unwrap_or(0);
         Some(Self { major, minor, patch })
     }
-
-    /// Format the version as a string.
-    pub fn to_string(&self) -> String {
-        format!("{}.{}.{}", self.major, self.minor, self.patch)
-    }
 }
 
 impl Default for Version {
@@ -41,7 +36,7 @@ impl Default for Version {
 
 impl core::fmt::Display for Version {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.to_string())
+        write!(f, "{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
 

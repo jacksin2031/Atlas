@@ -1,4 +1,4 @@
-﻿//! Deterministic priority queue for message routing.
+//! Deterministic priority queue for message routing.
 
 use crate::message::{MessageEnvelope, MessagePriority};
 
@@ -96,7 +96,7 @@ impl PriorityMessageQueue {
     fn drop_lowest_n(&mut self, n: usize) {
         let mut remaining = n;
         for priority_idx in (0..5).rev() {
-            if remaining <= 0 {
+            if remaining == 0 {
                 break;
             }
             let drop_count = std::cmp::min(remaining, self.queues[priority_idx].len());

@@ -21,6 +21,7 @@
   - Knowledge Runtime (Sprint 8)
   - Project Runtime (Sprint 9)
 
+  - Cross-Runtime Integration (Sprint 10)
 ## Compliance Reports
 
 - [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) — Runtime RFC compliance
@@ -30,6 +31,7 @@
 - [KNOWLEDGE_COMPLIANCE_REPORT.md](knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md) — Knowledge Runtime RFC compliance
 - [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md) — Project Runtime RFC compliance
 
+- [INTEGRATION_COMPLIANCE_REPORT.md](integration/INTEGRATION_COMPLIANCE_REPORT.md) — Cross-Runtime Integration RFC compliance
 ## Vision
 
 - [vision/](vision/) — Vision Runtime documentation
@@ -52,6 +54,11 @@
 
 - [project/](project/) — Project Runtime documentation
   - [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md)
+
+## Integration
+
+- [integration/](integration/) — Cross-Runtime Integration documentation
+  - [INTEGRATION_COMPLIANCE_REPORT.md](integration/INTEGRATION_COMPLIANCE_REPORT.md)
 
 ## Implementation
 

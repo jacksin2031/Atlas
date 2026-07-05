@@ -21,11 +21,11 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.9.0-alpha |
-| **Latest Sprint** | Sprint 9 — Project Runtime |
-| **Next Sprint** | Sprint 10 — Conformance Tests |
+| **Version** | 0.10.0-alpha |
+| **Latest Sprint** | Sprint 10 — Cross-Runtime Integration |
+| **Next Sprint** | Sprint 11 — Performance & Stress |
 | **Total Packages** | 16 (Rust + Python) |
-| **Test Cases** | 1,572+ |
+| **Test Cases** | 1,671+ |
 | **RFCs Implemented** | 125 (Runtime + IPC + Plugin + Workflow + Project) |
 | **License** | Apache 2.0 |
 

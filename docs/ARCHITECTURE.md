@@ -1,7 +1,7 @@
 ﻿# Atlas Platform Architecture
 
-> **Last Updated**: 2026-07-04
-> **Current Version**: 0.8.0-alpha
+> **Last Updated**: 2026-07-05
+> **Current Version**: 0.10.0-alpha
 
 ---
 
@@ -238,8 +238,9 @@ Atlas Platform
 ├── Storage Runtime (RFC-0401–0425) ⬜ — Specs only
 └── Project Runtime (Sprint 9) ⬜ — Planned
 ```
+├── Cross Runtime Integration (Sprint 10) ✅ — Python, 99 tests
 
-**Total Tests**: 656 (Rust: 282, Python: 375+, Specs: 66 RFCs)
+**Total Tests**: 1,671 (Rust: 266, Python: 1,405+, Specs: 66 RFCs)
 
 
 ---

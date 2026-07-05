@@ -71,15 +71,17 @@ jobs:
 
       - name: Run unit tests (skip if empty)
         run: |
-          if python -m pytest tests/unit/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then
+          count=$(find tests/unit -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
             python -m pytest tests/unit/ -v --tb=short -q
           else
-            echo "No unit tests found in tests/unit/ (directory empty or .gitkeep only)"
+            echo "No unit tests found in tests/unit/"
           fi
 
       - name: Run integration tests
         run: |
-          if python -m pytest tests/integration/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then
+          count=$(find tests/integration -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
             python -m pytest tests/integration/ -v --tb=short -q
           else
             echo "No integration tests found"
@@ -87,7 +89,8 @@ jobs:
 
       - name: Run conformance tests
         run: |
-          if python -m pytest tests/conformance/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then
+          count=$(find tests/conformance -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
             python -m pytest tests/conformance/ -v --tb=short -q
           else
             echo "No conformance tests found"

@@ -1,12 +1,12 @@
-﻿name: Benchmark
+name: Benchmark
 
 on:
   schedule:
-    - cron: '0 2 * * 1'
+    - cron: "0 2 * * 1"
   workflow_dispatch:
     inputs:
       benchmark_target:
-        description: 'Benchmark target'
+        description: "Benchmark target"
         required: false
         type: choice
         options:
@@ -22,44 +22,9 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  RUST_TOOLCHAIN: "1.80"
+  PYTHONPATH: "src"
 
 jobs:
-  rust-benchmarks:
-    name: Rust Benchmarks
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-
-      - name: Cache Cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Runtime startup benchmark
-        run: |
-          echo "## Rust Runtime Startup Benchmark"
-          START=$(date +%s%N)
-          cargo build --package runtime --quiet 2>/dev/null
-          END=$(date +%s%N)
-          ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Build time: ${ELAPSED}ms"
-
-      - name: Runtime test benchmark
-        run: |
-          echo "## Rust Test Execution Benchmark"
-          START=$(date +%s%N)
-          cargo test --package runtime --quiet 2>/dev/null
-          END=$(date +%s%N)
-          ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Test execution: ${ELAPSED}ms"
-
   python-benchmarks:
     name: Python Benchmarks
     runs-on: ubuntu-22.04
@@ -80,60 +45,63 @@ jobs:
         run: |
           echo "## Python Startup Benchmark"
           START=$(date +%s%N)
-          python -c "import sys; sys.path.insert(0,'.'); from atlas_runtime import Runtime; print('Runtime imported')" 2>/dev/null || echo "Import skipped"
+          python -c "import sys; sys.path.insert(0,'src'); from atlas_workflow import *; print('Workflow loaded')" 2>/dev/null || echo "Import skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Import time: ${ELAPSED}ms"
-
-      - name: Shutdown benchmark
-        run: |
-          echo "## Python Shutdown Benchmark"
-          START=$(date +%s%N)
-          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_runtime import Runtime\nr=Runtime()\nr.initialize()\nr.start()\nr.shutdown()\nprint("Shutdown OK")' if False else '')" 2>/dev/null || echo "Shutdown test skipped"
-          END=$(date +%s%N)
-          ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Shutdown time: ${ELAPSED}ms"
-
-      - name: Memory benchmark
-        run: |
-          echo "## Python Memory Benchmark"
-          python -c "import tracemalloc,sys; sys.path.insert(0,'.'); tracemalloc.start(); exec('from atlas_runtime import Runtime\nfrom atlas_plugin import PluginRuntime\nfrom atlas_ipc import IPCRuntime\ncurrent,peak=tracemalloc.get_traced_memory()\ntracemalloc.stop()\nprint(f"Memory peak: {peak/1024:.1f} KB")' if False else '')" 2>/dev/null || echo "Memory test skipped"
-
-      - name: Plugin load benchmark
-        run: |
-          echo "## Python Plugin Load Benchmark"
-          START=$(date +%s%N)
-          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_plugin import PluginLoader\nloader=PluginLoader()\nprint("PluginLoader instantiated")' if False else '')" 2>/dev/null || echo "Plugin test skipped"
-          END=$(date +%s%N)
-          ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Plugin init time: ${ELAPSED}ms"
+          echo "Startup time: ${ELAPSED}ms"
 
       - name: Workflow benchmark
         run: |
           echo "## Python Workflow Benchmark"
           START=$(date +%s%N)
-          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_workflow import WorkflowEngine,WorkflowParser\nengine=WorkflowEngine()\nprint("WorkflowEngine instantiated")' if False else '')" 2>/dev/null || echo "Workflow test skipped"
+          python -c "import sys; sys.path.insert(0,'src'); from atlas_workflow import *; print('Workflow loaded')" 2>/dev/null || echo "Workflow test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "Workflow init time: ${ELAPSED}ms"
 
-      - name: Vision benchmark
+      - name: Conformance benchmark
         run: |
-          echo "## Python Vision Benchmark"
+          echo "## Conformance Suite Benchmark"
           START=$(date +%s%N)
-          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_vision import VisionRuntime,VisionPipeline\nruntime=VisionRuntime()\nprint("VisionRuntime instantiated")' if False else '')" 2>/dev/null || echo "Vision test skipped"
+          python -m pytest tests/conformance/ -v --tb=short -q 2>/dev/null || echo "Conformance test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
-          echo "Vision init time: ${ELAPSED}ms"
+          echo "Conformance suite: ${ELAPSED}ms"
 
-      - name: AI benchmark
+  rust-benchmarks:
+    name: Rust Benchmarks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.80"
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build workspace
         run: |
-          echo "## Python AI Benchmark"
+          echo "## Rust Build Benchmark"
           START=$(date +%s%N)
-          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_ai import AIRuntime,AIManager\nruntime=AIRuntime()\nprint("AIRuntime instantiated")' if False else '')" 2>/dev/null || echo "AI test skipped"
+          cargo build --workspace --quiet 2>/dev/null
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
-          echo "AI init time: ${ELAPSED}ms"
+          echo "Build time: ${ELAPSED}ms"
+
+      - name: Test workspace
+        run: |
+          echo "## Rust Test Benchmark"
+          START=$(date +%s%N)
+          cargo test --workspace --quiet 2>/dev/null
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Test execution: ${ELAPSED}ms"
 
   benchmark-summary:
     name: Benchmark Summary
@@ -143,16 +111,12 @@ jobs:
     steps:
       - name: Summary
         run: |
-          echo "## Benchmark Results"
+          echo "# Benchmark Results"
           echo ""
           echo "| Category | Status |"
           echo "|----------|--------|"
-          echo "| Rust Startup | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Rust Tests | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Python Startup | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Python Shutdown | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Python Memory | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Plugin Load | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Workflow | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| Vision | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
-          echo "| AI | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Rust Build | ${{ needs.rust-benchmarks.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Rust Tests | ${{ needs.rust-benchmarks.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Python Startup | ${{ needs.python-benchmarks.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Workflow | ${{ needs.python-benchmarks.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Conformance | ${{ needs.python-benchmarks.result == 'success' && 'OK' || 'FAIL' }} |"

@@ -1,21 +1,22 @@
-﻿name: Documentation
+name: Documentation
 
 on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'ROADMAP.md'
-      - 'VERSIONING.md'
-      - 'RELEASE.md'
-      - 'PROJECT_STATUS.md'
-      - '.github/workflows/docs.yml'
+      - "docs/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "ROADMAP.md"
+      - "VERSIONING.md"
+      - "RELEASE.md"
+      - "PROJECT_STATUS.md"
+      - ".github/workflows/docs.yml"
   workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
 
 jobs:
   markdown-links:
@@ -36,14 +37,14 @@ jobs:
         run: |
           echo "## README.md Link Check" > links-result.md
           echo "" >> links-result.md
-          npx markdown-link-check@latest README.md 2>&1 || true >> links-result.md
+          markdown-link-check README.md 2>&1 || true >> links-result.md
 
       - name: Check docs links
         run: |
           echo "" >> links-result.md
           echo "## docs/ Link Check" >> links-result.md
           echo "" >> links-result.md
-          find docs -name "*.md" -exec npx markdown-link-check@latest {} \; 2>&1 || true >> links-result.md
+          find docs -name "*.md" -exec markdown-link-check {} \; 2>&1 || true >> links-result.md
 
       - name: Upload link check results
         uses: actions/upload-artifact@v4
@@ -75,10 +76,6 @@ jobs:
       - name: Check version consistency
         run: |
           echo "## Version Consistency Check"
-          VERSIONS=$(grep -rh "0\.[0-9]\+\.[0-9]\+-alpha" . --include="*.md" | sort -u)
-          echo "Versions found:"
-          echo "$VERSIONS"
-          echo ""
           echo "Checking CHANGELOG.md..."
           grep -c "## \[" CHANGELOG.md || echo "WARN: No version sections in CHANGELOG.md"
           echo "Checking ROADMAP.md..."
@@ -103,19 +100,19 @@ jobs:
       - name: Validate compliance reports exist
         run: |
           echo "## Compliance Report Check"
-          REPORTS=(
-            "docs/ARCHITECTURE.md"
-            "docs/README.md"
-            "docs/project/PROJECT_COMPLIANCE_REPORT.md"
-            "docs/ai/AI_COMPLIANCE_REPORT.md"
-            "docs/knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md"
-            "docs/vision/VISION_COMPLIANCE_REPORT.md"
-          )
-          for report in "${REPORTS[@]}"; do
+          for report in \
+            "docs/ARCHITECTURE.md" \
+            "docs/README.md" \
+            "docs/COMPLIANCE_REPORT.md" \
+            "docs/IPC_COMPLIANCE_REPORT.md" \
+            "docs/PLUGIN_COMPLIANCE_REPORT.md" \
+            "docs/ai/AI_COMPLIANCE_REPORT.md" \
+            "docs/knowledge/knowledge.md" \
+            "docs/vision/VISION_COMPLIANCE_REPORT.md"; do
             if [ -f "$report" ]; then
-              echo "✅ $report exists"
+              echo "OK  $report exists"
             else
-              echo "⚠️  $report not found"
+              echo "WARN $report not found"
             fi
           done
 
@@ -128,12 +125,11 @@ jobs:
       - name: Validate README structure
         run: |
           echo "## README.md Validation"
-          REQUIRED_SECTIONS=("## Vision" "## Goals" "## Current Status" "## Architecture" "## Implemented Modules" "## Quick Start" "## Repository Structure" "## Documentation" "## License")
-          for section in "${REQUIRED_SECTIONS[@]}"; do
+          for section in "## Vision" "## Goals" "## Current Status" "## Architecture" "## Implemented Modules" "## Quick Start" "## Repository Structure" "## Documentation" "## License"; do
             if grep -q "^$section" README.md; then
-              echo "✅ Found: $section"
+              echo "OK Found: $section"
             else
-              echo "⚠️  Missing: $section"
+              echo "WARN Missing: $section"
             fi
           done
 
@@ -145,11 +141,11 @@ jobs:
     steps:
       - name: Doc Check Summary
         run: |
-          echo "## Documentation Pipeline Summary"
+          echo "# Documentation Pipeline Summary"
           echo ""
           echo "| Check | Status |"
           echo "|-------|--------|"
-          echo "| Broken Links | ${{ needs.markdown-links.result == 'success' && '✅' || '❌' }} |"
-          echo "| Consistency | ${{ needs.documentation-consistency.result == 'success' && '✅' || '❌' }} |"
-          echo "| Compliance | ${{ needs.compliance-reports.result == 'success' && '✅' || '❌' }} |"
-          echo "| README Format | ${{ needs.readme-format.result == 'success' && '✅' || '❌' }} |"
+          echo "| Broken Links | ${{ needs.markdown-links.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Consistency | ${{ needs.documentation-consistency.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Compliance | ${{ needs.compliance-reports.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| README Format | ${{ needs.readme-format.result == 'success' && 'OK' || 'FAIL' }} |"

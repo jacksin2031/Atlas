@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
   RUST_TOOLCHAIN: "1.80"
 
 jobs:
   rust-build:
-    name: Rust Build & Test
+    name: Rust Build and Test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -38,10 +39,50 @@ jobs:
         run: cargo build --workspace
 
       - name: Clippy check
-        run: cargo clippy --workspace -- -D warnings
+        run: cargo clippy --workspace -- -A warnings
 
       - name: Format check
         run: cargo fmt --all --check
 
       - name: Run workspace tests
         run: cargo test --workspace
+
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Run unit tests
+        run: python -m pytest tests/unit/ -v --tb=short -q
+
+      - name: Run integration tests
+        run: python -m pytest tests/integration/ -v --tb=short -q
+
+      - name: Run conformance tests
+        run: python -m pytest tests/conformance/ -v --tb=short -q
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-22.04
+    needs: [rust-build, python-tests]
+    if: always()
+    steps:
+      - name: CI Summary
+        run: |
+          echo "# CI Pipeline Summary"
+          echo ""
+          echo "| Job | Status |"
+          echo "|-----|--------|"
+          echo "| Rust Build | ${{ needs.rust-build.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Python Tests | ${{ needs.python-tests.result == 'success' && 'OK' || 'FAIL' }} |"

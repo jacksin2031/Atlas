@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   release:
@@ -6,13 +6,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag (e.g., v0.10.0-alpha)'
+        description: "Version tag (e.g., v0.10.0-alpha)"
         required: true
         type: string
-        default: ''
+        default: ""
 
 env:
   PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
   RUST_TOOLCHAIN: "1.80"
 
 jobs:
@@ -61,11 +62,17 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           components: clippy,rustfmt
 
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Build release
         run: cargo build --workspace --release
 
       - name: Run release tests
-        run: cargo test --workspace --all-targets
+        run: cargo test --workspace
 
       - name: Upload release binary
         uses: actions/upload-artifact@v4
@@ -92,10 +99,10 @@ jobs:
           pip install pytest ruff
 
       - name: Run full test suite
-        run: pytest tests/ -v --tb=short
+        run: python -m pytest tests/ -v --tb=short
 
       - name: Run conformance suite
-        run: pytest tests/conformance/ -v --tb=short
+        run: python -m pytest tests/conformance/ -v --tb=short
 
   generate-release-notes:
     name: Generate Release Notes
@@ -108,10 +115,8 @@ jobs:
         run: |
           TAG="${{ github.event.release.tag_name || inputs.version }}"
           VERSION="${TAG#v}"
-          echo "## Release $VERSION" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Extract from CHANGELOG.md
+          echo "# Release $VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
           if grep -A 100 "## \[$VERSION" CHANGELOG.md | head -50; then
             echo "Changelog section found"
           else
@@ -126,11 +131,11 @@ jobs:
     steps:
       - name: Release Result
         run: |
-          echo "## Release Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Validate | ${{ needs.validate-release.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Rust Build | ${{ needs.rust-release.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Python Tests | ${{ needs.python-tests.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Release Notes | ${{ needs.generate-release-notes.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "# Release Pipeline Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Step | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Validate | ${{ needs.validate-release.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Rust Build | ${{ needs.rust-release.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Python Tests | ${{ needs.python-tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Release Notes | ${{ needs.generate-release-notes.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"

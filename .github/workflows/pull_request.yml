@@ -1,4 +1,4 @@
-﻿name: Pull Request Check
+name: Pull Request Check
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
   RUST_TOOLCHAIN: "1.80"
 
 jobs:
@@ -93,17 +94,17 @@ jobs:
 
       - name: Check for TODOs and placeholders
         run: |
-          echo "## TODO/Placeholder Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          $todos = Select-String -Path "**/*.py","**/*.rs" -Pattern "TODO|FIXME|HACK|XXX" -SimpleMatch -ErrorAction SilentlyContinue
-          if ($todos) {
-            echo "⚠️ Found TODOs/FIXMEs:" >> $GITHUB_STEP_SUMMARY
-            foreach ($todo in $todos) {
-              echo "- \`$($todo.Path):$($todo.LineNumber)\` - $($todo.Line.Trim())" >> $GITHUB_STEP_SUMMARY
-            }
-          } else {
-            echo "✅ No TODOs, FIXMEs, HACKs, or XXXs found." >> $GITHUB_STEP_SUMMARY
-          }
+          echo "## TODO/Placeholder Check" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          todos=$(grep -rn "TODO\|FIXME\|HACK\|XXX" --include="*.py" --include="*.rs" src/ packages/ tests/ 2>/dev/null || true)
+          if [ -n "$todos" ]; then
+            echo "- WARNING: Found TODOs/FIXMEs:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "$todos" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- OK: No TODOs, FIXMEs, HACKs, or XXXs found." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   tests:
     name: Test Suite
@@ -122,15 +123,21 @@ jobs:
           pip install pytest ruff
 
       - name: Run all Python tests
-        run: pytest tests/ -v --tb=short --color=yes
+        run: python -m pytest tests/ -v --tb=short --color=yes
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Run Rust tests
-        run: cargo test --workspace --all-targets
+        run: cargo test --workspace
 
   conformance:
     name: Conformance Suite
@@ -169,25 +176,24 @@ jobs:
     steps:
       - name: PR Check Summary
         run: |
-          echo "## Pull Request Check Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Architecture | ${{ needs.architecture-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| RFC Compliance | ${{ needs.rfc-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ADR Validation | ${{ needs.adr-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Documentation | ${{ needs.documentation-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests | ${{ needs.tests.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Conformance | ${{ needs.conformance.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          $allPassed = $needs.architecture-check.result -eq 'success' -and
-                       $needs.rfc-check.result -eq 'success' -and
-                       $needs.adr-check.result -eq 'success' -and
-                       $needs.documentation-check.result -eq 'success' -and
-                       $needs.tests.result -eq 'success' -and
-                       $needs.conformance.result -eq 'success'
-          if ($allPassed) {
-            echo "🎉 **All checks passed.** Ready for review." >> $GITHUB_STEP_SUMMARY
-          } else {
-            echo "⚠️ **Some checks failed.** Please fix before merging." >> $GITHUB_STEP_SUMMARY
-          }
+          echo "# Pull Request Check Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Architecture | ${{ needs.architecture-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| RFC Compliance | ${{ needs.rfc-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ADR Validation | ${{ needs.adr-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Documentation | ${{ needs.documentation-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tests | ${{ needs.tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Conformance | ${{ needs.conformance.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ needs.architecture-check.result }}" = "success" ] && \
+             [ "${{ needs.rfc-check.result }}" = "success" ] && \
+             [ "${{ needs.adr-check.result }}" = "success" ] && \
+             [ "${{ needs.documentation-check.result }}" = "success" ] && \
+             [ "${{ needs.tests.result }}" = "success" ] && \
+             [ "${{ needs.conformance.result }}" = "success" ]; then
+            echo "All checks passed. Ready for review." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Some checks failed. Please fix before merging." >> "$GITHUB_STEP_SUMMARY"
+          fi

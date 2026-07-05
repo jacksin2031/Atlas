@@ -125,7 +125,7 @@ jobs:
         run: pytest tests/ -v --tb=short --color=yes
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-action@stable
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 

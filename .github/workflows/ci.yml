@@ -72,10 +72,23 @@ jobs:
           fi
 
       - name: Run integration tests
-        run: python -m pytest tests/integration/ -v --tb=short -q
+        run: |
+          if python -m pytest tests/integration/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then
+            python -m pytest tests/integration/ -v --tb=short -q
+          else
+            echo "No integration tests found"
+          fi
 
       - name: Run conformance tests
-        run: python -m pytest tests/conformance/ -v --tb=short -q
+        run: |
+          if python -m pytest tests/conformance/ --collect-only -q 2>/dev/null | grep -q "tests collected"; then
+            python -m pytest tests/conformance/ -v --tb=short -q
+          else
+            echo "No conformance tests found"
+          fi
+
+      - name: Run full test suite
+        run: python -m pytest tests/ -v --tb=short -q
 
   summary:
     name: CI Summary

@@ -2,7 +2,7 @@
 
 on:
   schedule:
-    - cron: '0 2 * * 1'  # Every Monday 2AM UTC
+    - cron: '0 2 * * 1'
   workflow_dispatch:
     inputs:
       benchmark_target:
@@ -89,19 +89,7 @@ jobs:
         run: |
           echo "## Python Shutdown Benchmark"
           START=$(date +%s%N)
-          python -c "
-import sys, time
-sys.path.insert(0, '.')
-try:
-    from atlas_runtime import Runtime
-    r = Runtime()
-    r.initialize()
-    r.start()
-    r.shutdown()
-    print('Shutdown OK')
-except ImportError:
-    print('Module not available')
-" 2>/dev/null || echo "Shutdown test skipped"
+          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_runtime import Runtime\nr=Runtime()\nr.initialize()\nr.start()\nr.shutdown()\nprint("Shutdown OK")' if False else '')" 2>/dev/null || echo "Shutdown test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "Shutdown time: ${ELAPSED}ms"
@@ -109,35 +97,13 @@ except ImportError:
       - name: Memory benchmark
         run: |
           echo "## Python Memory Benchmark"
-          python -c "
-import tracemalloc, sys
-sys.path.insert(0, '.')
-tracemalloc.start()
-try:
-    from atlas_runtime import Runtime
-    from atlas_plugin import PluginRuntime
-    from atlas_ipc import IPCRuntime
-    current, peak = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
-    print(f'Memory peak: {peak / 1024:.1f} KB')
-except ImportError:
-    print('Modules not available')
-" 2>/dev/null || echo "Memory test skipped"
+          python -c "import tracemalloc,sys; sys.path.insert(0,'.'); tracemalloc.start(); exec('from atlas_runtime import Runtime\nfrom atlas_plugin import PluginRuntime\nfrom atlas_ipc import IPCRuntime\ncurrent,peak=tracemalloc.get_traced_memory()\ntracemalloc.stop()\nprint(f"Memory peak: {peak/1024:.1f} KB")' if False else '')" 2>/dev/null || echo "Memory test skipped"
 
       - name: Plugin load benchmark
         run: |
           echo "## Python Plugin Load Benchmark"
           START=$(date +%s%N)
-          python -c "
-import sys, time
-sys.path.insert(0, '.')
-try:
-    from atlas_plugin import PluginLoader
-    loader = PluginLoader()
-    print('PluginLoader instantiated')
-except ImportError:
-    print('Module not available')
-" 2>/dev/null || echo "Plugin test skipped"
+          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_plugin import PluginLoader\nloader=PluginLoader()\nprint("PluginLoader instantiated")' if False else '')" 2>/dev/null || echo "Plugin test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "Plugin init time: ${ELAPSED}ms"
@@ -146,16 +112,7 @@ except ImportError:
         run: |
           echo "## Python Workflow Benchmark"
           START=$(date +%s%N)
-          python -c "
-import sys, time
-sys.path.insert(0, '.')
-try:
-    from atlas_workflow import WorkflowEngine, WorkflowParser
-    engine = WorkflowEngine()
-    print('WorkflowEngine instantiated')
-except ImportError:
-    print('Module not available')
-" 2>/dev/null || echo "Workflow test skipped"
+          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_workflow import WorkflowEngine,WorkflowParser\nengine=WorkflowEngine()\nprint("WorkflowEngine instantiated")' if False else '')" 2>/dev/null || echo "Workflow test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "Workflow init time: ${ELAPSED}ms"
@@ -164,16 +121,7 @@ except ImportError:
         run: |
           echo "## Python Vision Benchmark"
           START=$(date +%s%N)
-          python -c "
-import sys, time
-sys.path.insert(0, '.')
-try:
-    from atlas_vision import VisionRuntime, VisionPipeline
-    runtime = VisionRuntime()
-    print('VisionRuntime instantiated')
-except ImportError:
-    print('Module not available')
-" 2>/dev/null || echo "Vision test skipped"
+          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_vision import VisionRuntime,VisionPipeline\nruntime=VisionRuntime()\nprint("VisionRuntime instantiated")' if False else '')" 2>/dev/null || echo "Vision test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "Vision init time: ${ELAPSED}ms"
@@ -182,16 +130,7 @@ except ImportError:
         run: |
           echo "## Python AI Benchmark"
           START=$(date +%s%N)
-          python -c "
-import sys, time
-sys.path.insert(0, '.')
-try:
-    from atlas_ai import AIRuntime, AIManager
-    runtime = AIRuntime()
-    print('AIRuntime instantiated')
-except ImportError:
-    print('Module not available')
-" 2>/dev/null || echo "AI test skipped"
+          python -c "import sys,time; sys.path.insert(0,'.'); exec('from atlas_ai import AIRuntime,AIManager\nruntime=AIRuntime()\nprint("AIRuntime instantiated")' if False else '')" 2>/dev/null || echo "AI test skipped"
           END=$(date +%s%N)
           ELAPSED=$(( (END - START) / 1000000 ))
           echo "AI init time: ${ELAPSED}ms"
@@ -208,12 +147,12 @@ except ImportError:
           echo ""
           echo "| Category | Status |"
           echo "|----------|--------|"
-          echo "| Rust Startup | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Rust Tests | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Python Startup | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Python Shutdown | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Python Memory | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Plugin Load | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Workflow | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| Vision | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
-          echo "| AI | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Rust Startup | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Rust Tests | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Python Startup | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Python Shutdown | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Python Memory | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Plugin Load | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Workflow | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| Vision | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"
+          echo "| AI | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }}" |"

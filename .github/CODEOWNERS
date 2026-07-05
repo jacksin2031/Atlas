@@ -1,0 +1,46 @@
+﻿# Atlas CODEOWNERS
+#
+# This file defines owners for files in the repository.
+# GitHub will request review from these users for PRs affecting their areas.
+#
+# Format: /pattern owner(s)
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global — all PRs require Atlas team review
+* @jacksin2031
+
+# Documentation
+/docs/ @jacksin2031
+/README.md @jacksin2031
+/CHANGELOG.md @jacksin2031
+/ROADMAP.md @jacksin2031
+/VERSIONING.md @jacksin2031
+/RELEASE.md @jacksin2031
+/PROJECT_STATUS.md @jacksin2031
+
+# Specifications
+/specs/ @jacksin2031
+
+# Rust Packages
+/packages/runtime/ @jacksin2031
+/packages/plugin/ @jacksin2031
+/packages/ipc/ @jacksin2031
+/packages/contracts/ @jacksin2031
+/packages/common/ @jacksin2031
+/packages/storage/ @jacksin2031
+
+# Python Packages (Reference Implementation)
+/src/atlas_workflow/ @jacksin2031
+/src/atlas_vision/ @jacksin2031
+/src/atlas_ai/ @jacksin2031
+/src/atlas_knowledge/ @jacksin2031
+/src/atlas_project/ @jacksin2031
+/src/atlas_integration/ @jacksin2031
+
+# CI/CD
+/.github/workflows/ @jacksin2031
+/.github/CODEOWNERS @jacksin2031
+
+# Tests
+/tests/conformance/ @jacksin2031
+/tests/integration/ @jacksin2031

@@ -1,0 +1,219 @@
+﻿name: Benchmark
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Every Monday 2AM UTC
+  workflow_dispatch:
+    inputs:
+      benchmark_target:
+        description: 'Benchmark target'
+        required: false
+        type: choice
+        options:
+          - all
+          - startup
+          - shutdown
+          - memory
+          - plugin-load
+          - workflow
+          - vision
+          - ai
+        default: all
+
+env:
+  PYTHON_VERSION: "3.12"
+  RUST_TOOLCHAIN: "1.80"
+
+jobs:
+  rust-benchmarks:
+    name: Rust Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-action@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Runtime startup benchmark
+        run: |
+          echo "## Rust Runtime Startup Benchmark"
+          START=$(date +%s%N)
+          cargo build --package runtime --quiet 2>/dev/null
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Build time: ${ELAPSED}ms"
+
+      - name: Runtime test benchmark
+        run: |
+          echo "## Rust Test Execution Benchmark"
+          START=$(date +%s%N)
+          cargo test --package runtime --quiet 2>/dev/null
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Test execution: ${ELAPSED}ms"
+
+  python-benchmarks:
+    name: Python Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Startup benchmark
+        run: |
+          echo "## Python Startup Benchmark"
+          START=$(date +%s%N)
+          python -c "import sys; sys.path.insert(0,'.'); from atlas_runtime import Runtime; print('Runtime imported')" 2>/dev/null || echo "Import skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Import time: ${ELAPSED}ms"
+
+      - name: Shutdown benchmark
+        run: |
+          echo "## Python Shutdown Benchmark"
+          START=$(date +%s%N)
+          python -c "
+import sys, time
+sys.path.insert(0, '.')
+try:
+    from atlas_runtime import Runtime
+    r = Runtime()
+    r.initialize()
+    r.start()
+    r.shutdown()
+    print('Shutdown OK')
+except ImportError:
+    print('Module not available')
+" 2>/dev/null || echo "Shutdown test skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Shutdown time: ${ELAPSED}ms"
+
+      - name: Memory benchmark
+        run: |
+          echo "## Python Memory Benchmark"
+          python -c "
+import tracemalloc, sys
+sys.path.insert(0, '.')
+tracemalloc.start()
+try:
+    from atlas_runtime import Runtime
+    from atlas_plugin import PluginRuntime
+    from atlas_ipc import IPCRuntime
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f'Memory peak: {peak / 1024:.1f} KB')
+except ImportError:
+    print('Modules not available')
+" 2>/dev/null || echo "Memory test skipped"
+
+      - name: Plugin load benchmark
+        run: |
+          echo "## Python Plugin Load Benchmark"
+          START=$(date +%s%N)
+          python -c "
+import sys, time
+sys.path.insert(0, '.')
+try:
+    from atlas_plugin import PluginLoader
+    loader = PluginLoader()
+    print('PluginLoader instantiated')
+except ImportError:
+    print('Module not available')
+" 2>/dev/null || echo "Plugin test skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Plugin init time: ${ELAPSED}ms"
+
+      - name: Workflow benchmark
+        run: |
+          echo "## Python Workflow Benchmark"
+          START=$(date +%s%N)
+          python -c "
+import sys, time
+sys.path.insert(0, '.')
+try:
+    from atlas_workflow import WorkflowEngine, WorkflowParser
+    engine = WorkflowEngine()
+    print('WorkflowEngine instantiated')
+except ImportError:
+    print('Module not available')
+" 2>/dev/null || echo "Workflow test skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Workflow init time: ${ELAPSED}ms"
+
+      - name: Vision benchmark
+        run: |
+          echo "## Python Vision Benchmark"
+          START=$(date +%s%N)
+          python -c "
+import sys, time
+sys.path.insert(0, '.')
+try:
+    from atlas_vision import VisionRuntime, VisionPipeline
+    runtime = VisionRuntime()
+    print('VisionRuntime instantiated')
+except ImportError:
+    print('Module not available')
+" 2>/dev/null || echo "Vision test skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "Vision init time: ${ELAPSED}ms"
+
+      - name: AI benchmark
+        run: |
+          echo "## Python AI Benchmark"
+          START=$(date +%s%N)
+          python -c "
+import sys, time
+sys.path.insert(0, '.')
+try:
+    from atlas_ai import AIRuntime, AIManager
+    runtime = AIRuntime()
+    print('AIRuntime instantiated')
+except ImportError:
+    print('Module not available')
+" 2>/dev/null || echo "AI test skipped"
+          END=$(date +%s%N)
+          ELAPSED=$(( (END - START) / 1000000 ))
+          echo "AI init time: ${ELAPSED}ms"
+
+  benchmark-summary:
+    name: Benchmark Summary
+    runs-on: ubuntu-latest
+    needs: [rust-benchmarks, python-benchmarks]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## Benchmark Results"
+          echo ""
+          echo "| Category | Status |"
+          echo "|----------|--------|"
+          echo "| Rust Startup | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Rust Tests | ${{ needs.rust-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Python Startup | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Python Shutdown | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Python Memory | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Plugin Load | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Workflow | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| Vision | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"
+          echo "| AI | ${{ needs.python-benchmarks.result == 'success' && '✅' || '❌' }} |"

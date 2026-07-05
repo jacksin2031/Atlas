@@ -1,0 +1,27 @@
+﻿---
+name: Feature Request
+about: Suggest a new feature for Atlas
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+---
+
+## Feature Request
+
+### Description
+<!-- Brief description of the proposed feature -->
+
+### Motivation
+<!-- Why is this feature needed? What problem does it solve? -->
+
+### Proposed Solution
+<!-- How should this feature work? Describe the API, behavior, or architecture. -->
+
+### Affected Runtimes
+<!-- Which runtimes would be impacted? -->
+
+### Alternatives Considered
+<!-- Any alternative approaches? -->
+
+### Additional Context
+<!-- Links, mockups, or other references -->

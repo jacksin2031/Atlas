@@ -222,6 +222,16 @@ Atlas/
 - [docs/DESIGN_PRINCIPLES.md](docs/DESIGN_PRINCIPLES.md) — Design philosophy
 - [docs/MODULE_DEPENDENCIES.md](docs/MODULE_DEPENDENCIES.md) — Module dependency map
 
+
+## GitHub Infrastructure
+
+- [.github/](.github/) — GitHub configuration
+  - [CODEOWNERS](.github/CODEOWNERS) — PR review assignment rules
+  - [workflows/](.github/workflows/) — CI/CD pipelines
+  - [ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) — Issue templates
+  - [PULL_REQUEST_TEMPLATE/](.github/PULL_REQUEST_TEMPLATE/) — PR checklist
+- [docs/github/GITHUB_INFRASTRUCTURE.md](docs/github/GITHUB_INFRASTRUCTURE.md) — Complete GitHub infrastructure documentation
+- [SECURITY.md](SECURITY.md) — Security policy and vulnerability reporting
 ## License
 
 Apache 2.0

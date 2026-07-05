@@ -18,7 +18,7 @@ env:
 jobs:
   validate-release:
     name: Validate Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +50,7 @@ jobs:
 
   rust-release:
     name: Rust Release Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: validate-release
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
 
   python-tests:
     name: Python Release Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: validate-release
     steps:
       - uses: actions/checkout@v4
@@ -99,7 +99,7 @@ jobs:
 
   generate-release-notes:
     name: Generate Release Notes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [rust-release, python-tests]
     steps:
       - uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
 
   summary:
     name: Release Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [validate-release, rust-release, python-tests, generate-release-notes]
     if: always()
     steps:

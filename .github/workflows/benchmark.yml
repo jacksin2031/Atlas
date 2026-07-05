@@ -27,7 +27,7 @@ env:
 jobs:
   rust-benchmarks:
     name: Rust Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -62,7 +62,7 @@ jobs:
 
   python-benchmarks:
     name: Python Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -137,7 +137,7 @@ jobs:
 
   benchmark-summary:
     name: Benchmark Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [rust-benchmarks, python-benchmarks]
     if: always()
     steps:

@@ -12,7 +12,7 @@ env:
 jobs:
   architecture-check:
     name: Architecture Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,7 +36,7 @@ jobs:
 
   rfc-check:
     name: RFC Compliance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -55,7 +55,7 @@ jobs:
 
   adr-check:
     name: ADR Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -74,7 +74,7 @@ jobs:
 
   documentation-check:
     name: Documentation Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -107,7 +107,7 @@ jobs:
 
   tests:
     name: Test Suite
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -134,7 +134,7 @@ jobs:
 
   conformance:
     name: Conformance Suite
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [architecture-check, rfc-check, adr-check, documentation-check, tests]
     steps:
       - uses: actions/checkout@v4
@@ -163,7 +163,7 @@ jobs:
 
   pr-summary:
     name: PR Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, conformance]
     if: always()
     steps:

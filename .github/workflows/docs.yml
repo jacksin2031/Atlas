@@ -20,7 +20,7 @@ env:
 jobs:
   markdown-links:
     name: Broken Link Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -55,7 +55,7 @@ jobs:
 
   documentation-consistency:
     name: Documentation Consistency
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -86,7 +86,7 @@ jobs:
 
   compliance-reports:
     name: Compliance Report Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -121,7 +121,7 @@ jobs:
 
   readme-format:
     name: README.md Format Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -139,7 +139,7 @@ jobs:
 
   summary:
     name: Documentation Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [markdown-links, documentation-consistency, compliance-reports, readme-format]
     if: always()
     steps:

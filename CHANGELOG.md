@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
+
+## [0.13.0-beta] — 2026-07-07
+
+### Sprint 13 — Workflow Studio
+
+#### Added
+- **Workflow Studio** — Visual workflow editor hosted by Atlas Desktop Shell
+  - React Flow canvas with minimap, controls, snap-to-grid, 6 edge types
+  - 44 builtin node types across 18 categories
+  - 5 stores: workflow, execution, debug, variable, node-registry
+  - 5 services: executor, debugger, validation, import-export, plugin-discovery
+  - 13 components: Canvas, Node Palette, Property Inspector, Variable Manager, Toolbar, Debugger Panel, Validation Report, 4 custom nodes, 6 edge renderers
+  - 2 hooks: keyboard shortcuts, canvas drag-and-drop
+  - 10 test files (~91 tests) covering all stores, services, and integration scenarios
+  - TypeScript strict mode, zero global mutable state, dependency injection throughout
+
+#### Changed
+- Desktop Shell extended with Workflow Studio panel
+- Repository structure updated with ``apps/atlas-desktop/src/studio/workflow/``
+
+#### Documentation
+- Added Workflow Studio compliance report (docs/workflow/WORKFLOW_STUDIO_COMPLIANCE_REPORT.md)
+- Updated Architecture documentation (Sprint 13 section)
+- All 33 Workflow RFCs (RFC-0301 through RFC-0333) addressed
+- Plus Runtime RFCs (RFC-0001-0014), IPC RFCs (RFC-0101-0112), Plugin RFCs (RFC-0201-0230)
 
 
 ---

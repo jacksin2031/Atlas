@@ -1,9 +1,9 @@
-# Atlas Roadmap
+﻿# Atlas Roadmap
 
 > **Last Updated**: 2026-07-05
 > **Current Version**: 0.12.0-beta
 > **Current Sprint**: Sprint 12 (Desktop Shell)
-> **Next Milestone**: Sprint 13 — Workflow Studio
+> **Next Milestone**: Sprint 14 — Vision Studio
 
 ---
 
@@ -212,7 +212,7 @@
 - **Command Palette** — Quick commands, fuzzy search, recent commands, keyboard shortcuts
 - **Architecture Layer 8** — Production Desktop Foundation
 
-### Sprint 13 — Workflow Studio**Version**: 0.13.0-alpha**Status**: ⬜ Planned
+### Sprint 13 — Workflow Studio**Version**: 0.13.0-beta**Status**: ✅ Completed
 - Desktop integration layer
 - System tray and notifications
 - File association and handlers
@@ -283,3 +283,6 @@ Build automation that understands intent instead of recording coordinates.
 - Vision-based interaction
 - Knowledge-driven workflows
 - Marketplace for plugins and knowledge packs
+
+
+

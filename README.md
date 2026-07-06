@@ -1,4 +1,4 @@
-﻿# Atlas
+# Atlas
 
 > Record Once. Understand Forever.
 
@@ -21,18 +21,18 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.11.0-beta |
-| **Latest Sprint** | Sprint 11 — Conformance & Architecture Validation |
-| **Next Sprint** | Sprint 12 — Performance & Stress |
+| **Version** | 0.12.0-beta |
+| **Latest Sprint** | Sprint 12 — Desktop Shell |
+| **Next Sprint** | Sprint 13 — Workflow Studio |
 | **Total Packages** | 16 (Rust + Python) |
 | **Test Cases** | 1,723+ |
-| **RFCs Implemented** | 125 (Runtime + IPC + Plugin + Workflow + Project) |
+| **RFCs Implemented** | 134 (Runtime + IPC + Plugin + Workflow + Project + Conformance + Integration + Desktop) |
 | **License** | Apache 2.0 |
 
 ## Architecture
 
 `
-            Desktop UI
+            Desktop Shell (Tauri 2 + React)
                  │
       ┌──────────┴──────────┐
       │                     │
@@ -42,9 +42,9 @@ Build automation that understands intent instead of recording coordinates.
                  │
           Atlas Runtime
                  │
- ┌─────┬─────┬─────┬─────┬─────┬─────┐
- │Plugin│IPC│Vision│AI│Knowledge│Project│
- └─────┴─────┴─────┴─────┴─────┴─────┘
+ ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ │Plugin│IPC│Vision│AI│Knowledge│Project│Desktop│
+ └─────┴─────┴─────┴─────┴─────┴─────┴─────┘
 `
 
 ## Implemented Modules
@@ -232,6 +232,52 @@ Atlas/
   - [PULL_REQUEST_TEMPLATE/](.github/PULL_REQUEST_TEMPLATE/) — PR checklist
 - [docs/github/GITHUB_INFRASTRUCTURE.md](docs/github/GITHUB_INFRASTRUCTURE.md) — Complete GitHub infrastructure documentation
 - [SECURITY.md](SECURITY.md) — Security policy and vulnerability reporting
+
+## Implemented Modules (Continued)
+
+### Cross-Runtime Integration (Sprint 10)
+- RuntimeIntegrationManager, RuntimeGraph, RuntimeDependencyResolver
+- RuntimeBootstrapper, RuntimeShutdownManager, RuntimeCoordinator
+- CrossRuntimeEventRouter, ArchitectureValidator, PerformanceBenchmarks
+- 99 integration tests, 774 total tests passing
+
+### Conformance & Architecture Validation (Sprint 11)
+- Conformance Runtime: 13 modules (Core Models, Scanners, Validators, Contracts, Service, CLI, Benchmark)
+- ArchitectureValidator: 9 rules (layering, dependency direction, circular deps, forbidden imports, provider pattern, DI, immutable models, runtime contracts, project hosting)
+- RFCValidator: 121 RFCs scanned, 18 implemented
+- ADRValidator: 12 ADRs parsed, 11 referenced
+- DocumentationValidator: 13/13 docs present (100%)
+- 52 conformance tests passing, 0 warnings, 0 errors
+- CLI entry point: tlas-conformance
+- Generated reports: CONFORMANCE_REPORT.md, conformance_report.json
+
+### Desktop Shell (Sprint 12)
+- **Tauri 2 + React 19 + TypeScript + Vite 7** — Production desktop foundation
+- **Menu System**: Menu Bar, Toolbar, Status Bar, Command Palette
+- **Dockable Panels**: Project Explorer, Runtime Monitor, Output, Console, Logs, Extensions, Settings, Problems, Notifications
+- **Runtime Monitor**: Live dashboard for 8 runtimes (Workflow, Vision, AI, Knowledge, Plugin, IPC, Project, Storage)
+- **Theme Manager**: Dark/Light/System theme support with live switching
+- **Layout Manager**: Docking, resizable panels, persistence, reset
+- **Plugin Support**: Extension Manager with search, status, health indicators
+- **Logging**: Real-time logs, filtering, export, search
+- **Project Support**: Open/Close/Recent projects, workspace management, settings
+- **Command Palette**: Quick commands, fuzzy search, recent commands, keyboard shortcuts
+- **Architecture Layer 8** — Production Desktop Foundation
 ## License
 
 Apache 2.0
+
+| **Latest Sprint** | Sprint 12 — Desktop Shell |
+| **Desktop Shell** | apps/atlas-desktop/ — Full GUI with Tauri 2 + React |
+
+### Desktop Shell (Sprint 12)
+- Tauri 2 + React 19 + TypeScript + Vite 7
+- Menu Bar, Toolbar, Status Bar, Command Palette
+- Dockable panels: Project Explorer, Runtime Monitor, Output, Console, Logs, Extensions, Settings, Problems, Notifications
+- Runtime Monitor: 8 runtimes (Workflow, Vision, AI, Knowledge, Plugin, IPC, Project, Storage)
+- Theme Manager: Dark/Light/System
+- Layout Manager: Docking, resizable panels, persistence, reset
+- Plugin Support: Extension Manager with search, status, health
+- Logging: Real-time logs, filtering, export, search
+- Project Support: Open/Close/Recent projects, workspace, settings
+- Command Palette: Quick commands, search, recent commands, keyboard shortcuts

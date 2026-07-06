@@ -1,4 +1,4 @@
-﻿# Atlas Platform Architecture
+# Atlas Platform Architecture
 
 > **Last Updated**: 2026-07-05
 > **Current Version**: 0.11.0-beta
@@ -316,3 +316,62 @@ from atlas_project import ProjectRuntime, ProjectDescriptor
 
 ### Documentation
 - docs/project/PROJECT_COMPLIANCE_REPORT.md — Full RFC traceability matrix with 130+ acceptance criteria
+
+
+## Desktop Shell (Sprint 12)
+
+The Atlas Desktop Shell provides the graphical user interface that hosts every Atlas runtime.
+
+### Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Shell | Tauri 2 (Rust) |
+| Frontend | React 19 + TypeScript |
+| Bundler | Vite 7 |
+| State | Zustand |
+| UI | Fluent UI (base styles) |
+
+### Implemented Components
+
+| Component | Location |
+|-----------|----------|
+| Main Window | apps/atlas-desktop/src/App.tsx |
+| Menu Bar | apps/atlas-desktop/src/components/layouts/MenuBar.tsx |
+| Toolbar | apps/atlas-desktop/src/components/layouts/Toolbar.tsx |
+| Dock Panels | apps/atlas-desktop/src/components/layouts/DockPanels.tsx |
+| Status Bar | apps/atlas-desktop/src/components/layouts/StatusBar.tsx |
+| Command Palette | apps/atlas-desktop/src/components/CommandPalette.tsx |
+| Theme Manager | apps/atlas-desktop/src/stores/theme.ts |
+| Layout Manager | apps/atlas-desktop/src/stores/layout.ts |
+| Project Manager | apps/atlas-desktop/src/stores/project.ts |
+| Runtime Monitor | apps/atlas-desktop/src/components/panels/RuntimeMonitorPanel.tsx |
+| Project Explorer | apps/atlas-desktop/src/components/panels/ProjectExplorerPanel.tsx |
+| Log Console | apps/atlas-desktop/src/components/panels/LogConsolePanel.tsx |
+| Extensions Manager | apps/atlas-desktop/src/components/panels/ExtensionsPanel.tsx |
+| Settings | apps/atlas-desktop/src/components/panels/SettingsPanel.tsx |
+| Notifications | apps/atlas-desktop/src/components/panels/NotificationsPanel.tsx |
+| Problems | apps/atlas-desktop/src/components/panels/ProblemsPanel.tsx |
+| Output | apps/atlas-desktop/src/components/panels/OutputPanel.tsx |
+| Console | apps/atlas-desktop/src/components/panels/ConsolePanel.tsx |
+| Logs | apps/atlas-desktop/src/components/panels/LogsPanel.tsx |
+
+### Services
+
+| Service | Location |
+|---------|----------|
+| IPC Service | apps/atlas-desktop/src/services/ipc.ts |
+| Plugin Manager | apps/atlas-desktop/src/services/plugin-manager.ts |
+| Project Service | apps/atlas-desktop/src/services/project.ts |
+| Theme Service | apps/atlas-desktop/src/services/theme.ts |
+| Layout Service | apps/atlas-desktop/src/services/layout.ts |
+| Log Service | apps/atlas-desktop/src/services/log.ts |
+| Command Palette Service | apps/atlas-desktop/src/services/command-palette.ts |
+
+### Compliance
+
+- Architecture compliant (MODULE_DEPENDENCIES.md Layer 8)
+- RFC-0001 through RFC-0014 (Runtime)
+- RFC-0101 through RFC-0112 (IPC)
+- RFC-0201 through RFC-0230 (Plugin)
+- Full compliance report: docs/desktop/DESKTOP_COMPLIANCE_REPORT.md

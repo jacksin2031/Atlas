@@ -169,3 +169,13 @@ graph TD
 ## Governance
 
 Changes to this dependency model require Architecture Board approval and an RFC update.
+
+---
+### Layer 8: Desktop UI
+**Depends on**: All previous layers
+
+- apps/atlas-desktop — Tauri 2 + React 19 + TypeScript + Vite 7 + Zustand
+
+**Depends on**: Runtime, Plugin, IPC, Workflow, Vision, AI, Knowledge, Project
+
+**Provides to**: None (presentation layer only)

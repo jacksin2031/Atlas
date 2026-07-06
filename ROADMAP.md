@@ -1,9 +1,9 @@
-﻿# Atlas Roadmap
+# Atlas Roadmap
 
 > **Last Updated**: 2026-07-05
-> **Current Version**: 0.11.0-beta
-> **Current Sprint**: Sprint 11 (Conformance & Architecture Validation)
-> **Next Milestone**: Sprint 12 — Performance & Stress
+> **Current Version**: 0.12.0-beta
+> **Current Sprint**: Sprint 12 (Desktop Shell)
+> **Next Milestone**: Sprint 13 — Workflow Studio
 
 ---
 
@@ -197,56 +197,60 @@
 - CLI entry point with --repo-root, --output, --format, --quiet flags
 - Benchmark suite measuring validation time per component
 - All existing workflow tests (15) still pass
-### Sprint 12 — Performance & Stress
-**Version**: 0.12.0-alpha
-**Status**: ⬜ Planned
-- Load testing and stress testing
-- Memory optimization and leak detection
-- Throughput benchmarks
-- Latency profiling
+### Sprint 12 — Desktop Shell
+**Version**: 0.12.0-beta
+**Status**: ✅ Complete
+- **Tauri 2 + React 19** — Production desktop shell
+- **Menu System** — Menu Bar, Toolbar, Status Bar, Command Palette
+- **Dockable Panels** — Project Explorer, Runtime Monitor, Output, Console, Logs, Extensions, Settings, Problems, Notifications
+- **Runtime Monitor** — Live dashboard for 8 runtimes (Workflow, Vision, AI, Knowledge, Plugin, IPC, Project, Storage)
+- **Theme Manager** — Dark/Light/System with live switching
+- **Layout Manager** — Docking, resizable panels, persistence, reset
+- **Plugin Support** — Extension Manager with search, status, health indicators
+- **Logging** — Real-time logs, filtering, export, search
+- **Project Support** — Open/Close/Recent projects, workspace management, settings
+- **Command Palette** — Quick commands, fuzzy search, recent commands, keyboard shortcuts
+- **Architecture Layer 8** — Production Desktop Foundation
 
-### Sprint 13 — Desktop Shell
-**Version**: 0.13.0-alpha
-**Status**: ⬜ Planned
+### Sprint 13 — Workflow Studio**Version**: 0.13.0-alpha**Status**: ⬜ Planned
 - Desktop integration layer
 - System tray and notifications
 - File association and handlers
 - OS-level automation hooks
 
-### Sprint 14 — Workflow Studio
+### Sprint 14 — Vision Studio
 **Version**: 0.14.0-alpha
-**Status**: ⬜ Planned
-- Visual workflow designer
-- Drag-and-drop node editing
-- Real-time execution preview
-- Workflow versioning and sharing
-
-### Sprint 15 — Vision Studio
-**Version**: 0.15.0-alpha
 **Status**: ⬜ Planned
 - Visual element recognition editor
 - Template matching studio
 - Camera calibration tools
 - Vision pipeline composer
 
-### Sprint 16 — AI Studio
-**Version**: 0.16.0-alpha
+### Sprint 15 — AI Studio
+**Version**: 0.15.0-alpha
 **Status**: ⬜ Planned
 - Model selection and comparison
 - Prompt engineering workspace
 - Agent behavior editor
 - Capability negotiation visualizer
 
-### Sprint 17 — Marketplace
-**Version**: 0.17.0-alpha
+### Sprint 16 — Marketplace
+**Version**: 0.16.0-alpha
 **Status**: ⬜ Planned
 - Plugin marketplace
 - Knowledge pack distribution
 - Provider marketplace
 - Rating and review system
 
-### Sprint 18 — Beta
-**Version**: 0.x.x-beta
+### Sprint 17 — Cloud Sync
+**Version**: 0.17.0-alpha
+**Status**: ⬜ Planned
+- Cross-device synchronization
+- Cloud backup and restore
+- Collaborative workspaces
+- Remote execution
+
+### Sprint 18 — Beta**Version**: 1.0.0-beta
 **Status**: ⬜ Planned
 - All Runtime modules implemented
 - API freeze

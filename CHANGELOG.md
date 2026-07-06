@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 
 ---
+## [0.12.0-beta] — 2026-07-06
+
+### Sprint 12 — Desktop Shell
+
+#### Added
+- **Desktop Shell** — Production desktop foundation with Tauri 2 + React 19
+  - Tauri 2 + React 19 + TypeScript + Vite 7 architecture
+  - Menu System: Menu Bar, Toolbar, Status Bar, Command Palette
+  - Dockable Panels: Project Explorer, Runtime Monitor, Output, Console, Logs, Extensions, Settings, Problems, Notifications
+  - Runtime Monitor: Live dashboard for 8 runtimes (Workflow, Vision, AI, Knowledge, Plugin, IPC, Project, Storage)
+  - Theme Manager: Dark/Light/System theme support with live switching
+  - Layout Manager: Docking, resizable panels, persistence, reset
+  - Plugin Support: Extension Manager with search, status, health indicators
+  - Logging: Real-time logs, filtering, export, search
+  - Project Support: Open/Close/Recent projects, workspace management, settings
+  - Command Palette: Quick commands, fuzzy search, recent commands, keyboard shortcuts
+- **Architecture Layer 8** — Production Desktop Foundation
+
+#### Changed
+- Runtime Architecture extended with Desktop Shell layer
+- Repository structure updated with apps/atlas-desktop/
+
+#### Documentation
+- Added Desktop Shell compliance report
+- Updated Architecture documentation
+- Updated Quick Start with desktop build instructions
+
+---
 
 ## [0.9.0-alpha] — 2026-07-05
 
@@ -392,5 +420,4 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 - Repository organization
 - `.gitignore` with comprehensive exclusions
 - Initial documentation scaffold
-
 

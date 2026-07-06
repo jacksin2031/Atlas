@@ -1,7 +1,7 @@
 # Atlas Platform Architecture
 
-> **Last Updated**: 2026-07-05
-> **Current Version**: 0.11.0-beta
+> **Last Updated**: 2026-07-06
+> **Current Version**: 0.12.0-beta
 
 ---
 

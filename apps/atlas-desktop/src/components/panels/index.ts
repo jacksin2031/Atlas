@@ -1,0 +1,9 @@
+﻿export { ProjectExplorerPanel } from "./ProjectExplorerPanel";
+export { RuntimeMonitorPanel } from "./RuntimeMonitorPanel";
+export { OutputPanel } from "./OutputPanel";
+export { ConsolePanel } from "./ConsolePanel";
+export { LogsPanel } from "./LogsPanel";
+export { ExtensionsPanel } from "./ExtensionsPanel";
+export { SettingsPanel } from "./SettingsPanel";
+export { ProblemsPanel } from "./ProblemsPanel";
+export { NotificationsPanel } from "./NotificationsPanel";

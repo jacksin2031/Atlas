@@ -51,3 +51,11 @@ __pycache__/
 *.pyc
 *.pyo
 
+
+# ============================================================
+# Desktop App (Tauri + React)
+# ============================================================
+apps/atlas-desktop/node_modules/
+apps/atlas-desktop/dist/
+apps/atlas-desktop/*.zip
+*.tar.gz

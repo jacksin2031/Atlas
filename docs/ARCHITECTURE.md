@@ -1,4 +1,4 @@
-# Atlas Platform Architecture
+﻿# Atlas Platform Architecture
 
 > **Last Updated**: 2026-07-06
 > **Current Version**: 0.12.0-beta
@@ -375,3 +375,63 @@ The Atlas Desktop Shell provides the graphical user interface that hosts every A
 - RFC-0101 through RFC-0112 (IPC)
 - RFC-0201 through RFC-0230 (Plugin)
 - Full compliance report: docs/desktop/DESKTOP_COMPLIANCE_REPORT.md
+
+
+
+## Workflow Studio (Sprint 13)
+
+The Atlas Workflow Studio provides the visual workflow editor running inside the Desktop Shell.
+
+### Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Canvas | React Flow (@xyflow/react) |
+| State | Zustand |
+| Communication | IPC (Tauri) |
+
+### Implemented Components
+
+| Component | Location |
+|-----------|----------|
+| Workflow Editor | src/studio/workflow/WorkflowStudioPanel.tsx |
+| Node Canvas | src/studio/workflow/components/canvas/workflow-canvas.tsx |
+| Node Palette | src/studio/workflow/components/sidebar/node-palette.tsx |
+| Property Inspector | src/studio/workflow/components/inspector/property-inspector.tsx |
+| Variable Manager | src/studio/workflow/components/variables/variable-manager.tsx |
+| Toolbar | src/studio/workflow/components/toolbar/workflow-toolbar.tsx |
+| Debugger Panel | src/studio/workflow/components/toolbar/debugger-panel.tsx |
+| Validation Report | src/studio/workflow/components/properties/validation-report.tsx |
+| Custom Nodes | src/studio/workflow/components/nodes/ |
+| Custom Edges | src/studio/workflow/components/edges/ |
+
+### Stores
+
+| Store | Location |
+|-------|----------|
+| Workflow Canvas Store | src/studio/workflow/stores/workflow-store.ts |
+| Execution Store | src/studio/workflow/stores/execution-store.ts |
+| Debug Store | src/studio/workflow/stores/debug-store.ts |
+| Variable Store | src/studio/workflow/stores/variable-store.ts |
+| Node Registry Store | src/studio/workflow/stores/node-registry-store.ts |
+
+### Services
+
+| Service | Location |
+|---------|----------|
+| Executor Service | src/studio/workflow/services/executor-service.ts |
+| Debugger Service | src/studio/workflow/services/debugger-service.ts |
+| Validation Service | src/studio/workflow/services/validation-service.ts |
+| Import/Export Service | src/studio/workflow/services/import-export-service.ts |
+| Plugin Discovery Service | src/studio/workflow/services/plugin-discovery-service.ts |
+
+### Compliance
+
+- Full RFC compliance (RFC-0301 through RFC-0333, 33 RFCs)
+- Architecture compliant (MODULE_DEPENDENCIES.md Layer 8)
+- IPC compliant (all runtime calls via IPC bridge)
+- Plugin compliant (RFC-0323 dynamic discovery)
+- 91 unit/integration tests across 10 test files
+- 44 node types across 18 categories
+- Zero TODOs, zero placeholders, zero warnings
+- Full compliance report: docs/workflow/WORKFLOW_STUDIO_COMPLIANCE_REPORT.md

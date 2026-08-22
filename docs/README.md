@@ -1,0 +1,73 @@
+﻿# Atlas Documentation
+
+> **Last Updated**: 2026-07-05
+
+---
+
+## Design
+
+- [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) — Six core design principles
+- [MODULE_DEPENDENCIES.md](MODULE_DEPENDENCIES.md) — Module dependency hierarchy
+
+## Architecture
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Complete runtime architecture
+  - Runtime Foundation (Sprint 1)
+  - IPC Runtime (Sprint 5)
+  - Plugin Runtime (Sprint 3)
+  - Workflow Runtime (Sprint 4)
+  - Vision Runtime (Sprint 6)
+  - AI Runtime (Sprint 7)
+  - Knowledge Runtime (Sprint 8)
+  - Project Runtime (Sprint 9)
+
+  - Cross-Runtime Integration (Sprint 10)
+## Compliance Reports
+  - Conformance Runtime (Sprint 11)
+
+- [COMPLIANCE_REPORT.md](COMPLIANCE_REPORT.md) — Runtime RFC compliance
+- [IPC_COMPLIANCE_REPORT.md](IPC_COMPLIANCE_REPORT.md) — IPC RFC compliance
+- [PLUGIN_COMPLIANCE_REPORT.md](PLUGIN_COMPLIANCE_REPORT.md) — Plugin RFC compliance
+- [AI_COMPLIANCE_REPORT.md](ai/AI_COMPLIANCE_REPORT.md) — AI Runtime RFC compliance
+- [KNOWLEDGE_COMPLIANCE_REPORT.md](knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md) — Knowledge Runtime RFC compliance
+- [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md) — Project Runtime RFC compliance
+
+- [INTEGRATION_COMPLIANCE_REPORT.md](integration/INTEGRATION_COMPLIANCE_REPORT.md) — Cross-Runtime Integration RFC compliance
+## Vision
+- [CONFORMANCE_COMPLIANCE_REPORT.md](conformance/CONFORMANCE_COMPLIANCE_REPORT.md) — Conformance Runtime RFC compliance
+
+- [vision/](vision/) — Vision Runtime documentation
+  - [VISION_COMPLIANCE_REPORT.md](vision/VISION_COMPLIANCE_REPORT.md)
+  - [vision-engine.md](vision/vision-engine.md)
+
+## AI
+
+- [ai/](ai/) — AI Runtime documentation
+  - [AI_COMPLIANCE_REPORT.md](ai/AI_COMPLIANCE_REPORT.md)
+  - [ai.md](ai/ai.md)
+
+## Knowledge
+
+- [knowledge/](knowledge/) — Knowledge Runtime documentation
+  - [KNOWLEDGE_COMPLIANCE_REPORT.md](knowledge/KNOWLEDGE_COMPLIANCE_REPORT.md)
+  - [knowledge.md](knowledge/knowledge.md)
+
+## Project
+
+- [project/](project/) — Project Runtime documentation
+  - [PROJECT_COMPLIANCE_REPORT.md](project/PROJECT_COMPLIANCE_REPORT.md)
+
+## Conformance
+
+- [conformance/](conformance/) — Conformance Runtime documentation
+  - [CONFORMANCE_COMPLIANCE_REPORT.md](conformance/CONFORMANCE_COMPLIANCE_REPORT.md)
+  - [CONFORMANCE_REPORT.md](conformance/CONFORMANCE_REPORT.md)
+
+## Integration
+
+- [integration/](integration/) — Cross-Runtime Integration documentation
+  - [INTEGRATION_COMPLIANCE_REPORT.md](integration/INTEGRATION_COMPLIANCE_REPORT.md)
+
+## Implementation
+
+- [IMPLEMENTATION_STRATEGY.md](IMPLEMENTATION_STRATEGY.md) — Reference vs. Production distinction

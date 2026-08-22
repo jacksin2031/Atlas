@@ -1,0 +1,12 @@
+import React from "react";
+import { IconButton, type IconName } from "../../../design-system";
+import { useVisionDocumentStore } from "../stores";
+import type { VisionTool } from "../types";
+
+const categories: { label: string; tools: { id: VisionTool; label: string; icon: IconName; shortcut: string }[] }[] = [
+  { label: "Navigation", tools: [{ id: "pointer", label: "Pointer", icon: "pointer", shortcut: "V" }, { id: "pan", label: "Pan", icon: "hand", shortcut: "H" }, { id: "zoom", label: "Zoom", icon: "zoom", shortcut: "Z" }] },
+  { label: "Selection", tools: [{ id: "rectangle-selection", label: "Rectangle Selection", icon: "rectangle", shortcut: "M" }, { id: "ellipse-selection", label: "Ellipse Selection", icon: "ellipse", shortcut: "Shift+M" }, { id: "polygon-selection", label: "Polygon Selection", icon: "polygon", shortcut: "P" }, { id: "lasso", label: "Lasso", icon: "lasso", shortcut: "L" }] },
+  { label: "Draw", tools: [{ id: "rectangle", label: "Rectangle", icon: "rectangle", shortcut: "R" }, { id: "ellipse", label: "Ellipse", icon: "ellipse", shortcut: "E" }, { id: "line", label: "Line", icon: "line", shortcut: "I" }, { id: "arrow", label: "Arrow", icon: "arrow", shortcut: "A" }, { id: "text", label: "Text", icon: "text", shortcut: "T" }] },
+  { label: "Inspect", tools: [{ id: "ocr-region", label: "OCR Region", icon: "ocr", shortcut: "O" }, { id: "object-region", label: "Object Region", icon: "detect", shortcut: "D" }, { id: "template-region", label: "Template Region", icon: "template", shortcut: "Shift+T" }, { id: "color-sampler", label: "Color Sampler", icon: "eyedropper", shortcut: "C" }, { id: "pixel-probe", label: "Pixel Probe", icon: "probe", shortcut: "X" }, { id: "measure", label: "Measure", icon: "measure", shortcut: "U" }] },
+];
+export const VisionToolbox: React.FC = () => { const tool = useVisionDocumentStore((s) => s.tool); const hasSource = useVisionDocumentStore((s) => Boolean(s.source)); return <div className="vision-toolbox">{categories.map((category) => <section key={category.label}><h3>{category.label}</h3><div className="tool-grid">{category.tools.map((item) => <IconButton key={item.id} icon={item.icon} label={`${item.label} (${item.shortcut})`} active={tool === item.id} disabled={!hasSource && item.id !== "pointer" && item.id !== "pan" && item.id !== "zoom"} onClick={() => useVisionDocumentStore.getState().setTool(item.id)} />)}</div></section>)}</div>; };

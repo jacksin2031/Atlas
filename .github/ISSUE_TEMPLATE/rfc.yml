@@ -1,0 +1,42 @@
+﻿---
+name: RFC Proposal
+about: Propose a new RFC for Atlas
+title: "[RFC]: "
+labels: ["rfc"]
+assignees: []
+---
+
+## RFC Proposal
+
+### RFC Title
+<!-- Clear, descriptive title -->
+
+### Author
+<!-- Your name / handle -->
+
+### Status
+<!-- Proposed | Draft | Review | Approved | Implemented | Superseded -->
+
+### Summary
+<!-- One-paragraph overview of the proposal -->
+
+### Motivation
+<!-- Why is this RFC needed? What problem does it solve? -->
+
+### Design Details
+<!-- Technical description of the proposed change -->
+
+### Affected Runtimes
+<!-- Which runtimes are impacted? -->
+
+### Dependencies
+<!-- Other RFCs this depends on -->
+
+### Migration Plan
+<!-- How will existing code/users migrate? -->
+
+### Rejection Criteria
+<!-- Under what circumstances would this RFC be rejected? -->
+
+### Additional Context
+<!-- Links, examples, references -->

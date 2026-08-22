@@ -1,0 +1,153 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "ROADMAP.md"
+      - "VERSIONING.md"
+      - "RELEASE.md"
+      - "PROJECT_STATUS.md"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "18"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  markdown-links:
+    name: Broken Link Check
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install link checker
+        run: npm install -g markdown-link-check
+
+      - name: Check README links
+        run: |
+          echo "## README.md Link Check" > links-result.md
+          echo "" >> links-result.md
+          markdown-link-check README.md 2>&1 || true >> links-result.md
+
+      - name: Check docs links
+        run: |
+          echo "" >> links-result.md
+          echo "## docs/ Link Check" >> links-result.md
+          echo "" >> links-result.md
+          find docs -name "*.md" -exec markdown-link-check {} \; 2>&1 || true >> links-result.md
+
+      - name: Upload link check results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: link-check-results
+          path: links-result.md
+          retention-days: 7
+
+  documentation-consistency:
+    name: Documentation Consistency
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+          pip install -e .
+
+      - name: Validate documentation
+        run: python -m pytest tests/conformance/test_documentation_validator.py -v --tb=short
+
+      - name: Check version consistency
+        run: |
+          echo "## Version Consistency Check"
+          echo "Checking CHANGELOG.md..."
+          grep -c "## \[" CHANGELOG.md || echo "WARN: No version sections in CHANGELOG.md"
+          echo "Checking ROADMAP.md..."
+          grep -c "### Sprint" ROADMAP.md || echo "WARN: No sprint sections in ROADMAP.md"
+
+  compliance-reports:
+    name: Compliance Report Validation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+          pip install -e .
+
+      - name: Validate compliance reports exist
+        run: |
+          echo "## Compliance Report Check"
+          for report in \
+            "docs/ARCHITECTURE.md" \
+            "docs/README.md" \
+            "docs/COMPLIANCE_REPORT.md" \
+            "docs/IPC_COMPLIANCE_REPORT.md" \
+            "docs/PLUGIN_COMPLIANCE_REPORT.md" \
+            "docs/ai/AI_COMPLIANCE_REPORT.md" \
+            "docs/knowledge/knowledge.md" \
+            "docs/vision/VISION_COMPLIANCE_REPORT.md"; do
+            if [ -f "$report" ]; then
+              echo "OK  $report exists"
+            else
+              echo "WARN $report not found"
+            fi
+          done
+
+  readme-format:
+    name: README.md Format Check
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate README structure
+        run: |
+          echo "## README.md Validation"
+          for section in "## Vision" "## Goals" "## Current Status" "## Architecture" "## Implemented Modules" "## Quick Start" "## Repository Structure" "## Documentation" "## License"; do
+            if grep -q "^$section" README.md; then
+              echo "OK Found: $section"
+            else
+              echo "WARN Missing: $section"
+            fi
+          done
+
+  summary:
+    name: Documentation Summary
+    runs-on: ubuntu-22.04
+    needs: [markdown-links, documentation-consistency, compliance-reports, readme-format]
+    if: always()
+    steps:
+      - name: Doc Check Summary
+        run: |
+          echo "# Documentation Pipeline Summary"
+          echo ""
+          echo "| Check | Status |"
+          echo "|-------|--------|"
+          echo "| Broken Links | ${{ needs.markdown-links.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Consistency | ${{ needs.documentation-consistency.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Compliance | ${{ needs.compliance-reports.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| README Format | ${{ needs.readme-format.result == 'success' && 'OK' || 'FAIL' }} |"

@@ -1,0 +1,15 @@
+﻿[package]
+name = "atlas-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+atlas-contracts = { path = "../contracts" }
+atlas-common = { path = "../common" }
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+tracing.workspace = true

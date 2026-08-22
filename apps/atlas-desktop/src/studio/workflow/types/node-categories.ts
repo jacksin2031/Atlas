@@ -1,0 +1,66 @@
+﻿// Atlas Workflow Studio - Node Category Constants
+
+export const NODE_CATEGORIES = {
+  CORE: "core",
+  LOGIC: "logic",
+  FLOW: "flow",
+  VARIABLE: "variable",
+  MATH: "math",
+  STRING: "string",
+  COLLECTION: "collection",
+  DATETIME: "datetime",
+  FILE: "file",
+  SYSTEM: "system",
+  IPC: "ipc",
+  PLUGIN: "plugin",
+  VISION: "vision",
+  AI: "ai",
+  KNOWLEDGE: "knowledge",
+  PROJECT: "project",
+  STORAGE: "storage",
+  CUSTOM: "custom",
+} as const;
+
+export type NodeCategory = (typeof NODE_CATEGORIES)[keyof typeof NODE_CATEGORIES];
+
+export const NODE_CATEGORY_LABELS: Record<NodeCategory, string> = {
+  core: "Core",
+  logic: "Logic",
+  flow: "Flow",
+  variable: "Variable",
+  math: "Math",
+  string: "String",
+  collection: "Collection",
+  datetime: "Date/Time",
+  file: "File",
+  system: "System",
+  ipc: "IPC",
+  plugin: "Plugin",
+  vision: "Vision",
+  ai: "AI",
+  knowledge: "Knowledge",
+  project: "Project",
+  storage: "Storage",
+  custom: "Custom",
+};
+
+export const NODE_CATEGORY_ICONS: Record<NodeCategory, string> = {
+  core: "\u2699",
+  logic: "\u25C7",
+  flow: "\u25B8",
+  variable: "v",
+  math: "\u2211",
+  string: "abc",
+  collection: "\u2630",
+  datetime: "\u25F7",
+  file: "\uD83D\uDCD4",
+  system: "\u25A6",
+  ipc: "\u21C4",
+  plugin: "\u229E",
+  vision: "\u25CE",
+  ai: "\u2726",
+  knowledge: "\u2756",
+  project: "\u25A3",
+  storage: "\u22A1",
+  custom: "\u270E",
+};

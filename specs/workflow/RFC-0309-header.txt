@@ -1,0 +1,61 @@
+RFC: RFC-0309
+Title: Workflow Actions
+Status: Proposed
+Version: 1.0.0
+Author: Atlas Specification Committee
+Created: 2026-07-01
+Depends On:
+  - RFC-0001 Runtime Overview
+  - RFC-0002 Runtime Lifecycle
+  - RFC-0003 Runtime Service Model
+  - RFC-0004 Runtime Scheduler
+  - RFC-0005 Runtime Event Bus
+  - RFC-0006 Runtime State Management
+  - RFC-1001 Common Event Model
+  - RFC-1002 Common State Model
+  - RFC-1003 Common Capability Model
+  - RFC-1004 Common Contract Model
+  - RFC-1005 Common Manifest Model
+  - RFC-1006 Common Error Model
+Supersedes: None
+Superseded By: None
+Category: Workflow
+Layer: Standard
+Normative: YES
+Audience: All Subsystem Teams
+ADR References:
+  - ADR-0012
+Constitution References:
+  - Section 1 (Workflow Philosophy)
+Related RFCs:
+  - RFC-0307 Workflow Context
+  - RFC-0308 Workflow Events
+  - RFC-0309 Workflow Actions
+  - RFC-0310 Workflow Conditions
+  - RFC-0311 Workflow Triggers
+  - RFC-0312 Workflow Scheduler
+  - RFC-0313 Workflow Parallelism
+  - RFC-0314 Workflow Error Handling
+  - RFC-0315 Workflow Recovery
+  - RFC-0316 Workflow Debugging
+  - RFC-0317 Workflow Validation
+  - RFC-0318 Workflow Versioning
+  - RFC-0319 Workflow Security
+  - RFC-0320 Workflow Performance
+  - RFC-0321 Workflow Observability
+  - RFC-0322 Workflow Extension
+  - RFC-0323 Workflow Plugin Integration
+  - RFC-0324 Workflow Storage
+  - RFC-0325 Workflow AI
+  - RFC-0326 Workflow Vision
+  - RFC-0327 Workflow IPC
+  - RFC-0328 Workflow Serialization
+  - RFC-0329 Workflow Compatibility
+  - RFC-0330 Workflow Compliance
++ Related ADR: ADR-0012 Contract-First Specification-Driven Development
++ Related JSON Schema: specs/workflow/json-schema/workflow-action-types.md
++ Related Catalog: specs/workflow/catalog/workflow-actions.md
+Target Release: 1.0.0
+Review Cycle: Specification Committee
+Compatibility: Compatible with Spec 1.x
+Last Updated: 2026-07-01

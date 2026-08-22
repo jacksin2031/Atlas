@@ -1,0 +1,161 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
+  RUST_TOOLCHAIN: "1.80"
+
+jobs:
+  rust-build:
+    name: Rust Build and Test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: clippy,rustfmt
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build workspace
+        run: cargo build --workspace
+
+      - name: Clippy check
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Format check
+        run: cargo fmt --all --check
+
+      - name: Run workspace tests
+        run: cargo test --workspace
+
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Verify test discovery
+        run: |
+          echo "PYTHONPATH=$PYTHONPATH"
+          python -c "import sys; sys.path.insert(0, 'src'); import atlas_workflow; print('atlas_workflow OK')"
+          python -m pytest --collect-only -q 2>&1 | tail -3
+
+      - name: Run unit tests (skip if empty)
+        run: |
+          count=$(find tests/unit -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
+            python -m pytest tests/unit/ -v --tb=short -q
+          else
+            echo "No unit tests found in tests/unit/"
+          fi
+
+      - name: Run integration tests
+        run: |
+          count=$(find tests/integration -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
+            python -m pytest tests/integration/ -v --tb=short -q
+          else
+            echo "No integration tests found"
+          fi
+
+      - name: Run conformance tests
+        run: |
+          count=$(find tests/conformance -name "test_*.py" 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
+            python -m pytest tests/conformance/ -v --tb=short -q
+          else
+            echo "No conformance tests found"
+          fi
+
+      - name: Run full test suite
+        run: python -m pytest tests/ -v --tb=short -q
+
+      - name: Run AI package tests
+        run: PYTHONPATH=packages/ai/src python -m pytest packages/ai/tests/ -v --tb=short -q
+
+      - name: Run Vision package tests
+        run: PYTHONPATH=packages/vision/src python -m pytest packages/vision/tests/ -v --tb=short -q
+
+  desktop-tests:
+    name: Desktop Build and Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: apps/atlas-desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
+
+      - name: Install Tauri system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint frontend
+        run: pnpm run lint
+
+      - name: Test frontend
+        run: pnpm test
+
+      - name: Build frontend
+        run: pnpm run build
+
+      - name: Check Tauri backend
+        run: cargo check --manifest-path src-tauri/Cargo.toml
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-22.04
+    needs: [rust-build, python-tests, desktop-tests]
+    if: always()
+    steps:
+      - name: CI Summary
+        run: |
+          echo "# CI Pipeline Summary"
+          echo ""
+          echo "| Job | Status |"
+          echo "|-----|--------|"
+          echo "| Rust Build | ${{ needs.rust-build.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Python Tests | ${{ needs.python-tests.result == 'success' && 'OK' || 'FAIL' }} |"
+          echo "| Desktop Tests | ${{ needs.desktop-tests.result == 'success' && 'OK' || 'FAIL' }} |"

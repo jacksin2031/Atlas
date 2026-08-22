@@ -1,0 +1,199 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+
+env:
+  PYTHON_VERSION: "3.12"
+  PYTHONPATH: "src"
+  RUST_TOOLCHAIN: "1.80"
+
+jobs:
+  architecture-check:
+    name: Architecture Validation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Validate architecture constraints
+        run: python -m pytest tests/conformance/test_architecture_validator.py -v --tb=short
+
+      - name: Check forbidden imports
+        run: python -m pytest tests/conformance/test_module_validator.py -v --tb=short
+
+  rfc-check:
+    name: RFC Compliance
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Validate RFC compliance
+        run: python -m pytest tests/conformance/test_rfc_validator.py -v --tb=short
+
+  adr-check:
+    name: ADR Validation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Validate ADRs
+        run: python -m pytest tests/conformance/test_adr_validator.py -v --tb=short
+
+  documentation-check:
+    name: Documentation Validation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Validate documentation
+        run: python -m pytest tests/conformance/test_documentation_validator.py -v --tb=short
+
+      - name: Check for TODOs and placeholders
+        run: |
+          echo "## TODO/Placeholder Check" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          todos=$(grep -rn "TODO\|FIXME\|HACK\|XXX" --include="*.py" --include="*.rs" src/ packages/ tests/ 2>/dev/null || true)
+          if [ -n "$todos" ]; then
+            echo "- WARNING: Found TODOs/FIXMEs:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "$todos" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- OK: No TODOs, FIXMEs, HACKs, or XXXs found." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  tests:
+    name: Test Suite
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Run all Python tests
+        run: python -m pytest tests/ -v --tb=short --color=yes
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run Rust tests
+        run: cargo test --workspace
+
+  conformance:
+    name: Conformance Suite
+    runs-on: ubuntu-22.04
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Run full conformance suite
+        run: python -m pytest tests/conformance/ -v --tb=short
+
+      - name: Upload conformance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr-conformance-results
+          path: |
+            docs/**/*_COMPLIANCE_REPORT.md
+          retention-days: 7
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-22.04
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, conformance]
+    if: always()
+    steps:
+      - name: PR Check Summary
+        run: |
+          echo "# Pull Request Check Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Architecture | ${{ needs.architecture-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| RFC Compliance | ${{ needs.rfc-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ADR Validation | ${{ needs.adr-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Documentation | ${{ needs.documentation-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tests | ${{ needs.tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Conformance | ${{ needs.conformance.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ needs.architecture-check.result }}" = "success" ] && \
+             [ "${{ needs.rfc-check.result }}" = "success" ] && \
+             [ "${{ needs.adr-check.result }}" = "success" ] && \
+             [ "${{ needs.documentation-check.result }}" = "success" ] && \
+             [ "${{ needs.tests.result }}" = "success" ] && \
+             [ "${{ needs.conformance.result }}" = "success" ]; then
+            echo "All checks passed. Ready for review." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Some checks failed. Please fix before merging." >> "$GITHUB_STEP_SUMMARY"
+          fi

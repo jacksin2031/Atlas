@@ -1,0 +1,37 @@
+﻿
+## 17 Acceptance Criteria
+
+### 17.1 Runtime Contract Conformance
+
+| # | Criterion | Verification Method |
+|---|---|---|
+| AC-01 | The runtime MUST expose a service discovery interface that returns all registered services on request. | Service discovery query test: Query service catalog → Verify all services listed in RFC-0304 Section 9.1 appear in response |
+| AC-02 | The runtime MUST initialize all declared services before the first workflow execution begins. | Startup sequence test: Start runtime → Wait for Ready state → Verify service registry is non-empty and all services report Healthy |
+| AC-03 | The runtime MUST enforce isolation boundaries between concurrently executing workflows. | Concurrent execution test: Launch N workflows with overlapping resource requirements → Verify no cross-workflow state leakage detected via correlation ID tracing |
+| AC-04 | The runtime MUST support at least three (3) distinct hosting models: embedded, sidecar, and standalone. | Hosting model test: Deploy runtime in each model → Verify workflow manifest loading, service registration, and execution succeed identically across all three |
+| AC-05 | The runtime MUST provide health check endpoints for all services with status values from {Healthy, Degraded, Unhealthy, Unknown}. | Health check test: Query health endpoint → Verify response contains status field with one of four enumerated values for each service |
+| AC-06 | The runtime MUST load workflow manifests from a pluggable source without hard-coded path assumptions. | Manifest loading test: Configure three different manifest sources (filesystem, HTTP, embedded) → Verify identical workflow execution from all three |
+| AC-07 | The runtime MUST reject malformed workflow manifests with a validation error matching the schema defined in RFC-0317. | Schema validation test: Submit workflow manifest with invalid field types → Verify rejection with error code from workflow-error-codes.md catalog |
+| AC-08 | The runtime MUST propagate capability advertisements from plugins to the workflow execution engine within 100ms of plugin registration. | Capability propagation test: Register plugin with capabilities → Measure time until workflow engine can discover and use those capabilities → Verify ≤ 100ms |
+
+### 17.2 Lifecycle Compliance
+
+| # | Criterion | Verification Method |
+|---|---|---|
+| AC-09 | The runtime MUST follow the lifecycle sequence: Initializing → Ready → Running → Stopping → Stopped. | Lifecycle order test: Transition runtime through all states → Verify state transitions occur in prescribed order, no backwards transitions allowed |
+| AC-10 | The runtime MUST persist workflow state at every checkpoint boundary defined in RFC-0315. | Checkpoint persistence test: Execute workflow with checkpoints → Inspect storage backend → Verify checkpoint files exist with valid serialized state at each boundary |
+| AC-11 | The runtime MUST resume a workflow from the last checkpoint within 5 seconds of restart. | Resume timing test: Stop runtime mid-execution → Restart → Measure time from Ready state to resumption of execution → Verify ≤ 5 seconds |
+
+### 17.3 Resource Management
+
+| # | Criterion | Verification Method |
+|---|---|---|
+| AC-12 | The runtime MUST enforce resource quotas per workflow as declared in the manifest. | Quota enforcement test: Declare CPU/memory quotas → Execute workflow exceeding quotas → Verify runtime throttles or terminates the workflow |
+| AC-13 | The runtime MUST report resource utilization metrics at intervals not exceeding 1 second. | Metrics interval test: Enable resource monitoring → Capture metrics over 10-second window → Verify at least 10 data points collected |
+
+### 17.4 Error Handling
+
+| # | Criterion | Verification Method |
+|---|---|---|
+| AC-14 | The runtime MUST convert all internal errors to the standardized error format defined in RFC-0314. | Error format test: Trigger five different internal failure modes → Verify each error response conforms to the error schema with category, code, and context fields |
+| AC-15 | The runtime MUST log all fatal errors with sufficient context for post-mortem analysis per RFC-0321. | Error logging test: Induce fatal error → Inspect log output → Verify presence of workflow ID, execution ID, node ID, error code, and stack trace |

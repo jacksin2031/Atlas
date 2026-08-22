@@ -1,0 +1,21 @@
+﻿---
+name: Documentation Update
+about: Suggest documentation changes
+title: "[Docs]: "
+labels: ["documentation"]
+assignees: []
+---
+
+## Documentation Update
+
+### File(s) Affected
+<!-- Which documentation file(s) need updating? -->
+
+### Current State
+<!-- What does the documentation say now? -->
+
+### Proposed Change
+<!-- What should it say instead? -->
+
+### Reason
+<!-- Why is this change needed? (typo, outdated, missing, incorrect) -->

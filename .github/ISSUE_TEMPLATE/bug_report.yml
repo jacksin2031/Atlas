@@ -1,0 +1,38 @@
+﻿---
+name: Bug Report
+about: Report a bug in Atlas
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+---
+
+## Bug Report
+
+### Description
+<!-- Brief description of the bug -->
+
+### Affected Runtime
+<!-- Which runtime is affected? (Runtime, Plugin, IPC, Workflow, Vision, AI, Knowledge, Project, Integration) -->
+
+### Steps to Reproduce
+1.
+2.
+3.
+
+### Expected Behavior
+<!-- What should happen? -->
+
+### Actual Behavior
+<!-- What actually happened? -->
+
+### Environment
+- **OS**: <!-- e.g., Windows 11, Ubuntu 24.04, macOS 15 -->
+- **Python Version**: <!-- e.g., 3.12 -->
+- **Rust Version**: <!-- e.g., 1.80 -->
+- **Atlas Version**: <!-- e.g., v0.10.0-alpha -->
+
+### Logs / Screenshots
+<!-- Attach logs, screenshots, or error output -->
+
+### Additional Context
+<!-- Any other context about the problem? -->

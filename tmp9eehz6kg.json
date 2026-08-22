@@ -1,0 +1,5383 @@
+{
+  "architecture": {
+    "total_rules": 9,
+    "passed_rules": 9,
+    "failed_rules": 0,
+    "violations": [],
+    "compliance_level": "Fully Compliant",
+    "metadata": {}
+  },
+  "rfc_coverage": {
+    "total_rfcs": 121,
+    "implemented": 18,
+    "referenced": 120,
+    "tested": 0,
+    "documented": 0,
+    "coverage_pct": 28.51,
+    "rfc_details": [
+      {
+        "rfc_id": "RFC-1001-event",
+        "title": "Common Event Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-1002-state",
+        "title": "Common State Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-1003-capability",
+        "title": "Common Capability Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-1004-contract",
+        "title": "Common Contract Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-1005-manifest",
+        "title": "Common Manifest Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-1006-error",
+        "title": "Common Error Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0101-ipc",
+        "title": "IPC Overview",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0102-ipc",
+        "title": "IPC Message Model",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0103-ipc",
+        "title": "IPC Transport",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0104-ipc",
+        "title": "IPC Routing",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0105-ipc",
+        "title": "IPC Channel",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0106-ipc",
+        "title": "IPC Serialization",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0107-ipc",
+        "title": "IPC Security",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0108-ipc",
+        "title": "IPC Reliability",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0109-ipc",
+        "title": "IPC Lifecycle",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0110-ipc",
+        "title": "IPC Observability",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0111-ipc",
+        "title": "IPC Error Model",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0112-ipc",
+        "title": "IPC Extension",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0201-plugin",
+        "title": "Plugin Overview",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0202-plugin",
+        "title": "RFC-0202-plugin-manifest",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0203-plugin",
+        "title": "Plugin Lifecycle",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0204-plugin",
+        "title": "Plugin Loader",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0205-plugin",
+        "title": "Plugin Registry",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0206-plugin",
+        "title": "Plugin Capability",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0207-plugin",
+        "title": "Plugin Security",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0208-plugin",
+        "title": "Plugin Sandbox",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0209-plugin",
+        "title": "Plugin API",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0210-plugin",
+        "title": "Plugin Events",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0211-plugin",
+        "title": "Plugin Dependency",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0212-plugin",
+        "title": "Plugin Versioning",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0213-plugin",
+        "title": "Plugin Marketplace",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0214-plugin",
+        "title": "Plugin Extension Model",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0215-plugin",
+        "title": "Plugin Service Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0216-plugin",
+        "title": "string;",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0217-plugin",
+        "title": "Plugin Packaging",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0218-plugin",
+        "title": "Plugin Compatibility",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0219-plugin",
+        "title": "Plugin Permission Model",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0220-plugin",
+        "title": "Plugin IPC",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0221-plugin",
+        "title": "Plugin Resources",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0222-plugin",
+        "title": "Plugin Configuration",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0223-plugin",
+        "title": "Plugin Storage",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0224-plugin",
+        "title": "Plugin Testing",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0225-plugin",
+        "title": "Plugin Hot Reload",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0226-plugin",
+        "title": "Plugin Dependency Resolution",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0227-plugin",
+        "title": "Plugin Service Discovery",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0228-plugin",
+        "title": "Plugin Migration",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0229-plugin",
+        "title": "Plugin Telemetry",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0230-plugin",
+        "title": "Plugin Diagnostics",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0001-runtime",
+        "title": "Runtime Overview",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0002-runtime",
+        "title": "Runtime Lifecycle",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0003-runtime",
+        "title": "Runtime Service Model",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0004-runtime",
+        "title": "Runtime Scheduler",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0005-runtime",
+        "title": "Runtime Event Bus",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0006-runtime",
+        "title": "Runtime State Management",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0007-runtime",
+        "title": "Runtime IPC Architecture",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0008-runtime",
+        "title": "Runtime Plugin Host",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0009-runtime",
+        "title": "Runtime Resource Management",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0010-runtime",
+        "title": "Runtime Manifest Specification",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0011-runtime",
+        "title": "Runtime Error Taxonomy",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0012-runtime",
+        "title": "Runtime Capability Registry",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0013-runtime",
+        "title": "Runtime Contracts",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0014-runtime",
+        "title": "Runtime Reference Architecture",
+        "status": "Frozen",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0401-storage",
+        "title": "Storage Overview",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0402-storage",
+        "title": "Storage Architecture",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0403-storage",
+        "title": "Storage Provider",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0404-storage",
+        "title": "Storage Lifecycle",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0405-storage",
+        "title": "Storage Schema",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0406-storage",
+        "title": "Storage Transactions",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0407-storage",
+        "title": "Storage Versioning",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0408-storage",
+        "title": "Storage Migration",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0409-storage",
+        "title": "Storage Security",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0410-storage",
+        "title": "Storage Cache",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0411-storage",
+        "title": "Storage Backup",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0412-storage",
+        "title": "Storage Recovery",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0413-storage",
+        "title": "Storage Events",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0414-storage",
+        "title": "Storage Observability",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0415-storage",
+        "title": "Storage Performance",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0416-storage",
+        "title": "Storage Consistency",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0417-storage",
+        "title": "Storage Locking",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0418-storage",
+        "title": "Storage Replication",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0419-storage",
+        "title": "Storage Extension",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0420-storage",
+        "title": "Storage Compliance",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0421-storage",
+        "title": "Storage Domains",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0422-storage",
+        "title": "Storage Namespace",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0423-storage",
+        "title": "Storage Resource Model",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0424-storage",
+        "title": "Storage Quota",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0425-storage",
+        "title": "Storage Capability Discovery",
+        "status": "Accepted",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0301-workflow",
+        "title": "Workflow Overview",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0302-workflow",
+        "title": "Workflow Language",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0303-workflow",
+        "title": "Workflow Execution",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0304-workflow",
+        "title": "Workflow Runtime",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0305-workflow",
+        "title": "Workflow Lifecycle",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0306-workflow",
+        "title": "Workflow State",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0307-workflow",
+        "title": "Workflow Context",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0308-workflow",
+        "title": "Workflow Events",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0309-workflow",
+        "title": "Workflow Actions",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0310-workflow",
+        "title": "Workflow Conditions",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0311-workflow",
+        "title": "Workflow Triggers",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0312-workflow",
+        "title": "Workflow Scheduler",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0313-workflow",
+        "title": "Workflow Parallelism",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0314-workflow",
+        "title": "Workflow Error Handling",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0315-workflow",
+        "title": "Workflow Recovery",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0316-workflow",
+        "title": "Workflow Debugging",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0317-workflow",
+        "title": "Workflow Validation",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0318-workflow",
+        "title": "Workflow Versioning",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0319-workflow",
+        "title": "Workflow Security",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0320-workflow",
+        "title": "Workflow Performance",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0321-workflow",
+        "title": "Workflow Observability",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0322-workflow",
+        "title": "Workflow Extension",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0323-workflow",
+        "title": "Workflow Plugin Integration",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0324-workflow",
+        "title": "Workflow Storage",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": true
+      },
+      {
+        "rfc_id": "RFC-0325-workflow",
+        "title": "Workflow AI",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0326-workflow",
+        "title": "Workflow Vision",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0327-workflow",
+        "title": "Workflow IPC",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0328-workflow",
+        "title": "Workflow Serialization",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0329-workflow",
+        "title": "Workflow Compatibility",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0330-workflow",
+        "title": "Workflow Compliance",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0331-workflow",
+        "title": "Workflow Testing",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0332-workflow",
+        "title": "Workflow Migration",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-0333-workflow",
+        "title": "Workflow Extension SDK",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      },
+      {
+        "rfc_id": "RFC-HEADER-TEMPLATE",
+        "title": "RFC-HEADER-TEMPLATE",
+        "status": "Draft",
+        "compliance_pct": 100.0,
+        "is_implemented": false
+      }
+    ],
+    "metadata": {}
+  },
+  "adr_compliance": {
+    "total_adrs": 12,
+    "referenced": 0,
+    "deprecated": 0,
+    "superseded": 0,
+    "compliance_pct": 0.0,
+    "references": [],
+    "metadata": {}
+  },
+  "documentation": {
+    "expected_docs": 13,
+    "present_docs": 13,
+    "missing_docs": [],
+    "broken_refs": [
+      "specs\\ipc\\catalog\\capabilities.md: ../glossary.md",
+      "specs\\ipc\\catalog\\capabilities.md: ../RFC_INDEX.md",
+      "specs\\storage\\RFC-0401-storage-overview.md: ../adr/ADR-0001.md",
+      "specs\\storage\\RFC-0401-storage-overview.md: ../adr/ADR-0010.md"
+    ],
+    "consistency_issues": [
+      "CHANGELOG.md: Multiple sprint references: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "ARCHITECTURE.md: Multiple sprint references: [1, 2, 3, 5, 6, 7, 8, 9, 10]",
+      "PLUGIN_COMPLIANCE_REPORT.md: Multiple sprint references: [3, 4, 5, 6]",
+      "README.md: Multiple sprint references: [1, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "PROJECT_STATUS.md: Multiple sprint references: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]",
+      "README.md: Multiple sprint references: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11]",
+      "ROADMAP.md: Multiple sprint references: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]",
+      "VERSIONING.md: Multiple sprint references: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]"
+    ],
+    "coverage_pct": 100.0,
+    "metadata": {}
+  },
+  "modules": {
+    "modules": [],
+    "edges": [
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "validators",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "_service",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "_service",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "cli",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "cli",
+        "target": "atlas_conformance",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "documentation_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_scanner",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "architecture_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "documentation_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime_contract_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "test_coverage_validator",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtimes",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "runtimes",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "documentation_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_scanner",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_scanner",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "adr_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "documentation_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "module_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "rfc_scanner",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "architecture_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "adr_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "documentation_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "module_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "rfc_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime_contract_validator",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "test_coverage_validator",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "adr_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "architecture_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "documentation_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "module_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "rfc_validator",
+        "target": "scanners",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "runtime_contract_validator",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "pathlib",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "test_coverage_validator",
+        "target": "core",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "events",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "events",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "errors",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "errors",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "event_bus",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "event_bus",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "execution_engine",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "service",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "parser",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "collector",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "collections",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "node_registry",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "workflow_parser",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "bridge",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "abstraction",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "abstraction",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "workflow_validator",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "errors",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "events",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "events",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "state",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "capabilities",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "contracts",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "manifest_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "error_model",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "capabilities",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "contracts",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "error_model",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "errors",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "errors",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "events",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "manifest_model",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "state",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "event_bus",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "event_bus",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "event_bus",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "execution_engine",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "execution_engine",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "service",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "service",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "parser",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "collector",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "collections",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "collector",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "node_registry",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "node_registry",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "models",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "workflow_parser",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "models",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_parser",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "bridge",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "bridge",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "runtime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "runtime",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "integration",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "dataclasses",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "enum",
+        "allowed": true
+      },
+      {
+        "source": "integration",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "abstraction",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "abstraction",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "abc",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "datetime",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "abstraction",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "__init__",
+        "target": "workflow_validator",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "__future__",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "typing",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      },
+      {
+        "source": "workflow_validator",
+        "target": "atlas_workflow",
+        "allowed": true
+      }
+    ],
+    "has_cycles": false,
+    "forbidden_imports": [],
+    "naming_violations": [],
+    "metadata": {}
+  },
+  "overall_level": "Partially Compliant",
+  "sprint": "11",
+  "timestamp": "2026-07-05T07:01:07.906329+00:00",
+  "metadata": {}
+}

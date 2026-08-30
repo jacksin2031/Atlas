@@ -4,11 +4,7 @@
 
 Atlas Desktop Shell — the graphical user interface that hosts every Atlas runtime.
 
-This is NOT the Workflow Editor.
-This is NOT the Vision Editor.
-This is NOT the AI Studio.
-
-This is the application shell.
+This is the application shell that hosts the independent Workflow, Vision, and AI Studio workspaces.
 
 ## Technology Stack
 
@@ -32,7 +28,7 @@ apps/atlas-desktop/
 │   │   └── CommandPalette.tsx
 │   ├── design-system/      # Atlas SVG icons and compact shared primitives
 │   ├── workspace/          # FlexLayout manager, models, registry, persistence
-│   ├── studio/             # Workflow Studio and Vision Studio
+│   ├── studio/             # Workflow, Vision, and AI Studio
 │   ├── services/           # IPC, plugin, project, theme, log, command registry/palette
 │   ├── stores/             # Shell Zustand stores
 │   ├── ipc/                # Tauri IPC bridge layer
@@ -54,16 +50,26 @@ apps/atlas-desktop/
 
 ## Workspaces
 
-Workflow and Vision each own a FlexLayout model. Panel tabs can be moved, docked, split, reordered, resized, closed, reopened, and maximized. Layouts persist independently and recover to defaults when invalid.
+Workflow, Vision, and AI each own a FlexLayout model. Panel tabs can be moved, docked, split, reordered, resized, closed, reopened, and maximized. Layouts persist independently and recover to defaults when invalid.
 
 - Workflow: Project Explorer / Node Palette, Workflow Canvas, Properties, Variables / Console / Problems / Debugger / Output.
 - Vision: Vision Toolbox / Project Explorer, Vision Canvas, Vision Properties, OCR / Detection / Color / Template / Timeline / Console / Output / Problems.
+- AI: Providers / Models / Sessions, multi-mode AI editor, Context / Request / Response, Console / Tools / Memory / Retrieval / Metrics / Events / Comparison / Problems.
+
+AI Studio uses the existing AI Runtime contracts through a typed IPC boundary, a persistent Tauri process manager, and a long-running Python host. The host implements discovery, inference, cancellation, provider actions, and request-correlated streaming for OpenAI-compatible and Ollama providers. Production mode shows explicit Runtime/provider-unavailable states; browser development can opt into the visibly isolated adapter with `VITE_ATLAS_AI_DEMO=true`.
+
+Workflow Studio uses a separate typed IPC boundary and persistent Python Workflow host. The graph is mapped to the canonical Workflow manifest; the host executes it through the existing Runtime, immutable DAG, Node Registry, and Plugin Bridge. Runtime events, not React timers, drive node/edge state, debugger state, variables, metrics, and result inspection. Browser development reports Runtime unavailable and keeps simulation explicitly separate from native execution.
 
 ## Commands
 
 | Shortcut | Action |
 |----------|--------|
 | Ctrl+Shift+P | Toggle Command Palette |
+| F5 | Run workflow |
+| F8 | Pause or resume workflow |
+| Shift+F5 | Stop workflow |
+| F7 | Step workflow |
+| Ctrl+Shift+F5 | Restart workflow |
 
 ## Running
 

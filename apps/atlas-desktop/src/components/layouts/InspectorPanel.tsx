@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { useWorkflowStore } from '../../studio/workflow/stores';
+import { EditablePropertyRow, ParameterEditor, TemplateImageEditor } from '../../studio/workflow/components/inspector/property-inspector';
 import { useThemeStore } from '../../stores';
 
 export const InspectorPanel: React.FC = () => {
   const resolvedTheme = useThemeStore((s) => s.resolvedTheme);
 
   // Access selection directly from store state
-  const selection = useWorkflowStore((s) => s.selection);
+  const selectedNodeIds = useWorkflowStore((s) => s.selectedNodeIds);
   const nodes = useWorkflowStore((s) => s.nodes);
+  const updateNode = useWorkflowStore((s) => s.updateNode);
 
-  const selectedNodeIds = Array.from(selection.selectedNodeIds);
   const selectedNode = selectedNodeIds.length === 1 ? nodes.find((n) => n.id === selectedNodeIds[0]) : null;
 
   return (
@@ -45,7 +46,7 @@ export const InspectorPanel: React.FC = () => {
           <div style={{ fontSize: 12 }}>
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 10, color: '#666', textTransform: 'uppercase', marginBottom: 4 }}>Name</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#e0e0e0' }}>{selectedNode.label}</div>
+              <EditablePropertyRow label="Label" value={selectedNode.label} onCommit={(label) => updateNode(selectedNode.id, { label })} />
             </div>
 
             <div style={{ marginBottom: 12 }}>
@@ -90,10 +91,25 @@ export const InspectorPanel: React.FC = () => {
             {Object.keys(selectedNode.parameters).length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 10, color: '#666', textTransform: 'uppercase', marginBottom: 4 }}>Parameters</div>
-                {Object.entries(selectedNode.parameters).map(([key, value]) => (
-                  <div key={key} style={{ padding: '2px 0', fontSize: 11, color: '#ccc' }}>
-                    {key}: <span style={{ fontFamily: 'monospace', color: '#888' }}>{String(value)}</span>
-                  </div>
+                <button style={{ fontSize: 10, marginBottom: 4 }} onClick={() => {
+                  const value = prompt('Node parameters (JSON):', JSON.stringify(selectedNode.parameters, null, 2));
+                  if (value === null) return;
+                  try { updateNode(selectedNode.id, { parameters: JSON.parse(value) as Record<string, unknown> }); }
+                  catch { alert('Parameters must be valid JSON.'); }
+                }}>Edit JSON</button>
+                {selectedNode.type === 'vision_template_match' && (
+                  <TemplateImageEditor
+                    value={selectedNode.parameters.templateUrl}
+                    fileName={selectedNode.parameters.templateName}
+                    onCommit={(templateUrl, templateName) => updateNode(selectedNode.id, {
+                      parameters: { ...selectedNode.parameters, templateUrl, templateName },
+                    })}
+                  />
+                )}
+                {Object.entries(selectedNode.parameters).filter(([key]) => (
+                  selectedNode.type !== 'vision_template_match' || (key !== 'templateUrl' && key !== 'templateName')
+                )).map(([key, value]) => (
+                  <ParameterEditor key={key} label={key} value={value} onCommit={(next) => updateNode(selectedNode.id, { parameters: { ...selectedNode.parameters, [key]: next } })} />
                 ))}
               </div>
             )}
@@ -103,11 +119,8 @@ export const InspectorPanel: React.FC = () => {
               <div style={{ padding: '2px 0', fontSize: 11, color: '#ccc' }}>
                 State: <span style={{ color: selectedNode.executionState === 'running' ? '#4CAF50' : '#888' }}>{selectedNode.executionState || 'pending'}</span>
               </div>
-              {selectedNode.priority !== undefined && selectedNode.priority !== 0 && (
-                <div style={{ padding: '2px 0', fontSize: 11, color: '#ccc' }}>
-                  Priority: {selectedNode.priority}
-                </div>
-              )}
+              <EditablePropertyRow label="Priority" value={String(selectedNode.priority ?? 0)} type="number" onCommit={(value) => updateNode(selectedNode.id, { priority: Number(value) || 0 })} />
+              <EditablePropertyRow label="Timeout" value={selectedNode.timeout ?? ''} placeholder="e.g. 30" onCommit={(timeout) => updateNode(selectedNode.id, { timeout: timeout || undefined })} />
             </div>
 
             {selectedNode.capabilities && selectedNode.capabilities.length > 0 && (

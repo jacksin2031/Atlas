@@ -21,10 +21,10 @@ Build automation that understands intent instead of recording coordinates.
 
 | Attribute | Value |
 |---|---|
-| **Version** | 0.12.0-alpha |
-| **Current Focus** | Desktop Shell and Workflow Studio stabilization |
+| **Version** | 0.15.0-alpha |
+| **Current Focus** | Sprint 15 frozen; preparing Sprint 16 Marketplace |
 | **Implemented Packages** | 6 Rust workspace crates, 3 Python runtimes, 1 desktop app |
-| **Automated Tests** | 1,005 |
+| **Automated Tests** | 1,074 passing in the Sprint 15 freeze |
 | **Specification Status** | RFCs are present across the planned runtimes; implementation coverage varies |
 | **License** | Apache 2.0 |
 
@@ -240,7 +240,7 @@ Atlas/
 
 Apache 2.0
 
-| **Current Focus** | Sprint 14 Vision Studio complete; runtime adapter follow-up |
+| **Current Focus** | Sprint 15.2 Workflow Execution Integration; live-provider acceptance pending |
 | **Desktop Shell** | apps/atlas-desktop/ — Alpha GUI with Tauri 2 + React |
 
 ### Desktop Shell (Sprint 12, alpha)
@@ -261,3 +261,11 @@ Apache 2.0
 - Image loading, pan/zoom canvas, grid/rulers, editable overlays, and properties
 - OCR, detection, color, template, and timeline panels behind UI service / IPC boundaries
 - Frontend, browser, Vision runtime, and Tauri MSVC verification pass
+
+### Workflow Execution Integration (Sprint 15.2, alpha)
+- Canonical graph serialization and validation through the existing Workflow Runtime
+- Persistent Tauri/Python host and nine native workflow lifecycle commands
+- Real port-to-port values, deterministic DAG order, conditional branch skipping, variables, cancellation, pause/resume, step, restart, results, history, and metrics
+- Runtime-driven canvas, edge, debugger, variable, Output, and Properties state
+- Core, AI bridge, Vision bridge, and deterministic Plugin Bridge node boundaries
+- Browser mode explicitly reports Runtime unavailable; simulation remains separate

@@ -7,7 +7,85 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
 
-## [Unreleased] — Sprint 14 Vision Studio
+## [0.15.0-alpha] — 2026-08-30
+
+### Sprint 15 Freeze
+
+- Final Acceptance: PASS.
+- 1,074 automated tests pass with no failures.
+- Core visual desktop automation loop, Input safety, crash recovery, credential boundaries, dynamic plugin integration, and the Desktop AI bridge are verified.
+- Live provider streaming and the final multimodal provider response remain `PENDING EXTERNAL CONDITION` because no healthy provider/model was available.
+
+### Added
+- Persistent Tauri-managed Python Workflow host with correlated JSON-lines requests, events, bridge requests, bounded history, and failure recovery.
+- Native `workflow_validate`, `workflow_start`, `workflow_pause`, `workflow_resume`, `workflow_stop`, `workflow_step`, `workflow_restart`, `workflow_get_state`, and `workflow_get_result` commands.
+- Canonical Workflow Studio graph serialization, real port-to-port value propagation, deterministic branch skipping, Runtime variable updates, backend breakpoints, cancellation, restart, metrics, and structured results.
+- Core executable nodes plus AI Runtime, Vision capture, and repository-owned deterministic Plugin Bridge node boundaries.
+- Runtime-driven canvas/edge/node state, debugger correlation, variable state, Output panel, node result inspection, workflow commands, menu actions, and shortcuts.
+- Deterministic acceptance workflow in `sample-workflow-execution.json` and focused Python/Desktop integration coverage.
+
+### Changed
+- Workflow execution state is separate from editable graph state; React no longer simulates native execution lifecycle.
+- Browser/Vite mode reports Runtime unavailable instead of silently returning mock execution results.
+- Vite ignores Tauri build artifacts so Rust rebuilds do not crash the development file watcher on Windows.
+
+### Security
+- Workflow host sanitizes credential-, secret-, authorization-, and token-like result metadata before crossing IPC.
+- AI nodes call the existing AI Runtime host bridge; Vision nodes reuse native capture; no React node calls providers or capture APIs directly.
+
+### Verification
+- 310 root Python tests, 110 AI tests, 185 Vision tests, and 135 Desktop tests pass.
+- Desktop TypeScript, ESLint, production build, Rust fmt/check/test, malformed-request recovery, cancellation, pause/step/resume, branch skipping, plugin execution, and AI request normalization pass.
+- Live-provider AI and multimodal acceptance remains pending external credentials/provider availability and is not reported as complete.
+
+### AI Studio Runtime Integration
+
+#### Added
+- Independent AI FlexLayout workspace using the shared Workspace Manager, panel registry, command registry, and `atlas.layout.ai.v1` persistence.
+- Persistent Tauri `AIHostManager` and JSON-lines Python host implementing `ai_discover`, `ai_infer`, `ai_cancel`, and `ai_provider_action`.
+- OpenAI-compatible and Ollama discovery/inference adapters with SSE/NDJSON streaming, cancellation, metrics, and Vision image payload support.
+- Request-correlated `ai://runtime-event` streaming from Python through Tauri to the React Playground.
+- Provider/Model browser, AI Playground, Prompt/Conversation/Agent modes, Context/Request/Response inspectors, Memory, Tools, Retrieval, Events, Metrics, and Prompt Comparison panels.
+- Typed Desktop AI IPC boundary and an explicit `VITE_ATLAS_AI_DEMO=true` development adapter visibly identified as Demo Provider.
+- Vision reference/image context handling without duplicating native capture or retaining base64 payloads in AI UI state.
+- Focused AI store/service tests and expanded three-Studio workspace regression coverage.
+
+#### Changed
+- Desktop toolbar, menu, status bar, icons, and workspace types now include AI Studio.
+- Command-driven panel requests are applied to the current Workspace Manager FlexLayout model.
+- Restored the existing `useLayoutStore` barrel export required by repository-wide TypeScript validation.
+
+#### Security
+- Provider credentials are not accepted, logged, inspected, or persisted by AI Studio.
+- The Python host reads credentials from its process environment until Atlas secure-vault integration is available.
+- Tool and agent views expose explicit Runtime metadata only and do not execute tools or reveal hidden reasoning.
+
+#### Verification
+- Desktop TypeScript, ESLint, production build, Rust fmt/Tauri check/test, and AI Runtime/host tests pass.
+- A real Tauri window reached the persistent Python host, discovered OpenAI, and routed Connect/Test without the former `unavailable` bridge regression.
+- The provider endpoint was unhealthy and exposed no selectable model; live text/Vision provider acceptance is recorded as `PENDING EXTERNAL CONDITION`.
+
+### Sprint 15.3–15.6 Closure
+
+#### Added
+- Input Runtime provider abstraction and 12 bounded mouse/keyboard workflow nodes.
+- Typed Vision target references consumed directly by Input nodes.
+- Native Windows Template matching and OCR workflow integrations.
+- Project-owned AI, Vision, Workflow, workspace, and execution persistence with backup recovery.
+- Dynamic data-driven workflow plugin registration with a restricted operation allow-list.
+
+#### Security
+- Windows credential-vault boundary with credential-shaped project asset rejection.
+- Emergency stop cancels active workflows, releases held input, and disarms the Input Runtime.
+- Restored projects never restore Input authorization or automatically replay interrupted workflows.
+- Missing visual targets fail closed before Mouse Click.
+
+#### Verification
+- Real Tauri target relocation, missing-target/no-click, Template, OCR, dynamic plugin, project restart, interrupted recovery, unarmed-after-restart, no-replay, and manual-restart scenarios pass.
+- The full final suite contains 1,074 passing tests: root Python 310, AI Python 110, Vision Python 185, Desktop Vitest 135, root Rust 329, and Tauri Rust 5.
+- See `docs/acceptance/SPRINT_15_FINAL_ACCEPTANCE_REPORT.md` for execution IDs and evidence.
+
+## Sprint 14 Vision Studio
 
 ### Added
 - FlexLayout 0.10.5 as the sole active desktop docking engine.

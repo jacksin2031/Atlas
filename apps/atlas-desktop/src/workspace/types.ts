@@ -1,6 +1,6 @@
 import type React from "react";
 
-export type WorkspaceId = "workflow" | "vision";
+export type WorkspaceId = "workflow" | "vision" | "ai";
 
 export interface PanelDefinition {
   id: string;
@@ -10,5 +10,5 @@ export interface PanelDefinition {
   closable: boolean;
   dockable: boolean;
   defaultTabset: string;
-  icon?: "workflow" | "vision" | "folder";
+  icon?: "workflow" | "vision" | "ai" | "folder";
 }

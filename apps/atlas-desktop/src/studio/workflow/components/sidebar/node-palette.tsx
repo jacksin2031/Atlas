@@ -3,6 +3,14 @@
 
 import React, { useMemo } from 'react';
 import { useNodeRegistryStore } from '../../stores';
+import { useWorkflowStore } from '../../stores';
+import {
+  beginPalettePointerDrag,
+  cancelPalettePointerDrag,
+  consumeSuppressedPaletteClick,
+  createNodeFromTemplate,
+  updatePalettePointerDrag,
+} from '../../hooks/use-canvas-drag-drop';
 import { NODE_CATEGORIES, NODE_CATEGORY_LABELS } from '../../types/node-categories';
 import { Icon, type IconName } from '../../../../design-system';
 import type { PluginNodeRegistration } from '../../types';
@@ -11,6 +19,7 @@ import type { NodeCategory } from '../../types/node-categories';
 export const NodePalette: React.FC = () => {
   const builtinNodes = useNodeRegistryStore((s) => s.builtinNodes);
   const registrations = useNodeRegistryStore((s) => s.registrations);
+  const addNode = useWorkflowStore((s) => s.addNode);
 
   const categorizedNodes = useMemo(() => {
     const seen = new Set<string>();
@@ -37,9 +46,33 @@ export const NodePalette: React.FC = () => {
         category: node.category,
         inputs: node.inputs.map((i) => ({ name: i.name, type: i.type })),
         outputs: node.outputs.map((o) => ({ name: o.name, type: o.type })),
+        parameters: node.parameters,
+        capabilities: node.capabilities,
+        pluginId: node.pluginId,
       })
     );
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  // The embedded desktop canvas can suppress native HTML5 drag events in some
+  // hosts. Clicking a palette item provides a deterministic fallback while
+  // preserving drag-and-drop for hosts that support it.
+  const handleClick = (node: PluginNodeRegistration) => {
+    if (consumeSuppressedPaletteClick()) return;
+    const existing = useWorkflowStore.getState().nodes;
+    const column = existing.length % 3;
+    const row = Math.floor(existing.length / 3);
+    const template = {
+      typeName: node.typeName,
+      label: node.label,
+      category: node.category,
+      inputs: node.inputs.map((i) => ({ name: i.name, type: i.type })),
+      outputs: node.outputs.map((o) => ({ name: o.name, type: o.type })),
+      parameters: node.parameters,
+      capabilities: node.capabilities,
+      pluginId: node.pluginId,
+    };
+    addNode(createNodeFromTemplate(template, 80 + column * 260, 80 + row * 150));
   };
 
   return (
@@ -87,8 +120,13 @@ export const NodePalette: React.FC = () => {
             {(categorizedNodes[cat] ?? []).map((node) => (
               <div
                 key={node.nodeId}
-                draggable
+                draggable={false}
                 onDragStart={(e) => handleDragStart(node, e)}
+                onPointerDown={(e) => beginPalettePointerDrag(toTemplate(node), e.clientX, e.clientY)}
+                onPointerMove={(e) => updatePalettePointerDrag(e.clientX, e.clientY)}
+                onPointerUp={cancelPalettePointerDrag}
+                onPointerCancel={cancelPalettePointerDrag}
+                onClick={() => handleClick(node)}
                 style={{
                   padding: '4px 12px 4px 24px',
                   fontSize: 12,
@@ -105,7 +143,7 @@ export const NodePalette: React.FC = () => {
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                 }}
-                title={node.description || node.label}
+                title={`${node.description || node.label} (click to add)`}
               >
                 <span style={{ fontSize: 10, color: '#666', display:'inline-flex' }}><Icon name={categoryIcon(node.category)} size={11}/></span>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -119,4 +157,15 @@ export const NodePalette: React.FC = () => {
   );
 };
 
-const categoryIcon = (category: NodeCategory): IconName => category === 'vision' ? 'vision' : category === 'file' || category === 'project' ? 'folder' : category === 'ai' ? 'detect' : 'workflow';
+const toTemplate = (node: PluginNodeRegistration) => ({
+  typeName: node.typeName,
+  label: node.label,
+  category: node.category,
+  inputs: node.inputs.map((i) => ({ name: i.name, type: i.type })),
+  outputs: node.outputs.map((o) => ({ name: o.name, type: o.type })),
+  parameters: node.parameters,
+  capabilities: node.capabilities,
+  pluginId: node.pluginId,
+});
+
+const categoryIcon = (category: NodeCategory): IconName => category === 'vision' ? 'vision' : category === 'file' || category === 'project' ? 'folder' : category === 'ai' ? 'detect' : category === 'input' ? 'pointer' : 'workflow';

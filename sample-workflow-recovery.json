@@ -1,0 +1,23 @@
+{
+  "id": "wf_sprint_15_6_interrupted_recovery",
+  "version": "1.0.0",
+  "name": "Sprint 15.6 Interrupted Input Recovery",
+  "description": "Performs one safe mouse move, remains running long enough to terminate Atlas, and must recover as interrupted without replay.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"move","type":"mouse_move","label":"Safe Mouse Move","category":"input","inputs":[{"id":"move_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"move_result","name":"result","type":"object"}],"parameters":{"x":700,"y":500,"duration_ms":100},"capabilities":["input.control"]},
+    {"id":"delay","type":"delay","label":"Recovery Window (15s)","category":"flow","inputs":[{"id":"delay_input","name":"input","type":"any"}],"outputs":[{"id":"delay_value","name":"value","type":"any"}],"parameters":{"seconds":15}},
+    {"id":"output","type":"output","label":"Recovered Output","category":"core","inputs":[{"id":"output_input","name":"input","type":"any"}],"outputs":[{"id":"output_value","name":"value","type":"any"}],"parameters":{}},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"any"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_move","source":"entry","sourcePort":"entry_out","target":"move","targetPort":"move_trigger","edgeType":"data"},
+    {"id":"move_delay","source":"move","sourcePort":"move_result","target":"delay","targetPort":"delay_input","edgeType":"data"},
+    {"id":"delay_output","source":"delay","sourcePort":"delay_value","target":"output","targetPort":"output_input","edgeType":"data"},
+    {"id":"output_exit","source":"output","sourcePort":"output_value","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "requiredCapabilities": ["input.control"],
+  "metadata": {"createdAt":1788051200000,"updatedAt":1788051200000,"createdBy":"Atlas Sprint 15.6 acceptance","tags":["sample","input","recovery","windows-e2e"]}
+}

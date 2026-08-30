@@ -6,6 +6,7 @@ directly.
 """
 
 from __future__ import annotations
+import inspect
 from typing import Any
 
 from atlas_workflow.common import PluginError
@@ -47,6 +48,7 @@ class PluginBridge:
         configuration: dict[str, Any],
         inputs: dict[str, Any],
         node_metadata: dict[str, Any],
+        execution_context: Any | None = None,
     ) -> dict[str, Any]:
         """Execute a workflow node through the Plugin Runtime.
 
@@ -78,12 +80,15 @@ class PluginBridge:
 
         try:
             if callable(handler):
-                return handler(
-                    node_id=node_id,
-                    configuration=configuration,
-                    inputs=inputs,
-                    metadata=node_metadata,
-                )
+                arguments = {
+                    "node_id": node_id,
+                    "configuration": configuration,
+                    "inputs": inputs,
+                    "metadata": node_metadata,
+                }
+                if "context" in inspect.signature(handler).parameters:
+                    arguments["context"] = execution_context
+                return handler(**arguments)
             else:
                 raise PluginError(
                     f"Handler for {node_type!r} is not callable",

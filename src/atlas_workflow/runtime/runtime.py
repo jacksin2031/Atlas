@@ -5,6 +5,7 @@ Per RFC-0304 (Workflow Runtime) and RFC-0305 (Lifecycle).
 
 from __future__ import annotations
 import uuid
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 
@@ -15,11 +16,12 @@ from atlas_workflow.common import (
     WorkflowEvent,
     EventType,
     WorkflowLifecycleState,
+    ExecutionState,
     ExecutionMetadata,
     SecurityError,
 )
 from atlas_workflow.events import EventBus
-from atlas_workflow.execution import ExecutionEngine, ExecutionToken, ExecutionResult
+from atlas_workflow.execution import ExecutionControl, ExecutionEngine, ExecutionToken, ExecutionResult
 from atlas_workflow.graph import WorkflowGraph, GraphNode, GraphEdge
 from atlas_workflow.health import HealthService
 from atlas_workflow.metrics import MetricsCollector
@@ -91,6 +93,7 @@ class WorkflowInstance:
         instance_id: str | None = None,
         inputs: dict[str, Any] | None = None,
         metadata: dict[str, Any] | None = None,
+        breakpoints: set[str] | None = None,
     ) -> None:
         self._instance_id = instance_id or str(uuid.uuid4())
         self._workflow_id = workflow_id
@@ -110,6 +113,7 @@ class WorkflowInstance:
         self._completed_at: datetime | None = None
         self._result: ExecutionResult | None = None
         self._token: ExecutionToken | None = None
+        self._control = ExecutionControl(breakpoints)
 
     @property
     def instance_id(self) -> str:
@@ -146,6 +150,10 @@ class WorkflowInstance:
     @property
     def token(self) -> ExecutionToken | None:
         return self._token
+
+    @property
+    def control(self) -> ExecutionControl:
+        return self._control
 
     @property
     def created_at(self) -> datetime:
@@ -271,6 +279,8 @@ class WorkflowRuntime:
         graph: WorkflowGraph,
         inputs: dict[str, Any] | None = None,
         metadata: dict[str, Any] | None = None,
+        instance_id: str | None = None,
+        breakpoints: set[str] | None = None,
     ) -> WorkflowInstance:
         instance = WorkflowInstance(
             workflow_id=graph.workflow_id,
@@ -279,6 +289,8 @@ class WorkflowRuntime:
             graph=graph,
             inputs=inputs,
             metadata=metadata,
+            instance_id=instance_id,
+            breakpoints=breakpoints,
         )
         self._instances[instance.instance_id] = instance
         self._event_bus.publish_event_type(
@@ -320,9 +332,17 @@ class WorkflowRuntime:
                 workflow_id=instance.workflow_id,
                 instance_id=instance.instance_id,
             ),
+            control=instance.control,
         )
 
-        if result.success:
+        if instance.control.is_cancelled:
+            result = replace(result, state=ExecutionState.CANCELLED, error="Execution cancelled")
+            instance.set_state(WorkflowLifecycleState.CANCELLED)
+            self._event_bus.publish_workflow_cancelled(
+                workflow_id=instance.workflow_id,
+                instance_id=instance.instance_id,
+            )
+        elif result.success:
             instance.set_state(WorkflowLifecycleState.COMPLETED)
             self._metrics.record_execution_completed(result.duration_ms or 0)
             self._event_bus.publish_workflow_completed(
@@ -346,6 +366,7 @@ class WorkflowRuntime:
         if instance is None or instance.state != WorkflowLifecycleState.RUNNING:
             return False
         instance.set_state(WorkflowLifecycleState.PAUSED)
+        instance.control.pause()
         if instance._token:
             instance._token = instance._token.pause()
         self._event_bus.publish_workflow_paused(
@@ -357,9 +378,12 @@ class WorkflowRuntime:
 
     def resume(self, instance_id: str) -> bool:
         instance = self._instances.get(instance_id)
-        if instance is None or instance.state != WorkflowLifecycleState.PAUSED:
+        if instance is None or (
+            instance.state != WorkflowLifecycleState.PAUSED and not instance.control.is_paused
+        ):
             return False
         instance.set_state(WorkflowLifecycleState.RUNNING)
+        instance.control.resume()
         if instance._token:
             instance._token = instance._token.resume()
         self._event_bus.publish_workflow_resumed(
@@ -375,11 +399,21 @@ class WorkflowRuntime:
             return False
         if instance._token:
             instance._token = instance._token.cancel()
+        instance.control.cancel()
         instance.set_state(WorkflowLifecycleState.CANCELLED)
         self._event_bus.publish_workflow_cancelled(
             workflow_id=instance.workflow_id,
             instance_id=instance_id,
         )
+        return True
+
+    def step(self, instance_id: str) -> bool:
+        instance = self._instances.get(instance_id)
+        if instance is None or (
+            instance.state != WorkflowLifecycleState.PAUSED and not instance.control.is_paused
+        ):
+            return False
+        instance.control.step()
         return True
 
     def dispose(self, instance_id: str) -> bool:

@@ -4,6 +4,7 @@
 import React from 'react';
 import { useWorkflowStore } from '../../stores';
 import { validationService } from '../../services/validation-service';
+import { executorService } from '../../services/executor-service';
 import type { ValidationResult } from '../../types';
 
 export const ValidationReportPanel: React.FC = () => {
@@ -14,7 +15,9 @@ export const ValidationReportPanel: React.FC = () => {
   const handleValidate = async () => {
     // Build a minimal workflow definition from current state
     const def = useWorkflowStore.getState().exportToDefinition();
-    const validationResults = await validationService.validate(def);
+    const localResults = await validationService.validate(def);
+    const runtimeErrors = await executorService.validate(def);
+    const validationResults: ValidationResult[] = [...localResults, ...runtimeErrors.map((message) => ({ rule: 'runtime_validation', severity: message === 'Workflow Runtime unavailable' ? 'warning' as const : 'error' as const, message, location: 'workflow' as const }))];
     setResults(validationResults);
     setValidationResults(validationResults);
     const hasErrors = validationResults.some((r) => r.severity === 'error');

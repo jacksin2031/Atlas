@@ -23,11 +23,18 @@ import {
 import '@xyflow/react/dist/style.css';
 import {
   useWorkflowStore,
+  useExecutionStore,
 } from "../../stores";
 import { NODE_TYPES, getNodeTypeName } from "../nodes/index";
+import { EDGE_TYPES } from "../edges";
 import type { WorkflowGraphEdge } from "../../stores/workflow-store";
 import type { DraggableNodeTemplate } from "../../hooks/use-canvas-drag-drop";
-import { createNodeFromTemplate as _createNodeFromTemplate } from "../../hooks/use-canvas-drag-drop";
+import {
+  cancelPalettePointerDrag,
+  createNodeFromTemplate as _createNodeFromTemplate,
+  takePalettePointerDrop,
+  updatePalettePointerDrag,
+} from "../../hooks/use-canvas-drag-drop";
 
 const NODE_WIDTH = 220;
 
@@ -35,14 +42,21 @@ export const WorkflowCanvas: React.FC = () => {
   const nodes = useWorkflowStore((s) => s.nodes);
   const edges = useWorkflowStore((s) => s.edges);
   const setNodes = useWorkflowStore((s) => s.setNodes);
+  const setNodePosition = useWorkflowStore((s) => s.setNodePosition);
+  const pushHistory = useWorkflowStore((s) => s.pushHistory);
+  const removeNode = useWorkflowStore((s) => s.removeNode);
   const setEdges = useWorkflowStore((s) => s.setEdges);
+  const removeEdge = useWorkflowStore((s) => s.removeEdge);
   const selectNode = useWorkflowStore((s) => s.selectNode);
   const selectEdge = useWorkflowStore((s) => s.selectEdge);
+  const setSelection = useWorkflowStore((s) => s.setSelection);
   const deselectAll = useWorkflowStore((s) => s.deselectAll);
   const setTransform = useWorkflowStore((s) => s.setTransform);
+  const activeRun = useExecutionStore((s) => s.activeRunId ? s.runs[s.activeRunId] : undefined);
   // transform removed useWorkflowStore((s) => s.transform);
 
   const rfRef = useRef<any>(null);
+  const draggingNodeIdsRef = useRef(new Set<string>());
 
   // Sync store -> React Flow
   const [rfNodes, setRfNodes]: any = useNodesState(
@@ -50,11 +64,34 @@ export const WorkflowCanvas: React.FC = () => {
       ...n,
       width: NODE_WIDTH,
       type: getNodeTypeName(n as any),
-      data: n,
+      data: { ...n, executionState: activeRun?.nodeStates[n.id] ?? n.executionState },
+      position: { x: n.x, y: n.y },
     })) as any)
   );
 
-  const [rfEdges, setRfEdges]: any = useEdgesState(edges);
+  const [rfEdges, setRfEdges]: any = useEdgesState([]);
+
+  // Keep the rendered React Flow graph in sync when nodes/edges are added from
+  // the palette, imported, or changed by another workflow panel.
+  useEffect(() => {
+    if (draggingNodeIdsRef.current.size > 0) return;
+    setRfNodes(nodes.map((n) => ({
+      ...n,
+      width: NODE_WIDTH,
+      type: getNodeTypeName(n as any),
+      data: { ...n, executionState: activeRun?.nodeStates[n.id] ?? n.executionState },
+      position: { x: n.x, y: n.y },
+    })) as any);
+  }, [nodes, activeRun?.nodeStates, setRfNodes]);
+
+  useEffect(() => {
+    setRfEdges(edges.map((edge) => {
+      const source = activeRun?.nodeStates[edge.source];
+      const target = activeRun?.nodeStates[edge.target];
+      const runtimeState = target === 'skipped' ? 'skipped' : source === 'failed' || target === 'failed' ? 'failed' : target === 'running' ? 'active' : source === 'completed' && target === 'completed' ? 'completed' : 'idle';
+      return { ...edge, sourceHandle: edge.sourcePort, targetHandle: edge.targetPort, type: 'data', data: { edgeType: edge.edgeType, runtimeState } };
+    }) as any);
+  }, [edges, activeRun?.nodeStates, setRfEdges]);
 
   // Push RF changes back to store
   const handleNodesChange: OnNodesChange = useCallback(
@@ -63,21 +100,29 @@ export const WorkflowCanvas: React.FC = () => {
       // Sync position changes back to store
       for (const change of changes) {
         if (change.type === 'position' && change.position) {
-          useWorkflowStore.getState().updateNode(change.id, {
-            x: change.position.x,
-            y: change.position.y,
-          });
+          setNodePosition(change.id, change.position.x, change.position.y);
+          if (change.dragging) {
+            draggingNodeIdsRef.current.add(change.id);
+          } else {
+            draggingNodeIdsRef.current.delete(change.id);
+            pushHistory();
+          }
+        } else if (change.type === 'remove') {
+          removeNode(change.id);
         }
       }
     },
-    [setRfNodes]
+    [setRfNodes, removeNode, setNodePosition, pushHistory]
   );
 
   const handleEdgesChange: OnEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       setRfEdges((eds: any[]) => applyEdgeChanges(changes, eds));
+      for (const change of changes) {
+        if (change.type === 'remove') removeEdge(change.id);
+      }
     },
-    [setRfEdges]
+    [setRfEdges, removeEdge]
   );
 
   const handleConnect: OnConnect = useCallback(
@@ -86,6 +131,8 @@ export const WorkflowCanvas: React.FC = () => {
         id: `edge_${connection.source}_${connection.target}_${Date.now()}`, 
         source: connection.source,
         target: connection.target,
+        sourcePort: connection.sourceHandle ?? undefined,
+        targetPort: connection.targetHandle ?? undefined,
         edgeType: 'data',
       };
       setEdges([...edges, edge]);
@@ -121,24 +168,28 @@ export const WorkflowCanvas: React.FC = () => {
 
   const handleSelection = useCallback(
     (params: OnSelectionChangeParams) => {
-      // Sync selection from RF to store
-      if (params.nodes) {
-        for (const n of params.nodes) {
-          selectNode(n.id, true);
-        }
-      }
-      if (params.edges) {
-        for (const e of params.edges) {
-          selectEdge(e.id, true);
-        }
-      }
+      setSelection(
+        (params.nodes ?? []).map((node) => node.id),
+        (params.edges ?? []).map((edge) => edge.id),
+      );
     },
-    [selectNode, selectEdge]
+    [setSelection]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const screenToFlowPosition = useCallback((clientX: number, clientY: number) => {
+    if (rfRef.current?.screenToFlowPosition) {
+      return rfRef.current.screenToFlowPosition({ x: clientX, y: clientY });
+    }
+    const bounds = document.querySelector('.react-flow')?.getBoundingClientRect();
+    return {
+      x: clientX - (bounds?.left ?? 0),
+      y: clientY - (bounds?.top ?? 0),
+    };
   }, []);
 
   const handleDrop = useCallback(
@@ -148,20 +199,34 @@ export const WorkflowCanvas: React.FC = () => {
       if (!data) return;
       try {
         const template: DraggableNodeTemplate = JSON.parse(data);
-        const reactFlowBounds = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const x = e.clientX - reactFlowBounds.left;
-        const y = e.clientY - reactFlowBounds.top;
-        const node = _createNodeFromTemplate(template, x, y);
+        const position = screenToFlowPosition(e.clientX, e.clientY);
+        const node = _createNodeFromTemplate(template, position.x, position.y);
         setNodes([...nodes, node]);
       } catch {
         // Invalid drag data
       }
     },
-    [nodes, setNodes]
+    [nodes, screenToFlowPosition, setNodes]
   );
 
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    updatePalettePointerDrag(e.clientX, e.clientY);
+  }, []);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    const template = takePalettePointerDrop();
+    if (!template) return;
+    const position = screenToFlowPosition(e.clientX, e.clientY);
+    const node = _createNodeFromTemplate(template, position.x, position.y);
+    setNodes([...useWorkflowStore.getState().nodes, node]);
+  }, [screenToFlowPosition, setNodes]);
+
+  const handlePointerCancel = useCallback(() => {
+    cancelPalettePointerDrag();
+  }, []);
+
   const nodeTypes = useMemo(() => NODE_TYPES, []);
-  const edgeTypes = useMemo(() => ({}), []);
+  const edgeTypes = useMemo(() => EDGE_TYPES, []);
 
   // Handle keyboard pan/zoom
   useEffect(() => {
@@ -191,6 +256,9 @@ export const WorkflowCanvas: React.FC = () => {
     onSelectionChange: handleSelection,
     onDragOver: handleDragOver,
     onDrop: handleDrop,
+    onPointerMove: handlePointerMove,
+    onPointerUp: handlePointerUp,
+    onPointerCancel: handlePointerCancel,
     onMove: (_e: any, viewPort: any) => {
       setTransform({ x: viewPort.x, y: viewPort.y, zoom: viewPort.zoom });
     },
@@ -225,6 +293,9 @@ export const WorkflowCanvas: React.FC = () => {
         onSelectionChange={handleSelection}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
         onMove={( _e, viewPort) => {
           setTransform({ x: viewPort.x, y: viewPort.y, zoom: viewPort.zoom });
         }}

@@ -41,12 +41,9 @@ describe('Canvas Integration', () => {
     const errors = results.filter((r) => r.severity === 'error');
     expect(errors.length).toBe(0);
 
-    // 4. Create execution run
-    const runId = useExecutionStore.getState().createRun('wf_full');
-    expect(runId).toBeTruthy();
-
-    // 5. Start execution
-    useExecutionStore.getState().startExecution();
+    // 4. Apply a backend-created execution session
+    const runId = 'runtime-full';
+    useExecutionStore.getState().applyRuntimeState({ executionId: runId, workflowId: 'wf_full', status: 'running', nodeStates: { n1: 'pending', n2: 'pending' }, nodeResults: {}, variables: {}, startedAt: new Date(0).toISOString(), metrics: { totalNodes: 2, completedNodes: 0, failedNodes: 0, duration: 0, throughput: 0 } });
     expect(useExecutionStore.getState().isRunning).toBe(true);
 
     // 6. Update node states
@@ -58,8 +55,8 @@ describe('Canvas Integration', () => {
     const exported = JSON.parse(json);
     expect(exported.id).toBe('wf_full');
 
-    // 8. Clean up
-    useExecutionStore.getState().stopExecution();
+    // 8. Clean up after a backend cancellation event
+    useExecutionStore.getState().applyRuntimeEvent({ eventId: 'cancel', eventType: 'WorkflowCancelled', timestamp: new Date().toISOString(), workflowId: 'wf_full', executionId: runId, correlationId: runId, data: {} });
     useWorkflowStore.getState().resetCanvas();
     expect(useWorkflowStore.getState().nodes).toHaveLength(0);
   });

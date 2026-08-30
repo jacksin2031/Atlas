@@ -26,6 +26,7 @@ class EventType(str, Enum):
     NODE_COMPLETED = "NodeCompleted"
     NODE_FAILED = "NodeFailed"
     NODE_SKIPPED = "NodeSkipped"
+    VARIABLE_CHANGED = "VariableChanged"
     # Execution events
     EXECUTION_CHECKPOINT = "ExecutionCheckpoint"
     EXECUTION_RETRY = "ExecutionRetry"

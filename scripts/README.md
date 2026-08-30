@@ -1,23 +1,32 @@
-﻿# scripts/
+# Atlas input control script
 
-## Purpose
+`atlas_input_control.py` is a CLI client for the provider-independent Atlas
+Input Service. It is dry-run by default:
 
-Automation scripts for build, deploy, test, and release workflows. Shell and
-PowerShell scripts that support the Atlas development lifecycle.
+```powershell
+python scripts/atlas_input_control.py --actions '[{"action":"move","x":400,"y":300},{"action":"click"},{"action":"type","text":"Hello Atlas"},{"action":"hotkey","keys":["ctrl","s"]}]'
+```
 
-## Ownership
+To send real Windows input, pass both `--execute` and `--confirm` only after
+reviewing the script:
 
-Release team / Platform team
+```powershell
+python scripts/atlas_input_control.py --script actions.json --execute --confirm
+```
 
-## Dependency Rules
+Supported actions are `move`, `click`, `double_click`, `drag`, `scroll`,
+`press`, `hotkey`, `type`, `key_down`, `key_up`, `wait`, and `release_all`.
+No shell commands or arbitrary Python are accepted. All held input is released
+when the script exits.
 
-- Scripts are standalone; they MAY invoke binaries from `apps/` or `crates/`.
-- Scripts MUST NOT contain business logic.
+Run a Studio workflow through Workflow Runtime and Input Runtime in test mode:
 
-## Related RFCs
+```powershell
+python scripts/run_input_workflow.py sample-workflow-input.json
+```
 
-- N/A (operational tooling)
+Real Windows acceptance requires explicit confirmation:
 
-## Future Scope
-
-Release automation, CI pipeline scripts, and environment provisioning.
+```powershell
+python scripts/run_input_workflow.py sample-workflow-input.json --execute --confirm
+```

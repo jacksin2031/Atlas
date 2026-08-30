@@ -44,7 +44,7 @@ export const SettingsPanel: React.FC = () => {
       <section style={{ marginBottom: 20 }}>
         <h4 style={{ margin: "0 0 8px", fontSize: 13 }}>About</h4>
         <div style={{ opacity: 0.7 }}>
-          <div>Atlas Desktop Shell v0.12.0-alpha</div>
+          <div>Atlas Desktop Shell v0.15.0-alpha</div>
           <div>Atlas Platform - Record Once. Understand Forever.</div>
         </div>
       </section>

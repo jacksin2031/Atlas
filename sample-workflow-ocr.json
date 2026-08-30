@@ -1,0 +1,23 @@
+{
+  "id": "wf_sprint_15_6_windows_ocr",
+  "version": "1.0.0",
+  "name": "Sprint 15.6 Windows OCR Reference",
+  "description": "Captures Atlas and resolves visible Atlas text through Windows.Media.Ocr into typed references.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"capture","type":"vision_current_frame","label":"Vision Capture","category":"vision","inputs":[{"id":"capture_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"capture_frame","name":"frame","type":"frame_reference"}],"parameters":{},"capabilities":["vision"]},
+    {"id":"ocr","type":"vision_ocr","label":"Windows OCR Atlas","category":"vision","inputs":[{"id":"ocr_frame","name":"frame","type":"frame_reference"}],"outputs":[{"id":"ocr_region","name":"region","type":"region_reference"},{"id":"ocr_bounds","name":"bounds","type":"bounds_reference"},{"id":"ocr_point","name":"point","type":"point_reference"}],"parameters":{"contains":"Atlas","label":"ocr-atlas"},"capabilities":["vision"]},
+    {"id":"output","type":"output","label":"OCR Region Output","category":"core","inputs":[{"id":"output_input","name":"input","type":"any"}],"outputs":[{"id":"output_value","name":"value","type":"any"}],"parameters":{}},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"any"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_capture","source":"entry","sourcePort":"entry_out","target":"capture","targetPort":"capture_trigger","edgeType":"data"},
+    {"id":"capture_ocr","source":"capture","sourcePort":"capture_frame","target":"ocr","targetPort":"ocr_frame","edgeType":"data"},
+    {"id":"ocr_output","source":"ocr","sourcePort":"ocr_region","target":"output","targetPort":"output_input","edgeType":"data"},
+    {"id":"output_exit","source":"output","sourcePort":"output_value","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "requiredCapabilities": ["vision"],
+  "metadata": {"createdAt":1788051200000,"updatedAt":1788051200000,"createdBy":"Atlas Sprint 15.6 acceptance","tags":["sample","vision","ocr","windows-e2e"]}
+}

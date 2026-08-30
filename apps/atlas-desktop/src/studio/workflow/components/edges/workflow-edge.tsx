@@ -22,9 +22,10 @@ export const WorkflowEdge = memo(({
   sourcePosition,
   targetPosition,
   data,
-}: EdgeProps & { data?: { edgeType?: string } }) => {
+}: EdgeProps & { data?: { edgeType?: string; runtimeState?: string } }) => {
   const edgeType = data?.edgeType || 'data';
   const edgeStyle = EDGE_STYLES[edgeType] ?? EDGE_STYLES.data;
+  const runtimeStroke = data?.runtimeState === 'active' ? '#ffffff' : data?.runtimeState === 'completed' ? '#4CAF50' : data?.runtimeState === 'failed' ? '#F44336' : data?.runtimeState === 'skipped' ? '#666666' : edgeStyle!.stroke;
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -40,10 +41,10 @@ export const WorkflowEdge = memo(({
         id={id}
         d={edgePath}
         fill="none"
-        stroke={edgeStyle!.stroke}
+        stroke={runtimeStroke}
         strokeWidth={edgeStyle!.strokeWidth}
         strokeDasharray={edgeStyle!.dasharray}
-        style={{ transition: 'stroke 0.2s', stroke: edgeStyle!.stroke, strokeWidth: edgeStyle!.strokeWidth, ...(edgeStyle!.dasharray ? { strokeDasharray: edgeStyle!.dasharray } : {}) }}
+        style={{ transition: 'stroke 0.2s', stroke: runtimeStroke, strokeWidth: data?.runtimeState === 'active' ? 3 : edgeStyle!.strokeWidth, opacity: data?.runtimeState === 'skipped' ? 0.45 : 1, ...(edgeStyle!.dasharray ? { strokeDasharray: edgeStyle!.dasharray } : {}) }}
       />
     </>
   );

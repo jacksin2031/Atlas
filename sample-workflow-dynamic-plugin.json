@@ -1,0 +1,24 @@
+{
+  "id": "wf_sprint_15_6_dynamic_plugin",
+  "version": "1.0.0",
+  "name": "Sprint 15.6 Dynamic Plugin E2E",
+  "description": "Executes a node registered at runtime from a safe plugin manifest.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"constant","type":"constant","label":"Atlas Value","category":"core","inputs":[{"id":"constant_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"constant_value","name":"value","type":"any"}],"parameters":{"value":"Atlas"}},
+    {"id":"plugin","type":"acceptance_dynamic_prefix","label":"Dynamic Acceptance Prefix","category":"plugin","inputs":[{"id":"plugin_input","name":"input","type":"any"}],"outputs":[{"id":"plugin_value","name":"value","type":"string"}],"parameters":{"prefix":"dynamic:"},"capabilities":["plugin.dynamic"],"pluginId":"atlas.acceptance.dynamic","requiredPlugins":["atlas.acceptance.dynamic"]},
+    {"id":"output","type":"output","label":"Plugin Output","category":"core","inputs":[{"id":"output_input","name":"input","type":"any"}],"outputs":[{"id":"output_value","name":"value","type":"any"}],"parameters":{}},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"any"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_constant","source":"entry","sourcePort":"entry_out","target":"constant","targetPort":"constant_trigger","edgeType":"data"},
+    {"id":"constant_plugin","source":"constant","sourcePort":"constant_value","target":"plugin","targetPort":"plugin_input","edgeType":"data"},
+    {"id":"plugin_output","source":"plugin","sourcePort":"plugin_value","target":"output","targetPort":"output_input","edgeType":"data"},
+    {"id":"output_exit","source":"output","sourcePort":"output_value","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "requiredCapabilities": ["plugin.dynamic"],
+  "requiredPlugins": ["atlas.acceptance.dynamic"],
+  "metadata": {"createdAt":1788051200000,"updatedAt":1788051200000,"createdBy":"Atlas Sprint 15.6 acceptance","tags":["sample","plugin","dynamic","windows-e2e"]}
+}

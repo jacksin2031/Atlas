@@ -26,6 +26,16 @@ const TYPE_COLORS: Record<DataType, string> = {
   null: '#666',
   duration: '#4DD0E1',
   timestamp: '#CE93D8',
+  number: '#81C784',
+  any: '#999',
+  image: '#00BCD4',
+  frame_reference: '#00BCD4',
+  point_reference: '#2DCF89',
+  bounds_reference: '#45B7D1',
+  region_reference: '#D962E3',
+  target_reference: '#F2C94C',
+  knowledge_reference: '#5C6BC0',
+  ai_response: '#7C4DFF',
 };
 
 export const VariableManager: React.FC = () => {

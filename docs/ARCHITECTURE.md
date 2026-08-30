@@ -259,7 +259,7 @@ Atlas Platform
 ├── Vision Runtime (Sprint 6) ✅ — Python, 185 tests
 ├── AI Runtime (Sprint 7) ✅ — Python, 105 tests
 ├── Knowledge Runtime (Sprint 8) ⬜ — Specs only
-├── Workflow Runtime (RFC-0301–0333) ⬜ — Specs only
+├── Workflow Runtime (RFC-0301–0333) ✅ — Python implementation and persistent Desktop host
 ├── Storage Runtime (RFC-0401–0425) ⬜ — Specs only
 └── Project Runtime (Sprint 9) ⬜ — Planned
 ```
@@ -427,16 +427,19 @@ The Atlas Workflow Studio provides the visual workflow editor running inside the
 | Import/Export Service | src/studio/workflow/services/import-export-service.ts |
 | Plugin Discovery Service | src/studio/workflow/services/plugin-discovery-service.ts |
 
-### Compliance
+### Runtime integration (Sprint 15.2)
 
-- Full RFC compliance (RFC-0301 through RFC-0333, 33 RFCs)
-- Architecture compliant (MODULE_DEPENDENCIES.md Layer 8)
-- IPC compliant (all runtime calls via IPC bridge)
-- Plugin compliant (RFC-0323 dynamic discovery)
-- 91 unit/integration tests across 10 test files
-- 44 node types across 18 categories
-- Zero TODOs, zero placeholders, zero warnings
-- Full compliance report: docs/workflow/WORKFLOW_STUDIO_COMPLIANCE_REPORT.md
+```text
+Workflow Canvas -> WorkflowExecutionService -> typed Tauri IPC
+-> WorkflowHostManager -> persistent Python atlas_workflow.host
+-> WorkflowRuntime -> ExecutionEngine -> NodeRegistry / PluginBridge
+-> Core, AI host bridge, Vision capture bridge, or Plugin handler
+-> workflow://runtime-event + correlated result -> React execution state
+```
+
+The editable graph and execution state are separate. Studio definitions map to the existing canonical Workflow manifest, including ports, edges, variables, capabilities, plugins, and metadata. The backend validates and schedules the immutable DAG; React neither selects execution order nor synthesizes Runtime lifecycle events. The host is persistent across commands and one failed request does not terminate it.
+
+Current verified scope includes core nodes, real edge values, branch skipping, Runtime variables, lifecycle controls, node breakpoints/step, results, bounded history, metrics, AI/Vision bridge requests, and deterministic Plugin Bridge execution. Advanced checkpoint UX and live-provider AI/Vision acceptance remain pending. See `docs/workflow/WORKFLOW_STUDIO_COMPLIANCE_REPORT.md` and `docs/workflow/WORKFLOW_EXECUTION_INTEGRATION_REPORT.md`.
 
 ## Vision Studio (Sprint 14, alpha)
 
@@ -450,3 +453,22 @@ Vision panels -> Zustand stores / UI services -> IPC bridge -> Vision Runtime
 FlexLayout JSON contains layout data and stable panel references only. Workflow and Vision retain independent, versioned models (`atlas.layout.workflow.v1` and `atlas.layout.vision.v1`). Validation rejects malformed, unsupported, unknown-panel, duplicate-panel, and blank-center layouts and restores the relevant default.
 
 Vision UI source is under `apps/atlas-desktop/src/studio/vision/`; workspace infrastructure is under `apps/atlas-desktop/src/workspace/`. Runtime analysis remains under `packages/vision/`.
+
+## AI Studio (Sprint 15, alpha)
+
+AI Studio is a separate Layer 8 workspace built on the same Workspace Manager, FlexLayout models, panel registry, versioned persistence, design primitives, and command registry used by Workflow and Vision.
+
+```text
+Desktop Shell -> WorkspaceManager -> FlexLayout -> Panel Registry -> AI panels
+AI panels -> Zustand UI state / AIStudioService -> typed IPC bridge -> Tauri AIHostManager
+Tauri AIHostManager -> persistent JSON-lines Python host -> AI Runtime -> Provider -> Model
+Python Runtime events -> Tauri ai://runtime-event -> React Playground
+Vision Studio -> frame/image reference metadata -> AI Context
+Knowledge / Memory / Tools / Agents -> Runtime-supplied normalized data -> inspectors
+```
+
+The central editor supports Playground, Prompt, Conversation, Agent, Memory, and Tools modes. Dockable panels cover provider/model/session discovery, context, normalized request/response, memory, tools and invocation trace, knowledge retrieval, events, metrics, and prompt comparison.
+
+Production data is discovery-driven. The Desktop bridge and Rust host implement `ai_discover`, `ai_infer`, `ai_cancel`, and `ai_provider_action`; a persistent Python host provides OpenAI-compatible and Ollama transport, streams request-correlated events back to React, and degrades explicitly when the host or provider is unavailable. A development adapter is opt-in under `DEV && VITE_ATLAS_AI_DEMO=true` and visibly labeled Demo Provider.
+
+AI Studio never imports or reimplements `packages/ai`, stores credentials in Zustand or Project JSON, executes tools, performs Knowledge retrieval, mutates Memory, duplicates native capture, or exposes hidden chain-of-thought. On Windows, Tauri stores provider credentials in Credential Manager and injects them only below the Desktop IPC boundary when starting the Python host; environment variables remain a developer/CI fallback. Full status and remaining work are documented in `docs/ai/AI_STUDIO_COMPLIANCE_REPORT.md` and `docs/security/SPRINT_15_5_HARDENING.md`.

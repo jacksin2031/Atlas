@@ -1,0 +1,67 @@
+{
+  "id": "wf_sprint_15_2_acceptance",
+  "version": "1.0.0",
+  "name": "Sprint 15.2 Runtime Acceptance",
+  "description": "Deterministic Entry -> Constant -> Transform -> Output -> Exit acceptance workflow.",
+  "nodes": [
+    {
+      "id": "entry",
+      "type": "entry",
+      "label": "Entry",
+      "category": "core",
+      "inputs": [],
+      "outputs": [{ "id": "output", "name": "output", "type": "any" }],
+      "parameters": {}
+    },
+    {
+      "id": "constant",
+      "type": "constant",
+      "label": "Constant",
+      "category": "core",
+      "inputs": [{ "id": "trigger", "name": "trigger", "type": "any" }],
+      "outputs": [{ "id": "value", "name": "value", "type": "string" }],
+      "parameters": { "value": "Hello from Atlas Workflow Runtime" }
+    },
+    {
+      "id": "transform",
+      "type": "transform",
+      "label": "Uppercase Transform",
+      "category": "core",
+      "inputs": [{ "id": "input", "name": "input", "type": "any" }],
+      "outputs": [{ "id": "value", "name": "value", "type": "any" }],
+      "parameters": { "operation": "uppercase" }
+    },
+    {
+      "id": "output",
+      "type": "output",
+      "label": "Output",
+      "category": "core",
+      "inputs": [{ "id": "input", "name": "input", "type": "any" }],
+      "outputs": [{ "id": "value", "name": "value", "type": "any" }],
+      "parameters": {}
+    },
+    {
+      "id": "exit",
+      "type": "exit",
+      "label": "Exit",
+      "category": "core",
+      "inputs": [{ "id": "input", "name": "input", "type": "any" }],
+      "outputs": [],
+      "parameters": {}
+    }
+  ],
+  "edges": [
+    { "id": "entry_constant", "source": "entry", "sourcePort": "output", "target": "constant", "targetPort": "trigger", "edgeType": "data" },
+    { "id": "constant_transform", "source": "constant", "sourcePort": "value", "target": "transform", "targetPort": "input", "edgeType": "data" },
+    { "id": "transform_output", "source": "transform", "sourcePort": "value", "target": "output", "targetPort": "input", "edgeType": "data" },
+    { "id": "output_exit", "source": "output", "sourcePort": "value", "target": "exit", "targetPort": "input", "edgeType": "data" }
+  ],
+  "variables": [],
+  "parameters": {},
+  "metadata": {
+    "createdAt": 1787529600000,
+    "updatedAt": 1787529600000,
+    "createdBy": "Atlas Sprint 15.2 acceptance",
+    "tags": ["sample", "workflow-runtime", "deterministic"]
+  }
+}

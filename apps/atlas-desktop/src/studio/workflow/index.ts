@@ -33,6 +33,7 @@ export { useCanvasDragDrop, createNodeFromTemplate } from './hooks/use-canvas-dr
 
 // Types
 export * from './types';
+export { registerWorkflowCommands, installWorkflowShortcuts } from './commands';
 export * from './types/node-categories';
 
 // Stores

@@ -3,3 +3,4 @@ export { useLogStore } from "./logs";
 export { useRuntimeStore } from "./runtime";
 export { usePluginStore } from "./plugins";
 export { useProjectStore } from "./project";
+export { useLayoutStore } from "./layout";

@@ -1,6 +1,6 @@
 ﻿# Atlas Module Dependencies
 
-> **Last Updated**: 2026-07-04
+> **Last Updated**: 2026-08-24
 > **Owner**: Atlas Architecture Board
 
 ---
@@ -65,7 +65,8 @@ Atlas follows a strict layered dependency model. Lower layers do NOT depend on u
 ### Layer 3: Workflow
 **Depends on**: Core Foundation, Plugin, IPC
 
-- packages/workflow — Manifest parsing, graph execution, scheduling, recovery
+- src/atlas_workflow — Manifest parsing, immutable graph execution, scheduling, events, Node Registry, and persistent Desktop host
+- packages/workflow — package landing documentation; the current Python implementation is `src/atlas_workflow`
 
 **Depends on**: Runtime, Plugin, IPC, Contracts
 
@@ -122,9 +123,15 @@ Atlas follows a strict layered dependency model. Lower layers do NOT depend on u
 ### Layer 8 Studio boundary
 
 - `apps/atlas-desktop/src/studio/vision/components` depends only on Vision UI stores, UI services, shared desktop components, and the IPC bridge.
+- `apps/atlas-desktop/src/studio/ai` depends only on AI UI contracts/state/services, shared desktop infrastructure, Vision frame-reference state, and the typed IPC bridge. It must not import the Python AI Runtime.
+- `apps/atlas-desktop/src/studio/workflow` depends only on Workflow UI contracts/stores/services and the typed IPC bridge. It must not import or execute the Python Workflow Runtime.
+- `apps/atlas-desktop/src-tauri` owns the process boundary and may launch `packages/ai` as a long-running host; JSON-lines command responses and `ai://runtime-event` payloads are the only Desktop-to-Python integration contract.
+- `apps/atlas-desktop/src-tauri` also owns the persistent `atlas_workflow.host` process boundary. Workflow JSON-lines responses, bridge requests, and `workflow://runtime-event` payloads are the Desktop-to-Workflow-Python contract.
+- Workflow AI nodes call the existing Tauri AI host manager; Vision nodes call the existing native capture boundary; Plugin nodes execute through the Workflow Runtime Node Registry and Plugin Bridge.
+- Concrete provider HTTP/SSE/NDJSON transport belongs to the Python host. React and Rust must not receive or persist provider credentials.
 - Vision React components must not import `packages/vision` or a concrete provider/runtime implementation.
 - FlexLayout depends on panel identifiers and component factories only; it contains no studio business state.
-- Workflow and Vision panel content may share shell panels, but a layout may contain each stable panel ID at most once.
+- Workflow, Vision, and AI panel content may share shell panels, but a layout may contain each stable panel component ID at most once.
 
 The following dependencies are **explicitly forbidden**:
 

@@ -1,0 +1,28 @@
+{
+  "id": "wf_sprint_15_3_vision_input",
+  "version": "1.0.0",
+  "name": "Sprint 15.3 Vision Input Loop",
+  "description": "Capture before and after acting on the center of a configured target region.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"before","type":"vision_current_frame","label":"Vision Current Frame","category":"vision","inputs":[{"id":"before_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"before_frame","name":"frame","type":"frame_reference"}],"parameters":{},"capabilities":["vision"]},
+    {"id":"region","type":"constant","label":"Target Region","category":"core","inputs":[{"id":"region_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"region_value","name":"value","type":"object"}],"parameters":{"value":{"x":300,"y":220,"width":200,"height":120}}},
+    {"id":"move","type":"mouse_move","label":"Mouse Move","category":"input","inputs":[{"id":"move_trigger","name":"trigger","type":"any"},{"id":"move_target","name":"target","type":"object"}],"outputs":[{"id":"move_result","name":"result","type":"object"}],"parameters":{"duration_ms":300},"capabilities":["input.control"]},
+    {"id":"click","type":"mouse_click","label":"Mouse Click","category":"input","inputs":[{"id":"click_trigger","name":"trigger","type":"any"},{"id":"click_target","name":"target","type":"object"}],"outputs":[{"id":"click_result","name":"result","type":"object"}],"parameters":{"button":"left"},"capabilities":["input.control"]},
+    {"id":"after","type":"vision_current_frame","label":"Vision Current Frame","category":"vision","inputs":[{"id":"after_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"after_frame","name":"frame","type":"frame_reference"}],"parameters":{},"capabilities":["vision"]},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"any"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_before","source":"entry","sourcePort":"entry_out","target":"before","targetPort":"before_trigger","edgeType":"data"},
+    {"id":"entry_region","source":"entry","sourcePort":"entry_out","target":"region","targetPort":"region_trigger","edgeType":"data"},
+    {"id":"before_move","source":"before","sourcePort":"before_frame","target":"move","targetPort":"move_trigger","edgeType":"data"},
+    {"id":"region_move","source":"region","sourcePort":"region_value","target":"move","targetPort":"move_target","edgeType":"data"},
+    {"id":"move_click","source":"move","sourcePort":"move_result","target":"click","targetPort":"click_trigger","edgeType":"data"},
+    {"id":"region_click","source":"region","sourcePort":"region_value","target":"click","targetPort":"click_target","edgeType":"data"},
+    {"id":"click_after","source":"click","sourcePort":"click_result","target":"after","targetPort":"after_trigger","edgeType":"data"},
+    {"id":"after_exit","source":"after","sourcePort":"after_frame","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "metadata": {"createdAt":1787798400000,"updatedAt":1787798400000,"createdBy":"Atlas Sprint 15.3 acceptance","tags":["sample","vision","input-runtime","closed-loop"]}
+}

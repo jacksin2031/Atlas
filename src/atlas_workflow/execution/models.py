@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+import threading
 from typing import Any
 
 from atlas_workflow.common import (
@@ -31,6 +32,77 @@ class ExecutionTokenState(str, Enum):
     PAUSED = "Paused"
     COMPLETED = "Completed"
     CANCELLED = "Cancelled"
+
+
+class ExecutionControl:
+    """Thread-safe control plane for one live workflow execution."""
+
+    def __init__(self, breakpoints: set[str] | None = None) -> None:
+        self._condition = threading.Condition()
+        self._cancelled = False
+        self._paused = False
+        self._step_budget = 0
+        self._breakpoints = set(breakpoints or set())
+
+    @property
+    def is_cancelled(self) -> bool:
+        with self._condition:
+            return self._cancelled
+
+    @property
+    def is_paused(self) -> bool:
+        with self._condition:
+            return self._paused
+
+    def pause(self) -> None:
+        with self._condition:
+            self._paused = True
+
+    def resume(self) -> None:
+        with self._condition:
+            self._paused = False
+            self._step_budget = 0
+            self._condition.notify_all()
+
+    def cancel(self) -> None:
+        with self._condition:
+            self._cancelled = True
+            self._condition.notify_all()
+
+    def step(self) -> None:
+        with self._condition:
+            self._paused = True
+            self._step_budget += 1
+            self._condition.notify_all()
+
+    def wait_before_node(self, node_id: str) -> bool:
+        with self._condition:
+            if node_id in self._breakpoints:
+                self._paused = True
+            while self._paused and self._step_budget == 0 and not self._cancelled:
+                self._condition.wait(timeout=0.1)
+            if self._cancelled:
+                return False
+            if self._paused and self._step_budget > 0:
+                self._step_budget -= 1
+            return True
+
+    def has_breakpoint(self, node_id: str) -> bool:
+        with self._condition:
+            return node_id in self._breakpoints
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class NodeExecutionContext:
+    """Runtime-owned context supplied to control-aware node handlers."""
+
+    workflow_id: str
+    instance_id: str
+    node_id: str
+    variables: dict[str, Any]
+    capabilities: tuple[str, ...] = field(default_factory=tuple)
+    control: ExecutionControl | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

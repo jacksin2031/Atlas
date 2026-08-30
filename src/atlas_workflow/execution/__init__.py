@@ -8,6 +8,8 @@ from .models import (
     ExecutionTokenState,
     ExecutionHistory,
     ExecutionScope,
+    ExecutionControl,
+    NodeExecutionContext,
 )
 from .execution_engine import ExecutionEngine
 
@@ -17,5 +19,7 @@ __all__ = [
     "ExecutionTokenState",
     "ExecutionHistory",
     "ExecutionScope",
+    "ExecutionControl",
+    "NodeExecutionContext",
     "ExecutionEngine",
 ]

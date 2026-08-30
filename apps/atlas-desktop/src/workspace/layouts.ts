@@ -49,9 +49,27 @@ export const DEFAULT_LAYOUTS: Record<WorkspaceId, IJsonModel> = {
       { type: "tabset", id: "vision-right", weight: 20, children: [tab("vision.properties", "Vision Properties")] },
     ]},
   },
+  ai: {
+    global,
+    borders: [],
+    layout: { type: "row", children: [
+      { type: "tabset", id: "ai-left", weight: 18, selected: 0, children: [
+        tab("ai.providers", "Providers", false), tab("ai.models", "Models"), tab("ai.sessions", "Sessions"),
+      ]},
+      { type: "row", weight: 62, children: [
+        { type: "tabset", id: "ai-center", weight: 70, enableDeleteWhenEmpty: false, children: [tab("ai.editor", "AI Playground", false)] },
+        { type: "tabset", id: "ai-bottom", weight: 30, selected: 0, children: [
+          tab("shared.console", "Console"), tab("ai.tools", "Tools"), tab("ai.memory", "Memory"), tab("ai.retrieval", "Retrieval"), tab("ai.metrics", "Metrics"), tab("ai.events", "Events"), tab("ai.comparison", "Comparison"), tab("shared.problems", "Problems"),
+        ]},
+      ]},
+      { type: "tabset", id: "ai-right", weight: 20, selected: 0, children: [
+        tab("ai.context", "Context", false), tab("ai.request", "Request"), tab("ai.response", "Response"),
+      ]},
+    ]},
+  },
 };
 
-export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas" };
+export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas", ai: "ai.editor" };
 
 export function cloneDefaultLayout(id: WorkspaceId): IJsonModel {
   return structuredClone(DEFAULT_LAYOUTS[id]);

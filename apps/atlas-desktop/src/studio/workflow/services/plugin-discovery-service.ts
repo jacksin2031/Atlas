@@ -3,12 +3,14 @@
 
 import type { PluginNodeRegistration } from '../types';
 import { useNodeRegistryStore } from '../stores';
+import { registerWorkflowPlugin } from '../../../ipc/bridge';
 
 export interface PluginDiscoveryService {
   discoverFromPluginRuntime(): Promise<PluginNodeRegistration[]>;
   registerDiscoveredNodes(registrations: PluginNodeRegistration[]): void;
   watchForPluginChanges(callback: (regs: PluginNodeRegistration[]) => void): () => void;
   refresh(pluginId?: string): Promise<void>;
+  registerManifest(manifest: Record<string, unknown>): Promise<PluginNodeRegistration[]>;
 }
 
 export class PluginDiscoveryServiceImpl implements PluginDiscoveryService {
@@ -46,6 +48,14 @@ export class PluginDiscoveryServiceImpl implements PluginDiscoveryService {
     for (const listener of this.listeners) {
       listener(nodes);
     }
+  }
+
+  async registerManifest(manifest: Record<string, unknown>): Promise<PluginNodeRegistration[]> {
+    const result = await registerWorkflowPlugin(manifest);
+    useNodeRegistryStore.getState().hotReload(result.pluginId);
+    this.registerDiscoveredNodes(result.registrations);
+    for (const listener of this.listeners) listener(result.registrations);
+    return result.registrations;
   }
 }
 

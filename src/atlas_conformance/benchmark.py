@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-\"\"\"Benchmark suite for Atlas Conformance & Architecture Validation.\"\"\"
+"""Benchmark suite for Atlas Conformance & Architecture Validation."""
 
 import time
 from pathlib import Path

@@ -7,7 +7,8 @@ export type IconName =
   | "pause" | "previous" | "next" | "open" | "save" | "export" | "undo"
   | "redo" | "zoom-in" | "zoom-out" | "fit" | "actual" | "grid" | "rulers"
   | "command" | "workflow" | "vision" | "folder" | "search" | "copy" | "lock"
-  | "eye" | "trash" | "duplicate" | "marker";
+  | "eye" | "trash" | "duplicate" | "marker" | "ai" | "retry" | "settings"
+  | "image" | "memory" | "tools" | "metrics" | "inspect" | "clear" | "add";
 
 const paths: Record<IconName, React.ReactNode> = {
   pointer: <path d="M5 3l11 9-6 .7-2.7 5.1z" />,
@@ -56,6 +57,16 @@ const paths: Record<IconName, React.ReactNode> = {
   trash: <><path d="M4 6h12M8 3h4l1 3M6 6l1 11h6l1-11"/></>,
   duplicate: <><rect x="6" y="6" width="11" height="11"/><path d="M13 6V3H3v10h3"/></>,
   marker: <path d="M5 3h10v14l-5-3-5 3z" />,
+  ai: <><path d="M5 7a5 5 0 0110 0v6a5 5 0 01-10 0z"/><path d="M8 10h.01M12 10h.01M8 14h4M10 2V0M2 10H0M20 10h-2"/></>,
+  retry: <><path d="M16 6V2l-3 3a7 7 0 10.5 10.5"/><path d="M16 2v4h-4"/></>,
+  settings: <><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M15.7 4.3l-1.4 1.4M5.7 14.3l-1.4 1.4"/></>,
+  image: <><rect x="2" y="3" width="16" height="14" rx="1"/><circle cx="7" cy="8" r="2"/><path d="M3 16l5-5 3 3 2-2 4 4"/></>,
+  memory: <><rect x="4" y="4" width="12" height="12" rx="2"/><path d="M7 1v3M10 1v3M13 1v3M7 16v3M10 16v3M13 16v3M1 7h3M1 10h3M1 13h3M16 7h3M16 10h3M16 13h3"/></>,
+  tools: <path d="M12 3a4 4 0 01-5 5L3 12l5 5 4-4a4 4 0 005-5l-3 3-3-3z"/>,
+  metrics: <><path d="M3 17V9M8 17V4M13 17v-6M18 17V2"/><path d="M1 17h18"/></>,
+  inspect: <><circle cx="8" cy="8" r="5"/><path d="M12 12l6 6M8 5v6M5 8h6"/></>,
+  clear: <><path d="M4 4l12 12M16 4L4 16"/></>,
+  add: <path d="M10 3v14M3 10h14"/>,
 };
 
 export const Icon: React.FC<{ name: IconName; size?: number; className?: string }> = ({ name, size = 16, className }) => (

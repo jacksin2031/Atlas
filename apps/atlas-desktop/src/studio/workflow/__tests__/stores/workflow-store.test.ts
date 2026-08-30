@@ -56,6 +56,15 @@ describe('WorkflowStore', () => {
       expect(useWorkflowStore.getState().nodes[0]!.label).toBe('Updated');
     });
 
+    it('should update a node position without creating history for each drag frame', () => {
+      useWorkflowStore.getState().addNode(createTestNode('node_1'));
+      const historyIndex = useWorkflowStore.getState().historyIndex;
+      useWorkflowStore.getState().setNodePosition('node_1', 120, 80);
+      const node = useWorkflowStore.getState().nodes[0]!;
+      expect({ x: node.x, y: node.y }).toEqual({ x: 120, y: 80 });
+      expect(useWorkflowStore.getState().historyIndex).toBe(historyIndex);
+    });
+
     it('should remove a node and its edges', () => {
       const n1 = createTestNode('node_1');
       const n2 = createTestNode('node_2');
@@ -123,6 +132,15 @@ describe('WorkflowStore', () => {
       useWorkflowStore.getState().selectNode('a', true);
       useWorkflowStore.getState().selectNode('a', true);
       expect(useWorkflowStore.getState().selectedNodeIds).toHaveLength(0);
+    });
+
+    it('should replace selection with the exact React Flow selection', () => {
+      useWorkflowStore.getState().setSelection(['a'], ['edge-a']);
+      useWorkflowStore.getState().setSelection(['a'], []);
+      const state = useWorkflowStore.getState();
+      expect(state.selectedNodeIds).toEqual(['a']);
+      expect(Array.from(state.selection.selectedNodeIds)).toEqual(['a']);
+      expect(state.selectedEdges).toEqual([]);
     });
   });
 

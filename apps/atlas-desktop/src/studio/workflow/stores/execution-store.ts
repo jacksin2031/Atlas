@@ -8,6 +8,10 @@ import type {
   ExecutionError,
   ExecutionMetrics,
   NodeExecutionState,
+  WorkflowNodeRuntimeResult,
+  WorkflowRuntimeEvent,
+  WorkflowRuntimeResult,
+  WorkflowRuntimeState,
 } from "../types";
 
 export interface ExecutionState {
@@ -19,24 +23,27 @@ export interface ExecutionState {
   isSimulating: boolean;
   isDryRunning: boolean;
   metrics: ExecutionMetrics;
+  runtimeAvailable: boolean | null;
+  runtimeError: string | null;
+  result: WorkflowRuntimeResult | null;
+  nodeResults: Record<string, WorkflowNodeRuntimeResult>;
+  events: WorkflowRuntimeEvent[];
   createRun: (workflowId: string) => string;
   setActiveRun: (runId: string | null) => void;
   updateRunStatus: (runId: string, status: WorkflowRunStatus) => void;
   updateNodeState: (runId: string, nodeId: string, state: NodeExecutionState) => void;
   addExecutionError: (runId: string, error: ExecutionError) => void;
   updateMetrics: (updates: Partial<ExecutionMetrics>) => void;
-  startExecution: () => void;
-  pauseExecution: () => void;
-  resumeExecution: () => void;
-  stopExecution: () => void;
-  stepExecution: () => void;
-  restartExecution: () => void;
   startSimulation: () => void;
   stopSimulation: () => void;
   startDryRun: () => void;
   stopDryRun: () => void;
   clearRun: (runId: string) => void;
   reset: () => void;
+  applyRuntimeState: (state: WorkflowRuntimeState) => void;
+  applyRuntimeEvent: (event: WorkflowRuntimeEvent) => void;
+  setRuntimeError: (error: string | null) => void;
+  setResult: (result: WorkflowRuntimeResult | null) => void;
 }
 
 function createEmptyMetrics(): ExecutionMetrics {
@@ -52,6 +59,11 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
   isSimulating: false,
   isDryRunning: false,
   metrics: createEmptyMetrics(),
+  runtimeAvailable: null,
+  runtimeError: null,
+  result: null,
+  nodeResults: {},
+  events: [],
 
   createRun: (workflowId) => {
     const runId = `run_${workflowId}_${Date.now()}`;
@@ -130,13 +142,6 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
       };
     }),
 
-  startExecution: () => set({ status: "running", isRunning: true, isPaused: false }),
-  pauseExecution: () => set({ status: "paused", isPaused: true }),
-  resumeExecution: () => set({ status: "running", isPaused: false }),
-  stopExecution: () => set({ status: "cancelled", isRunning: false, isPaused: false }),
-  stepExecution: () =>
-    set((state) => ({ status: state.isPaused ? "running" : state.status })),
-  restartExecution: () => set({ status: "restarting", isRunning: true, isPaused: false }),
   startSimulation: () => set({ isSimulating: true }),
   stopSimulation: () => set({ isSimulating: false }),
   startDryRun: () => set({ isDryRunning: true }),
@@ -157,5 +162,71 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
       isSimulating: false,
       isDryRunning: false,
       metrics: createEmptyMetrics(),
+      runtimeAvailable: null,
+      runtimeError: null,
+      result: null,
+      nodeResults: {},
+      events: [],
     }),
+  applyRuntimeState: (runtimeState) => set((state) => {
+    const metrics = { ...createEmptyMetrics(), ...runtimeState.metrics };
+    const existing = state.runs[runtimeState.executionId];
+    const run: WorkflowRun = {
+      id: runtimeState.executionId,
+      workflowId: runtimeState.workflowId,
+      status: runtimeState.status,
+      currentNodeId: runtimeState.currentNodeId ?? undefined,
+      startedAt: Date.parse(runtimeState.startedAt),
+      completedAt: runtimeState.completedAt ? Date.parse(runtimeState.completedAt) : undefined,
+      nodeStates: runtimeState.nodeStates,
+      variables: runtimeState.variables,
+      errors: existing?.errors ?? [],
+      metrics,
+    };
+    return {
+      runs: { ...state.runs, [runtimeState.executionId]: run },
+      activeRunId: runtimeState.executionId,
+      status: runtimeState.status,
+      isRunning: runtimeState.status === "running" || runtimeState.status === "scheduled",
+      isPaused: runtimeState.status === "paused",
+      runtimeAvailable: true,
+      runtimeError: null,
+      metrics,
+      nodeResults: runtimeState.nodeResults,
+    };
+  }),
+  applyRuntimeEvent: (event) => set((state) => {
+    if (!event.executionId || (state.activeRunId && event.executionId !== state.activeRunId)) {
+      return { events: [...state.events, event].slice(-500) };
+    }
+    const run = state.runs[event.executionId];
+    if (!run) return { events: [...state.events, event].slice(-500) };
+    const statusMap: Record<string, WorkflowRunStatus> = {
+      WorkflowStarted: "running", WorkflowPaused: "paused", WorkflowResumed: "running",
+      WorkflowCompleted: "completed", WorkflowFailed: "failed", WorkflowCancelled: "cancelled",
+    };
+    const nodeMap: Record<string, NodeExecutionState> = {
+      NodeStarted: "running", NodeCompleted: "completed", NodeFailed: "failed", NodeSkipped: "skipped",
+    };
+    const nextStatus = statusMap[event.eventType] ?? run.status;
+    const runtimeNodeState = nodeMap[event.eventType];
+    const nextNodeStates = event.nodeId && runtimeNodeState
+      ? { ...run.nodeStates, [event.nodeId]: runtimeNodeState }
+      : run.nodeStates;
+    const nextResults = event.nodeId && (event.eventType === "NodeCompleted" || event.eventType === "NodeFailed")
+      ? { ...state.nodeResults, [event.nodeId]: event.data as WorkflowNodeRuntimeResult }
+      : state.nodeResults;
+    const variables = event.eventType === "VariableChanged" && typeof event.data.name === "string"
+      ? { ...run.variables, [event.data.name]: event.data.value }
+      : run.variables;
+    const nextRun = { ...run, status: nextStatus, currentNodeId: event.nodeId ?? run.currentNodeId, nodeStates: nextNodeStates, variables };
+    return {
+      runs: { ...state.runs, [event.executionId]: nextRun }, status: nextStatus,
+      isRunning: nextStatus === "running" || nextStatus === "scheduled", isPaused: nextStatus === "paused",
+      nodeResults: nextResults, events: [...state.events, event].slice(-500), runtimeAvailable: true,
+      runtimeError: event.eventType === "WorkflowFailed" ? String(event.data.error ?? "Workflow execution failed") : state.runtimeError,
+    };
+  }),
+  setRuntimeError: (runtimeError) => set({ runtimeError, runtimeAvailable: runtimeError ? false : true }),
+  setResult: (result) => set({ result }),
 }));

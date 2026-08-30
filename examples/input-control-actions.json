@@ -1,0 +1,6 @@
+[
+  {"action": "move", "x": 400, "y": 300},
+  {"action": "click", "button": "left"},
+  {"action": "type", "text": "Hello from Atlas"},
+  {"action": "hotkey", "keys": ["ctrl", "s"]}
+]

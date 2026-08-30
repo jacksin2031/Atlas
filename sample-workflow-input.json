@@ -1,0 +1,26 @@
+{
+  "id": "wf_sprint_15_3_input_acceptance",
+  "version": "1.0.0",
+  "name": "Sprint 15.3 Input Acceptance",
+  "description": "Entry -> Mouse Move -> Mouse Click -> Delay -> Keyboard Type -> Output -> Exit.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"move","type":"mouse_move","label":"Mouse Move","category":"input","inputs":[{"id":"move_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"move_result","name":"result","type":"object"}],"parameters":{"x":400,"y":300,"duration_ms":300},"capabilities":["input.control"]},
+    {"id":"click","type":"mouse_click","label":"Mouse Click","category":"input","inputs":[{"id":"click_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"click_result","name":"result","type":"object"}],"parameters":{"x":400,"y":300,"button":"left","click_count":1},"capabilities":["input.control"]},
+    {"id":"delay","type":"delay","label":"Delay","category":"flow","inputs":[{"id":"delay_input","name":"input","type":"any"}],"outputs":[{"id":"delay_value","name":"value","type":"any"}],"parameters":{"seconds":0.5}},
+    {"id":"type","type":"keyboard_type","label":"Keyboard Type","category":"input","inputs":[{"id":"type_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"type_result","name":"result","type":"object"}],"parameters":{"text":"Atlas","interval_ms":40},"capabilities":["input.control"]},
+    {"id":"output","type":"output","label":"Output","category":"core","inputs":[{"id":"output_input","name":"input","type":"any"}],"outputs":[{"id":"output_value","name":"value","type":"any"}],"parameters":{}},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"any"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_move","source":"entry","sourcePort":"entry_out","target":"move","targetPort":"move_trigger","edgeType":"data"},
+    {"id":"move_click","source":"move","sourcePort":"move_result","target":"click","targetPort":"click_trigger","edgeType":"data"},
+    {"id":"click_delay","source":"click","sourcePort":"click_result","target":"delay","targetPort":"delay_input","edgeType":"data"},
+    {"id":"delay_type","source":"delay","sourcePort":"delay_value","target":"type","targetPort":"type_trigger","edgeType":"data"},
+    {"id":"type_output","source":"type","sourcePort":"type_result","target":"output","targetPort":"output_input","edgeType":"data"},
+    {"id":"output_exit","source":"output","sourcePort":"output_value","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "metadata": {"createdAt":1787798400000,"updatedAt":1787798400000,"createdBy":"Atlas Sprint 15.3 acceptance","tags":["sample","input-runtime","desktop-automation"]}
+}

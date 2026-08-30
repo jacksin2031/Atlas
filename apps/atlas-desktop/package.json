@@ -2,7 +2,7 @@
   "name": "@atlas/desktop",
   "private": true,
   "packageManager": "pnpm@11.9.0",
-  "version": "0.12.0-alpha",
+  "version": "0.15.0-alpha",
   "description": "Atlas Desktop Shell",
   "type": "module",
   "scripts": {

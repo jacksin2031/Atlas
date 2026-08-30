@@ -1,0 +1,27 @@
+{
+  "id": "wf_sprint_15_4_visual_closed_loop",
+  "version": "1.0.0",
+  "name": "Sprint 15.4 Visual Desktop Automation Loop",
+  "description": "Captures Atlas, detects the magenta visual target, clicks its RegionReference, recaptures, and validates the lime clicked state.",
+  "nodes": [
+    {"id":"entry","type":"entry","label":"Entry","category":"core","inputs":[],"outputs":[{"id":"entry_out","name":"output","type":"any"}],"parameters":{}},
+    {"id":"capture_before","type":"vision_current_frame","label":"Vision Capture","category":"vision","inputs":[{"id":"capture_before_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"capture_before_frame","name":"frame","type":"frame_reference"}],"parameters":{},"capabilities":["vision"]},
+    {"id":"detect","type":"vision_detect","label":"Detect Visual Target","category":"vision","inputs":[{"id":"detect_frame","name":"frame","type":"frame_reference"}],"outputs":[{"id":"detect_region","name":"region","type":"region_reference"},{"id":"detect_bounds","name":"bounds","type":"bounds_reference"},{"id":"detect_point","name":"point","type":"point_reference"}],"parameters":{"targetColor":"#ff00c8","tolerance":6,"minArea":24,"label":"atlas-visual-target"},"capabilities":["vision"]},
+    {"id":"click","type":"mouse_click","label":"Mouse Click RegionReference","category":"input","inputs":[{"id":"click_target","name":"target","type":"target_reference"}],"outputs":[{"id":"click_result","name":"result","type":"object"}],"parameters":{"button":"left","click_count":1},"capabilities":["input.control"]},
+    {"id":"capture_after","type":"vision_current_frame","label":"Vision Capture After","category":"vision","inputs":[{"id":"capture_after_trigger","name":"trigger","type":"any"}],"outputs":[{"id":"capture_after_frame","name":"frame","type":"frame_reference"}],"parameters":{},"capabilities":["vision"]},
+    {"id":"validate","type":"vision_validate","label":"Validate Clicked State","category":"vision","inputs":[{"id":"validate_frame","name":"frame","type":"frame_reference"}],"outputs":[{"id":"validate_valid","name":"valid","type":"boolean"},{"id":"validate_result","name":"result","type":"object"}],"parameters":{"operation":"detection","targetColor":"#a8ff00","tolerance":6,"minArea":24,"expect":"present","label":"atlas-clicked-target"},"capabilities":["vision"]},
+    {"id":"exit","type":"exit","label":"Exit","category":"core","inputs":[{"id":"exit_input","name":"input","type":"boolean"}],"outputs":[],"parameters":{}}
+  ],
+  "edges": [
+    {"id":"entry_capture","source":"entry","sourcePort":"entry_out","target":"capture_before","targetPort":"capture_before_trigger","edgeType":"data"},
+    {"id":"capture_detect","source":"capture_before","sourcePort":"capture_before_frame","target":"detect","targetPort":"detect_frame","edgeType":"data"},
+    {"id":"detect_click","source":"detect","sourcePort":"detect_region","target":"click","targetPort":"click_target","edgeType":"data"},
+    {"id":"click_capture","source":"click","sourcePort":"click_result","target":"capture_after","targetPort":"capture_after_trigger","edgeType":"data"},
+    {"id":"capture_validate","source":"capture_after","sourcePort":"capture_after_frame","target":"validate","targetPort":"validate_frame","edgeType":"data"},
+    {"id":"validate_exit","source":"validate","sourcePort":"validate_valid","target":"exit","targetPort":"exit_input","edgeType":"data"}
+  ],
+  "variables": [],
+  "parameters": {},
+  "requiredCapabilities": ["vision", "input.control"],
+  "metadata": {"createdAt":1787798400000,"updatedAt":1787798400000,"createdBy":"Atlas Sprint 15.4 acceptance","tags":["sample","vision","typed-reference","closed-loop","windows-e2e"]}
+}

@@ -1,215 +1,107 @@
-﻿# Workflow Studio Compliance Report
+# Workflow Studio Compliance Report
 
-> **Generated**: 2026-07-06
-> **Sprint**: 13
-> **Component**: Atlas Workflow Studio
+> Component: Atlas Workflow Studio and Desktop execution integration
+> Updated: 2026-08-24
+> Status: Alpha; deterministic Runtime integration verified, live-provider acceptance pending
 
----
+## Executive status
 
-## 1. Architecture Compliance
+The Sprint 13 visual editor is no longer described as fully compliant merely because UI types and placeholders exist. Sprint 15.2 connects the editor to the real Python Workflow Runtime through Tauri. The deterministic core execution path and the AI, Vision, and Plugin integration boundaries are implemented and tested. Claims below distinguish implemented behavior from partial or pending behavior.
 
-### MODULE_DEPENDENCIES.md - Layer 8 (Desktop UI)
-
-| Requirement | Status | Evidence |
+| Boundary | Status | Evidence |
 |---|---|---|
-| Desktop UI is presentation layer only | PASS | All stores are Zustand (pure state), all services use IPC bridge |
-| No runtime logic in Studio | PASS | executor-service.ts, debugger-service.ts forward to IPC only |
-| Depends on IPC Runtime | PASS | All services use IPC invoke pattern |
-| Depends on Plugin Runtime | PASS | plugin-discovery-service.ts queries node registry |
-| Depends on Workflow Runtime | PASS | executor-service.ts invokes workflow commands |
-| Presentation layer only | PASS | All business logic in stores/services, UI is React components |
+| Editable graph remains data | Pass | Workflow Zustand store and canonical serializer |
+| React performs no native node execution | Pass | `executor-service.ts` calls typed IPC only |
+| Persistent Python Runtime host | Pass | `src/atlas_workflow/host.py`, Tauri `WorkflowHostManager` |
+| Nine lifecycle commands | Pass | Tauri command registration and Desktop IPC bridge |
+| Canonical manifest mapping | Pass | `runtime-serialization.ts`; nodes, ports, edges, variables, metadata, capabilities, plugins |
+| Deterministic DAG order | Pass | immutable graph topological order in `ExecutionEngine` |
+| Real edge values | Pass | source-port to target-port propagation and integration tests |
+| Typed-port validation | Pass for current canonical types | Workflow validator compatibility rules |
+| Condition branch skipping | Pass | inactive branch nodes emit `NodeSkipped` |
+| Runtime variables | Pass for current host scopes | Runtime-authoritative state and `VariableChanged` events |
+| Pause/resume/step/stop/restart | Pass | shared `ExecutionControl`, host commands, lifecycle tests |
+| Node breakpoint | Pass | breakpoint set included in start request and enforced by Runtime control |
+| Runtime event bridge | Pass | `workflow://runtime-event`, execution/workflow/node correlation |
+| Output and node inspection | Pass | structured result panel and Properties runtime result section |
+| AI integration boundary | Pass; live provider pending | Workflow host bridge request → existing Tauri AI host |
+| Vision integration boundary | Pass; multimodal provider pending | Workflow host bridge request → existing native capture command |
+| Plugin node integration | Pass for repository test provider | Node Registry + Plugin Bridge deterministic node |
+| Durable execution-history persistence | Pending | in-memory bounded history only |
+| Checkpoint/resume UI | Pending | not required for basic execution acceptance |
+| Secure provider credential vault | Pending | inherited Sprint 15.1 limitation |
 
-### Forbidden Dependencies
+## Active architecture
 
-| From | To | Status |
-|---|---|---|
-| Studio | Core Runtime impl | PASS - IPC only |
-| Studio | Plugin Runtime impl | PASS - IPC only |
-| Studio | Any runtime implementation | PASS - All services are IPC wrappers |
+```text
+Workflow Studio
+  -> WorkflowExecutionService
+  -> Tauri workflow_* command
+  -> WorkflowHostManager
+  -> persistent atlas_workflow.host
+  -> WorkflowRuntime / ExecutionEngine
+  -> NodeRegistry / PluginBridge
+  -> Core or AI/Vision/Plugin bridge
+  -> workflow://runtime-event and result
+  -> execution/debug/variable stores and inspectors
+```
 
----
+The editable graph is not mutated by Runtime events. Execution state is normalized separately and merged only for rendering. Browser development mode reports the native Runtime as unavailable; simulation is explicitly labeled and never returned as a Runtime result.
 
-## 2. RFC Compliance
+## Command coverage
 
-### Workflow RFCs (RFC-0301 to RFC-0333)
-
-| RFC | Title | Status | Implementation |
-|---|---|---|---|
-| RFC-0301 | Workflow Overview | PASS | Node types, lifecycle states, catalog |
-| RFC-0302 | Workflow Language | PASS | Node/edge/variable declarations, scoping |
-| RFC-0303 | Workflow Execution | PASS | Execution states, phases, node semantics |
-| RFC-0304 | Workflow Runtime | PASS | Runtime lifecycle integration |
-| RFC-0305 | Workflow Lifecycle | PASS | Draft->Validated->Queued->Running states |
-| RFC-0306 | Workflow State | PASS | State persistence via Zustand |
-| RFC-0307 | Workflow Context | PASS | Variable management, scoping rules |
-| RFC-0308 | Workflow Events | PASS | Debug event tracking |
-| RFC-0309 | Workflow Actions | PASS | Action node types |
-| RFC-0310 | Workflow Conditions | PASS | Condition evaluation nodes |
-| RFC-0311 | Workflow Triggers | PASS | Trigger node types |
-| RFC-0312 | Workflow Scheduler | PASS | Priority and scheduling hints |
-| RFC-0313 | Workflow Parallelism | PASS | Fan-out/fan-in node types |
-| RFC-0314 | Workflow Error Handling | PASS | Error handler nodes, retry policies |
-| RFC-0315 | Workflow Recovery | PASS | Recovery policies, checkpoint states |
-| RFC-0316 | Workflow Debugging | PASS | Full debugger: attach, breakpoints, step, replay |
-| RFC-0317 | Workflow Validation | PASS | 8 validation rules, DAG check, type mismatch |
-| RFC-0318 | Workflow Versioning | PASS | Version metadata in definition |
-| RFC-0319 | Workflow Security | PASS | Security context per node |
-| RFC-0320 | Workflow Performance | PASS | Execution metrics tracking |
-| RFC-0321 | Workflow Observability | PASS | Observability config per node |
-| RFC-0322 | Workflow Extension | PASS | Extension point nodes |
-| RFC-0323 | Workflow Plugin Integration | PASS | Dynamic node discovery, hot reload |
-| RFC-0324 | Workflow Storage | PASS | Storage operation nodes |
-| RFC-0325 | Workflow AI | PASS | AI operation nodes |
-| RFC-0326 | Workflow Vision | PASS | Vision operation nodes |
-| RFC-0327 | Workflow IPC | PASS | IPC operation nodes |
-| RFC-0328 | Workflow Serialization | PASS | JSON/YAML import/export |
-| RFC-0329 | Workflow Compatibility | PASS | Version compatibility nodes |
-| RFC-0330 | Workflow Compliance | PASS | Compliance nodes |
-| RFC-0331 | Workflow Testing | PASS | 7 test files covering all modules |
-| RFC-0332 | Workflow Migration | PASS | Import/export supports migration |
-| RFC-0333 | Workflow SDK | PASS | TypeScript types exported |
-
-### Runtime RFCs (RFC-0001 to RFC-0014)
-
-| RFC | Status | Evidence |
-|---|---|---|
-| RFC-0001 | Runtime Overview | PASS - Delegates to runtime via IPC |
-| RFC-0002 | Runtime Lifecycle | PASS - Execution states align with runtime FSM |
-| RFC-0013 | Runtime Contracts | PASS - Type definitions match contracts |
-
-### IPC RFCs (RFC-0101 to RFC-0112)
-
-| RFC | Status | Evidence |
-|---|---|---|
-| RFC-0101 | IPC Overview | PASS - IPCService wrapper pattern |
-| RFC-0102 | Message Model | PASS - MessageEnvelope type in types |
-| RFC-0107 | Security | PASS - IPC commands validated |
-| RFC-0109 | Lifecycle | PASS - Connect/disconnect lifecycle |
-
----
-
-## 3. Design Principles Compliance
-
-| Principle | Status | Evidence |
-|---|---|---|
-| Everything is Runtime | PASS - Studio hosts but doesn't replace runtime |
-| Everything is Plugin | PASS - Node types discovered via plugin system |
-| Everything is Event | PASS - Debug events, execution events tracked |
-| Everything is Deterministic | PASS - Zustand stores are pure, no randomness |
-| Contracts First | PASS - All types defined before components |
-| Provider Pattern | PASS - Services abstract IPC providers |
-
----
-
-## 4. Quality Gates
-
-| Gate | Status |
+| Command | Implemented behavior |
 |---|---|
-| Zero TODOs | PASS |
-| Zero placeholders | PASS |
-| Zero warnings | PASS - Strict TypeScript |
-| Strict TypeScript | PASS |
-| No global mutable state | PASS - Zustand stores only |
-| Dependency injection | PASS - Services accept IPC bridge |
-| Architecture compliant | PASS - See Section 1 |
-| IPC compliant | PASS - All runtime calls via IPC |
-| Plugin compliant | PASS - RFC-0323 |
-| Workflow RFC compliant | PASS - All 33 RFCs |
-| Desktop compliant | PASS - Layer 8 |
-| Deterministic execution | PASS |
-| Platform independent | PASS |
+| `workflow_validate` | Parse, validate, compile, and return deterministic plan/errors |
+| `workflow_start` | Create a unique execution and start it asynchronously |
+| `workflow_pause` | Pause the backend execution control |
+| `workflow_resume` | Continue the same execution |
+| `workflow_stop` | Cancel the backend control and active cancel-aware node |
+| `workflow_step` | Release one Runtime scheduling step |
+| `workflow_restart` | Create a new execution ID from the stored manifest |
+| `workflow_get_state` | Return authoritative lifecycle, nodes, results, variables, metrics |
+| `workflow_get_result` | Return result, state, and bounded event history |
 
----
+## Initial executable node scope
 
-## 5. Module Inventory
+- Core: Entry, Exit, Constant, Transform/Map, Condition, Delay, Output, Set Variable, Get Variable, No-op.
+- AI: AI Inference and the legacy alias, normalized through the existing AI Runtime host.
+- Vision: Current Frame and the legacy alias, routed through existing Tauri capture.
+- Plugin: deterministic repository-owned test node through the Runtime Plugin Bridge.
 
-### Stores (5)
-1. stores/workflow-store.ts - Canvas state, nodes, edges, selection, undo/redo
-2. stores/execution-store.ts - Execution runs, status, metrics
-3. stores/debug-store.ts - Debug sessions, breakpoints, events
-4. stores/variable-store.ts - Variable management, scoping, shadowing
-5. stores/node-registry-store.ts - Plugin node discovery, builtin catalog
+Palette node types outside this initial scope remain design-time catalog entries and are not claimed as executable. Unsupported nodes fail explicitly during validation or execution rather than succeeding as placeholders.
 
-### Services (5)
-1. services/executor-service.ts - Run/Pause/Resume/Stop/Step/Simulate/DryRun
-2. services/debugger-service.ts - Attach/Detach/Breakpoint/Step/Inspect
-3. services/validation-service.ts - 8 validation rules, DAG cycle detection
-4. services/import-export-service.ts - JSON/YAML serialization
-5. services/plugin-discovery-service.ts - Dynamic node discovery, hot reload
+## Security and reliability
 
-### Components (9)
-1. components/canvas/workflow-canvas.tsx - React Flow canvas
-2. components/nodes/workflow-node.tsx - Standard node renderer
-3. components/nodes/entry-node.tsx - Entry node
-4. components/nodes/exit-node.tsx - Exit node
-5. components/nodes/composite-node.tsx - Sub-graph node
-6. components/edges/workflow-edge.tsx - Typed edge renderer
-7. components/sidebar/node-palette.tsx - Draggable node categories
-8. components/inspector/property-inspector.tsx - Node properties
-9. components/variables/variable-manager.tsx - Variable scoping UI
-10. components/toolbar/workflow-toolbar.tsx - Execution controls
-11. components/toolbar/debugger-panel.tsx - Debug visualization
-12. components/properties/validation-report.tsx - Validation results
-13. components/layouts/dock-panels.tsx - Dock panel integration
+- Result/event payload keys that look like API keys, authorization, credentials, secrets, or tokens are masked in the Python host.
+- Provider credentials are not stored in Zustand or workflow definitions.
+- Each request and execution has a correlation identifier.
+- Runtime history is capped at 500 events per execution.
+- Malformed and unknown host requests return structured errors without killing the persistent process.
+- One failed execution does not prevent a later valid execution.
 
-### Hooks (2)
-1. hooks/use-keyboard-shortcuts.ts - Undo/Redo/Copy/Delete/SelectAll
-2. hooks/use-canvas-drag-drop.ts - Node drag-and-drop
+## Verification snapshot
 
-### Types (2)
-1. 	ypes/index.ts - All workflow type definitions
-2. 	ypes/node-categories.ts - 18 node categories
+| Suite/check | Result |
+|---|---:|
+| Root Workflow/Conformance Python | 294 passed |
+| Focused Desktop Workflow host integration | 5 passed (included above) |
+| AI Runtime/host Python | 109 passed |
+| Vision Runtime Python | 185 passed |
+| Desktop Vitest | 125 passed |
+| Desktop TypeScript | Pass |
+| Desktop ESLint | Pass |
+| Desktop production build | Pass |
+| Tauri Rust fmt/check/test | Pass |
 
-### Main Component
-1. WorkflowStudioPanel.tsx - Integrated studio panel
+The backend acceptance proves `Constant("Atlas")` is propagated through an edge and returned from the output. Additional integration coverage proves true/false branch skipping, cancellation, pause/step/resume, restart with a new ID, malformed-request recovery, typed mismatch rejection, AI request normalization, and Plugin Bridge execution.
 
----
+The running Tauri desktop acceptance imported `sample-workflow-execution.json`, executed it through F5, rendered all five nodes as completed from Runtime events, and displayed the backend execution ID, success status, and `HELLO FROM ATLAS WORKFLOW RUNTIME` value in the React Output panel.
 
-## 6. Test Inventory
+## External acceptance
 
-| File | Coverage |
-|---|---|
-| __tests__/stores/workflow-store.test.ts | Node CRUD, selection, undo/redo, transform, variables (24 tests) |
-| __tests__/stores/execution-store.test.ts | Run lifecycle, status transitions (12 tests) |
-| __tests__/stores/debug-store.test.ts | Sessions, breakpoints, events, call stack (12 tests) |
-| __tests__/stores/variable-store.test.ts | Add/update/remove/shadowing/import/export (11 tests) |
-| __tests__/stores/node-registry-store.test.ts | Registration, discovery, dedup, hot reload (8 tests) |
-| __tests__/validation/validation-service.test.ts | Cycle detection, disconnected nodes, duplicates (8 tests) |
-| __tests__/services/import-export-service.test.ts | JSON/YAML serialize/deserialize (6 tests) |
-| __tests__/services/plugin-discovery.test.ts | Discovery, registration, watch, refresh (4 tests) |
-| __tests__/executor/executor.test.ts | IPC bridge, operation support (3 tests) |
-| __tests__/integration/workflow-lifecycle.test.ts | Full lifecycle integration (3 tests) |
+Live-provider AI and Vision→multimodal AI workflow acceptance is pending. The integration boundary exists, but no usable provider credential/model was available: the previously configured OpenAI credential returned HTTP 401 and Ollama was not running. No Demo Provider or fabricated response is counted as live acceptance.
 
-Total: 91 tests across 10 test files.
+## Conclusion
 
----
-
-## 7. Node Type Coverage
-
-| Category | Node Types | Count |
-|---|---|---|
-| Core | execute, transform, serialization, version, compliance, extension, composite, entry, exit | 9 |
-| Flow | route, branch, loop, wait, signal, notify, compensate, manual, human_approval, resource | 10 |
-| Logic | condition, action, trigger, scheduler, error_handler, recovery, debug, observation, validation | 9 |
-| Math | math_operation | 1 |
-| String | string_operation | 1 |
-| Collection | collection_operation | 1 |
-| DateTime | datetime_operation | 1 |
-| File | file_operation | 1 |
-| System | system_operation | 1 |
-| IPC | ipc_operation | 1 |
-| Vision | vision_operation | 1 |
-| AI | ai_operation | 1 |
-| Knowledge | knowledge_operation | 1 |
-| Project | project_operation | 1 |
-| Storage | storage_operation | 1 |
-
-Total: 44 node types across 18 categories.
-
----
-
-## 8. Conclusion
-
-The Atlas Workflow Studio (Sprint 13) is fully implemented and architecture-compliant.
-
-All 33 Workflow RFCs are addressed. All quality gates pass. Zero TODOs, placeholders, or warnings.
+Sprint 15.2 infrastructure and deterministic backend acceptance are implemented. The overall Workflow Studio remains alpha, not “all RFCs complete”: durable execution persistence, advanced checkpoint UX, broader node executors, Project Runtime resolution, plugin permission/health expansion, secure credentials, and live-provider E2E remain follow-up work.

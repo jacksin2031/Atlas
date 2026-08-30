@@ -1,0 +1,59 @@
+{
+  "id": "wf_sample_linear",
+  "version": "1.0.0",
+  "name": "Sample Linear Workflow",
+  "description": "A minimal starter workflow that passes data from an entry point through a transform step to an exit point.",
+  "nodes": [
+    {
+      "id": "entry_1",
+      "type": "entry",
+      "label": "Entry",
+      "category": "core",
+      "inputs": [],
+      "outputs": [{ "id": "entry_out", "name": "output", "type": "object" }],
+      "parameters": {},
+      "version": "1.0.0",
+      "executionState": "pending",
+      "validationState": "unchecked",
+      "statusMessage": ""
+    },
+    {
+      "id": "transform_1",
+      "type": "transform",
+      "label": "Transform",
+      "category": "core",
+      "inputs": [{ "id": "transform_in", "name": "input", "type": "object" }],
+      "outputs": [{ "id": "transform_out", "name": "output", "type": "object" }],
+      "parameters": { "operation": "pass-through" },
+      "version": "1.0.0",
+      "executionState": "pending",
+      "validationState": "unchecked",
+      "statusMessage": ""
+    },
+    {
+      "id": "exit_1",
+      "type": "exit",
+      "label": "Exit",
+      "category": "core",
+      "inputs": [{ "id": "exit_in", "name": "input", "type": "object" }],
+      "outputs": [],
+      "parameters": {},
+      "version": "1.0.0",
+      "executionState": "pending",
+      "validationState": "unchecked",
+      "statusMessage": ""
+    }
+  ],
+  "edges": [
+    { "id": "edge_entry_transform", "source": "entry_1", "target": "transform_1", "edgeType": "data", "cardinality": "one-to-one" },
+    { "id": "edge_transform_exit", "source": "transform_1", "target": "exit_1", "edgeType": "data", "cardinality": "one-to-one" }
+  ],
+  "variables": [],
+  "parameters": {},
+  "metadata": {
+    "createdAt": 1787356800000,
+    "updatedAt": 1787356800000,
+    "createdBy": "Atlas sample",
+    "tags": ["sample", "starter", "linear"]
+  }
+}

@@ -1,6 +1,6 @@
 ﻿# Atlas Workflow Studio
 
-Version: 0.12.0-alpha | Sprint: 13 | Status: Implemented
+Version: 0.15.0-alpha | Sprint: 15 | Status: Implemented
 
 ## Overview
 

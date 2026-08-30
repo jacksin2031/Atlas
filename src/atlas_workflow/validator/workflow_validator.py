@@ -122,8 +122,32 @@ class WorkflowValidator:
                     violations.append(
                         f"Target port {edge.target_port!r} not found on node {edge.target_node_id!r}"
                     )
+            if source_node and target_node and edge.source_port and edge.target_port:
+                source_types = source_node.metadata.get("output_port_types", {})
+                target_types = target_node.metadata.get("input_port_types", {})
+                source_type = source_types.get(edge.source_port) if isinstance(source_types, dict) else None
+                target_type = target_types.get(edge.target_port) if isinstance(target_types, dict) else None
+                if source_type and target_type and not self._types_compatible(str(source_type), str(target_type)):
+                    violations.append(
+                        f"Port type mismatch: {edge.source_node_id}.{edge.source_port} "
+                        f"({source_type}) -> {edge.target_node_id}.{edge.target_port} ({target_type})"
+                    )
 
         return violations
+
+    @staticmethod
+    def _types_compatible(source: str, target: str) -> bool:
+        if source == target or "any" in {source, target}:
+            return True
+        if {source, target} <= {"integer", "float", "number"}:
+            return True
+        reference_types = {"point_reference", "bounds_reference", "region_reference"}
+        if target == "target_reference" and source in reference_types:
+            return True
+        return target == "object" and source in {
+            "image", "frame_reference", "knowledge_reference", "ai_response",
+            "target_reference", *reference_types,
+        }
 
     def _validate_capabilities(self, parsed: ParsedWorkflow) -> list[str]:
         """Validate capability requirements. Only checks if a registry is available."""

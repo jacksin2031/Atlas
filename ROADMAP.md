@@ -1,9 +1,9 @@
 ﻿# Atlas Roadmap
 
-> **Last Updated**: 2026-08-22
-> **Current Version**: 0.12.0-beta
-> **Current Sprint**: Sprint 12 (Desktop Shell)
-> **Next Milestone**: Sprint 15 — AI Studio
+> **Last Updated**: 2026-08-24
+> **Current Version**: 0.15.0-alpha
+> **Current Sprint**: Sprint 15.2 — Workflow Execution Integration
+> **Next Milestone**: Live-provider AI and Vision→AI acceptance
 
 ---
 
@@ -230,11 +230,25 @@
 
 ### Sprint 15 — AI Studio
 **Version**: 0.15.0-alpha
-**Status**: ⬜ Planned
-- Model selection and comparison
-- Prompt engineering workspace
-- Agent behavior editor
-- Capability negotiation visualizer
+**Status**: ✅ Complete — Final Acceptance PASS
+- Third FlexLayout workspace with independent versioned persistence
+- Provider/model discovery, capability validation, Playground, Prompt comparison, Conversation testing
+- Context, Request/Response, Memory, Tool, Agent, Event, Retrieval, and Metrics inspectors
+- Vision reference input, normalized IPC boundary, explicit development adapter
+- Persistent Tauri/Python host, four AI commands, OpenAI-compatible/Ollama transport, true streaming/cancellation, metrics, and multimodal request plumbing
+- Secure credential vault, project persistence, interrupted recovery, Input safety, typed Vision targets, Template/OCR, and dynamic plugin execution verified
+- Live-provider text/Vision response remains `PENDING EXTERNAL CONDITION` when no healthy provider/model is available
+
+### Sprint 15.2 — Workflow Execution Integration
+**Version**: 0.15.0-alpha
+**Status**: ✅ Complete — included in Sprint 15 freeze
+- Persistent Workflow host and nine Tauri lifecycle commands
+- Canonical Studio-to-Runtime manifest mapping
+- Real typed edge propagation, deterministic execution, branch skipping, Runtime variables, events, results, metrics, and error flow
+- Backend-aware pause/resume/step/stop/restart and node breakpoints
+- Runtime-driven Canvas, Debugger, Variables, Output, and node result inspection
+- AI, Vision, and Plugin execution boundaries reuse their existing runtimes/bridges
+- Real visual loop, target relocation, missing-target/no-click, project restart, interrupted recovery, unarmed recovery, no replay, and manual restart verified
 
 ### Sprint 16 — Marketplace
 **Version**: 0.16.0-alpha

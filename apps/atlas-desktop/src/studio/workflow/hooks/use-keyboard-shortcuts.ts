@@ -3,7 +3,7 @@
 
 import { useEffect, useCallback } from 'react';
 import { useWorkflowStore } from '../stores';
-import { useExecutionStore } from '../stores';
+import { commandPaletteService } from '../../../services';
 
 const SHORTCUTS: Record<string, () => void> = {
   'Control+z': () => useWorkflowStore.getState().undo(),
@@ -44,10 +44,10 @@ export function useKeyboardShortcuts() {
 
 // Run/Debug shortcuts
 export function useExecutionShortcuts() {
-  const start = useCallback(() => useExecutionStore.getState().startExecution(), []);
-  const pause = useCallback(() => useExecutionStore.getState().pauseExecution(), []);
-  const stop = useCallback(() => useExecutionStore.getState().stopExecution(), []);
-  const step = useCallback(() => useExecutionStore.getState().stepExecution(), []);
+  const start = useCallback(() => commandPaletteService.execute('workflow.run'), []);
+  const pause = useCallback(() => commandPaletteService.execute('workflow.pause-resume'), []);
+  const stop = useCallback(() => commandPaletteService.execute('workflow.stop'), []);
+  const step = useCallback(() => commandPaletteService.execute('workflow.step'), []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

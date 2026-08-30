@@ -32,6 +32,8 @@ export interface WorkflowNodeData {
   icon?: string;
   documentationUrl?: string;
   capabilities?: string[];
+  pluginId?: string;
+  requiredPlugins?: string[];
   // Runtime metadata (populated at execution time)
   executionState?: NodeExecutionState;
   validationState?: ValidationState;
@@ -99,7 +101,17 @@ export type DataType =
   | "object"
   | "null"
   | "duration"
-  | "timestamp";
+  | "timestamp"
+  | "number"
+  | "any"
+  | "image"
+  | "frame_reference"
+  | "point_reference"
+  | "bounds_reference"
+  | "region_reference"
+  | "target_reference"
+  | "knowledge_reference"
+  | "ai_response";
 
 // ---------------------------------------------------------------------------
 // Edge types (RFC-0302 §5.3)
@@ -111,6 +123,8 @@ export interface WorkflowEdgeData {
   id: string;
   source: string;
   target: string;
+  sourcePort?: string;
+  targetPort?: string;
   edgeType: EdgeType;
   condition?: string;
   transformation?: string;
@@ -131,6 +145,8 @@ export type NodeExecutionState =
   | "completed"
   | "failed"
   | "cancelled"
+  | "skipped"
+  | "paused"
   | "compensated";
 
 // ---------------------------------------------------------------------------
@@ -197,6 +213,9 @@ export interface WorkflowDefinition {
   variables: WorkflowVariable[];
   parameters: Record<string, unknown>;
   metadata: WorkflowMetadata;
+  requiredCapabilities?: string[];
+  requiredPlugins?: string[];
+  projectId?: string;
 }
 
 export interface WorkflowMetadata {
@@ -213,12 +232,70 @@ export interface WorkflowMetadata {
 export type WorkflowRunStatus =
   | "created"
   | "initializing"
+  | "validated"
+  | "scheduled"
   | "running"
   | "paused"
   | "completed"
   | "failed"
   | "cancelled"
-  | "restarting";
+  | "restarting"
+  | "interrupted";
+
+export interface WorkflowRuntimeEvent {
+  eventId: string;
+  eventType: string;
+  timestamp: string;
+  workflowId: string;
+  executionId: string;
+  nodeId?: string | null;
+  correlationId: string;
+  data: Record<string, unknown>;
+}
+
+export interface WorkflowNodeRuntimeResult {
+  inputs?: Record<string, unknown>;
+  outputs?: Record<string, unknown>;
+  duration_ms?: number;
+  attempt?: number;
+  error?: string;
+}
+
+export interface WorkflowRuntimeState {
+  executionId: string;
+  workflowId: string;
+  status: WorkflowRunStatus;
+  currentNodeId?: string | null;
+  nodeStates: Record<string, NodeExecutionState>;
+  nodeResults: Record<string, WorkflowNodeRuntimeResult>;
+  variables: Record<string, unknown>;
+  startedAt: string;
+  completedAt?: string | null;
+  metrics: ExecutionMetrics;
+}
+
+export interface WorkflowRuntimeResult {
+  executionId: string;
+  workflowId: string;
+  status: string;
+  success: boolean;
+  output: Record<string, unknown>;
+  error?: string | null;
+  durationMs?: number | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface WorkflowResultEnvelope {
+  result: WorkflowRuntimeResult | null;
+  state: WorkflowRuntimeState;
+  history: WorkflowRuntimeEvent[];
+}
+
+export interface WorkflowValidationResponse {
+  valid: boolean;
+  errors: string[];
+  plan: string[];
+}
 
 export interface WorkflowRun {
   id: string;

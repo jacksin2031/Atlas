@@ -6,15 +6,31 @@ import { useVisionDocumentStore, useVisionTimelineStore } from "./stores";
 import { visionCaptureService, visionExportService, visionImportService } from "./services/vision-service";
 import type { CommandPaletteItem } from "../../types";
 import type { VisionTool } from "./types";
+import { selectProjectDirectory } from "../../ipc/bridge";
 
 const log = (message: string) => useLogStore.getState().addEntry({ timestamp: Date.now(), level: "info", source: "VisionStudio", message });
-const openProjectPicker = (): void => { const input=document.createElement("input"); input.type="file"; input.setAttribute("webkitdirectory", ""); input.addEventListener("change",()=>{const file=input.files?.[0];if(!file)return;projectService.openProject({id:`project-${Date.now()}`,name:file.name,path:file.webkitRelativePath.split("/")[0]||file.name,createdAt:Date.now(),updatedAt:Date.now(),settings:{theme:"system",language:"en",autoSave:true,tabSize:2}});}); input.click(); };
+const openProjectPicker = (): void => {
+  void selectProjectDirectory().then((path) => {
+    if (!path) return;
+    const name = path.split(/[\\\\/]/).filter(Boolean).at(-1) ?? "Atlas Project";
+    projectService.openProject({id:"project-"+Date.now(),name,path,createdAt:Date.now(),updatedAt:Date.now(),settings:{theme:"system",language:"en",autoSave:true,tabSize:2}});
+  }).catch((error) => {
+    log(error instanceof Error ? error.message : "Native project picker is unavailable.");
+  });
+};
+const openProjectPathPrompt = (): void => {
+  const path = window.prompt("Atlas project directory path:", "");
+  if (!path?.trim()) return;
+  const normalized = path.trim();
+  const name = normalized.split(/[\\/]/).filter(Boolean).at(-1) ?? "Atlas Project";
+  projectService.openProject({id:"project-"+Date.now(),name,path:normalized,createdAt:Date.now(),updatedAt:Date.now(),settings:{theme:"system",language:"en",autoSave:true,tabSize:2}});
+};
 const setRuntimeStatus = (status: "running"|"terminated"): void => { const state=useRuntimeStore.getState(); state.runtimes.forEach((runtime)=>state.setStatus(runtime.name,status)); log(`All runtimes ${status}`); };
 export function registerVisionCommands(): void {
   const command = (id: string, label: string, category: string, handler: () => void, shortcut?: string): CommandPaletteItem => ({ id, label, category, description: `${label} in Vision Studio`, handler, shortcut });
   const commands = [
-    command("desktop.open-project", "Open Project", "File", openProjectPicker), command("desktop.close-project", "Close Project", "File", () => projectService.closeProject()), command("desktop.exit", "Exit", "File", () => log("Exit requested by user")),
-    command("desktop.cut", "Cut", "Edit", () => { useVisionDocumentStore.getState().copySelected(); useVisionDocumentStore.getState().deleteSelected(); }), command("desktop.start-runtimes", "Start All Runtimes", "Run", () => setRuntimeStatus("running")), command("desktop.stop-runtimes", "Stop All Runtimes", "Run", () => setRuntimeStatus("terminated")), command("desktop.restart-runtime", "Restart Selected", "Run", () => { setRuntimeStatus("terminated"); setRuntimeStatus("running"); }), command("desktop.export-logs", "Export Logs", "Tools", () => log("Log export requested")), command("desktop.clear-logs", "Clear Logs", "Tools", () => useLogStore.getState().clearEntries()), command("desktop.settings", "Open Settings", "Tools", () => log("Settings requested")), command("desktop.about", "About Atlas", "Help", () => log("Atlas Desktop 0.12.0-alpha")),
+    command("desktop.open-project", "Open Project", "File", openProjectPicker), command("desktop.open-project-path", "Open Project by Path", "File", openProjectPathPrompt), command("desktop.close-project", "Close Project", "File", () => projectService.closeProject()), command("desktop.exit", "Exit", "File", () => log("Exit requested by user")),
+    command("desktop.cut", "Cut", "Edit", () => { useVisionDocumentStore.getState().copySelected(); useVisionDocumentStore.getState().deleteSelected(); }), command("desktop.start-runtimes", "Start All Runtimes", "Run", () => setRuntimeStatus("running")), command("desktop.stop-runtimes", "Stop All Runtimes", "Run", () => setRuntimeStatus("terminated")), command("desktop.restart-runtime", "Restart Selected", "Run", () => { setRuntimeStatus("terminated"); setRuntimeStatus("running"); }), command("desktop.export-logs", "Export Logs", "Tools", () => log("Log export requested")), command("desktop.clear-logs", "Clear Logs", "Tools", () => useLogStore.getState().clearEntries()), command("desktop.settings", "Open Settings", "Tools", () => log("Settings requested")), command("desktop.about", "About Atlas", "Help", () => log("Atlas Desktop 0.15.0-alpha")),
     command("vision.capture", "Capture Screen", "Vision / Capture", () => void visionCaptureService.captureScreen()), command("vision.freeze", "Freeze Frame", "Vision / Capture", () => log("Freeze requested through capture service")),
     command("vision.record", "Start Recording", "Vision / Capture", () => log("Recording requested through runtime boundary")), command("vision.stop", "Stop Capture or Playback", "Vision / Capture", () => { useVisionTimelineStore.getState().pause(); log("Stop requested"); }),
     command("vision.play", "Play Timeline", "Vision / Playback", () => useVisionTimelineStore.getState().play()), command("vision.pause", "Pause Timeline", "Vision / Playback", () => useVisionTimelineStore.getState().pause()),

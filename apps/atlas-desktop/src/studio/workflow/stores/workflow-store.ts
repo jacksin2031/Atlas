@@ -38,6 +38,8 @@ export interface WorkflowGraphNode {
   statusMessage?: string;
   documentationUrl?: string;
   capabilities?: string[];
+  pluginId?: string;
+  requiredPlugins?: string[];
   version?: string;
   x: number;
   y: number;
@@ -47,6 +49,8 @@ export interface WorkflowGraphEdge {
   id: string;
   source: string;
   target: string;
+  sourcePort?: string;
+  targetPort?: string;
   edgeType: EdgeType;
   condition?: string;
   transformation?: string;
@@ -86,6 +90,7 @@ export interface WorkflowCanvasState {
   setNodes: (nodes: WorkflowGraphNode[]) => void;
   addNode: (node: WorkflowGraphNode) => void;
   updateNode: (id: string, partial: Partial<WorkflowGraphNode>) => void;
+  setNodePosition: (id: string, x: number, y: number) => void;
   removeNode: (id: string) => void;
   duplicateNode: (id: string) => void;
   setEdges: (edges: WorkflowGraphEdge[]) => void;
@@ -94,6 +99,7 @@ export interface WorkflowCanvasState {
   setTransform: (transform: CanvasTransform) => void;
   selectNode: (id: string, multi?: boolean) => void;
   selectEdge: (id: string, multi?: boolean) => void;
+  setSelection: (nodeIds: string[], edgeIds: string[]) => void;
   deselectAll: () => void;
   selectAll: () => void;
   setValidationResults: (results: ValidationResult[]) => void;
@@ -154,6 +160,12 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
       }));
       get().pushHistory();
     },
+    // React Flow emits many position changes during one drag. Keep those
+    // transient updates out of the undo stack; the canvas commits history
+    // once when dragging ends.
+    setNodePosition: (id, x, y) => set((state) => ({
+      nodes: state.nodes.map((n) => (n.id === id ? { ...n, x, y } : n)),
+    })),
     removeNode: (id) => {
       set((state) => ({
         nodes: state.nodes.filter((n) => n.id !== id),
@@ -206,6 +218,14 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         };
       });
     },
+    setSelection: (nodeIds, edgeIds) => set({
+      selection: {
+        selectedNodeIds: new Set(nodeIds),
+        selectedEdgeIds: new Set(edgeIds),
+      },
+      selectedNodeIds: [...nodeIds],
+      selectedEdges: [...edgeIds],
+    }),
     deselectAll: () =>
       set({
         selection: { selectedNodeIds: new Set<string>(), selectedEdgeIds: new Set<string>() },
@@ -285,6 +305,8 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         statusMessage: "",
         documentationUrl: n.documentationUrl,
         capabilities: n.capabilities,
+        pluginId: n.pluginId,
+        requiredPlugins: n.requiredPlugins,
         version: n.version,
         x: 100 + (i % 5) * 220,
         y: 100 + Math.floor(i / 5) * 160,
@@ -293,6 +315,8 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         id: e.id,
         source: e.source,
         target: e.target,
+        sourcePort: e.sourcePort,
+        targetPort: e.targetPort,
         edgeType: (e.edgeType as EdgeType) || "data",
         condition: e.condition,
         transformation: e.transformation,
@@ -305,6 +329,9 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         workflowId: def.id,
         workflowName: def.name,
         workflowVersion: def.version,
+        selection: { selectedNodeIds: new Set<string>(), selectedEdgeIds: new Set<string>() },
+        selectedNodeIds: [],
+        selectedEdges: [],
       });
       get().pushHistory();
     },
@@ -330,12 +357,16 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
           icon: n.icon,
           documentationUrl: n.documentationUrl,
           capabilities: n.capabilities,
+          pluginId: n.pluginId,
+          requiredPlugins: n.requiredPlugins,
           version: n.version,
         })),
         edges: state.edges.map((e: any) => ({
           id: e.id,
           source: e.source,
           target: e.target,
+          sourcePort: e.sourcePort,
+          targetPort: e.targetPort,
           edgeType: e.edgeType,
           condition: e.condition,
           transformation: e.transformation,
@@ -378,6 +409,8 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         variables: prev.variables,
         historyIndex: state.historyIndex - 1,
         selection: { selectedNodeIds: new Set<string>(), selectedEdgeIds: new Set<string>() },
+        selectedNodeIds: [],
+        selectedEdges: [],
       });
     },
 
@@ -392,6 +425,8 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         variables: next.variables,
         historyIndex: state.historyIndex + 1,
         selection: { selectedNodeIds: new Set<string>(), selectedEdgeIds: new Set<string>() },
+        selectedNodeIds: [],
+        selectedEdges: [],
       });
     },
 
@@ -406,6 +441,8 @@ export const useWorkflowStore = create<WorkflowCanvasState>()(
         variables: [],
         transform: DEFAULT_TRANSFORM,
         selection: { selectedNodeIds: new Set<string>(), selectedEdgeIds: new Set<string>() },
+        selectedNodeIds: [],
+        selectedEdges: [],
         validationResults: [],
         history: [createInitialHistory()],
         historyIndex: 0,

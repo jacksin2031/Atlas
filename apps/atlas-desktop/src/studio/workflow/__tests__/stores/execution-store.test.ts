@@ -47,28 +47,14 @@ describe('ExecutionStore', () => {
     expect(useExecutionStore.getState().runs[runId]!.errors).toHaveLength(1);
   });
 
-  it('should start execution', () => {
-    useExecutionStore.getState().startExecution();
-    expect(useExecutionStore.getState().status).toBe('running');
+  it('derives execution lifecycle only from Runtime state and events', () => {
+    useExecutionStore.getState().applyRuntimeState({ executionId: 'runtime-1', workflowId: 'wf_1', status: 'running', nodeStates: {}, nodeResults: {}, variables: {}, startedAt: new Date(0).toISOString(), metrics: { totalNodes: 0, completedNodes: 0, failedNodes: 0, duration: 0, throughput: 0 } });
     expect(useExecutionStore.getState().isRunning).toBe(true);
-  });
-
-  it('should pause execution', () => {
-    useExecutionStore.getState().startExecution();
-    useExecutionStore.getState().pauseExecution();
+    useExecutionStore.getState().applyRuntimeEvent({ eventId: 'pause', eventType: 'WorkflowPaused', timestamp: new Date().toISOString(), workflowId: 'wf_1', executionId: 'runtime-1', correlationId: 'runtime-1', data: {} });
     expect(useExecutionStore.getState().isPaused).toBe(true);
-  });
-
-  it('should resume execution', () => {
-    useExecutionStore.getState().startExecution();
-    useExecutionStore.getState().pauseExecution();
-    useExecutionStore.getState().resumeExecution();
+    useExecutionStore.getState().applyRuntimeEvent({ eventId: 'resume', eventType: 'WorkflowResumed', timestamp: new Date().toISOString(), workflowId: 'wf_1', executionId: 'runtime-1', correlationId: 'runtime-1', data: {} });
     expect(useExecutionStore.getState().isPaused).toBe(false);
-  });
-
-  it('should stop execution', () => {
-    useExecutionStore.getState().startExecution();
-    useExecutionStore.getState().stopExecution();
+    useExecutionStore.getState().applyRuntimeEvent({ eventId: 'stop', eventType: 'WorkflowCancelled', timestamp: new Date().toISOString(), workflowId: 'wf_1', executionId: 'runtime-1', correlationId: 'runtime-1', data: {} });
     expect(useExecutionStore.getState().isRunning).toBe(false);
   });
 

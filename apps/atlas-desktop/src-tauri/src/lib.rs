@@ -747,6 +747,7 @@ fn workflow_python_path(root: &Path) -> Result<std::ffi::OsString, String> {
         root.join("src"),
         root.join("packages/ai/src"),
         root.join("packages/vision/src"),
+        root.join("packages/knowledge/src"),
     ];
     if let Some(existing) = env::var_os("PYTHONPATH") {
         paths.extend(env::split_paths(&existing));
@@ -879,6 +880,11 @@ async fn request_ai_host(
         .map_err(|error| format!("AI Runtime host task failed: {error}"))?
 }
 
+#[derive(Default)]
+struct ActiveKnowledgeScope {
+    value: Mutex<Option<(String, String)>>,
+}
+
 #[tauri::command]
 async fn ai_discover(app: AppHandle, state: State<'_, Arc<AIHostManager>>) -> HostResult {
     request_ai_host(state.inner().clone(), app, "ai_discover", json!({})).await
@@ -888,8 +894,34 @@ async fn ai_discover(app: AppHandle, state: State<'_, Arc<AIHostManager>>) -> Ho
 async fn ai_infer(
     app: AppHandle,
     state: State<'_, Arc<AIHostManager>>,
-    request: Value,
+    workflow_state: State<'_, Arc<WorkflowHostManager>>,
+    knowledge_scope: State<'_, ActiveKnowledgeScope>,
+    mut request: Value,
 ) -> HostResult {
+    let references = selected_knowledge_references(&request);
+    if !references.is_empty() {
+        let active = knowledge_scope
+            .value
+            .lock()
+            .map_err(|_| "Active Knowledge project lock is poisoned.".to_owned())?
+            .clone();
+        let (project_id, project_path) = active.ok_or_else(|| {
+            "Knowledge context requires an active Knowledge Runtime project.".to_owned()
+        })?;
+        let contexts = request_knowledge_host(
+            workflow_state.inner().clone(),
+            app.clone(),
+            "knowledge_context",
+            project_id,
+            project_path,
+            json!({"references": references}),
+        )
+        .await?;
+        request
+            .as_object_mut()
+            .ok_or_else(|| "AI request must be an object.".to_owned())?
+            .insert("knowledgeContext".to_owned(), contexts);
+    }
     request_ai_host(
         state.inner().clone(),
         app,
@@ -897,6 +929,21 @@ async fn ai_infer(
         json!({"request": request}),
     )
     .await
+}
+
+fn selected_knowledge_references(request: &Value) -> Vec<Value> {
+    request
+        .get("contextReferences")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter(|item| item.get("kind").and_then(Value::as_str) == Some("knowledge"))
+        .filter_map(|item| {
+            item.get("metadata")
+                .and_then(|value| value.get("knowledgeReference"))
+                .cloned()
+        })
+        .collect()
 }
 
 #[tauri::command(rename_all = "camelCase")]
@@ -1343,11 +1390,247 @@ async fn workflow_plugin_register(
     .await
 }
 
+async fn request_knowledge_host(
+    manager: Arc<WorkflowHostManager>,
+    app: AppHandle,
+    command: &'static str,
+    project_id: String,
+    project_path: String,
+    payload: Value,
+) -> HostResult {
+    let payload = knowledge_payload(project_id, project_path, payload)?;
+    request_workflow_host(manager, app, command, payload).await
+}
+
+fn knowledge_payload(
+    project_id: String,
+    project_path: String,
+    mut payload: Value,
+) -> Result<Value, String> {
+    let object = payload
+        .as_object_mut()
+        .ok_or_else(|| "Knowledge command payload must be an object.".to_owned())?;
+    object.insert("projectId".to_owned(), Value::String(project_id));
+    object.insert("projectPath".to_owned(), Value::String(project_path));
+    Ok(payload)
+}
+
+#[tauri::command(rename_all = "camelCase")]
+fn knowledge_activate(
+    state: State<'_, ActiveKnowledgeScope>,
+    project_id: String,
+    project_path: String,
+) -> Result<(), String> {
+    if project_id.is_empty()
+        || project_id.len() > 128
+        || !project_id
+            .chars()
+            .all(|value| value.is_ascii_alphanumeric() || "_.:-".contains(value))
+    {
+        return Err("Knowledge project id contains unsupported characters.".to_owned());
+    }
+    project_asset_paths(&project_path)?;
+    *state
+        .value
+        .lock()
+        .map_err(|_| "Active Knowledge project lock is poisoned.".to_owned())? =
+        Some((project_id, project_path));
+    Ok(())
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_status(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_status",
+        project_id,
+        project_path,
+        json!({}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_list(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    entry_type: Option<String>,
+    tags: Option<Vec<String>>,
+    offset: Option<u64>,
+    limit: Option<u64>,
+) -> HostResult {
+    request_knowledge_host(state.inner().clone(), app, "knowledge_list", project_id, project_path, json!({"type":entry_type,"tags":tags.unwrap_or_default(),"offset":offset.unwrap_or(0),"limit":limit.unwrap_or(100)})).await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_get(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    entry_id: String,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_get",
+        project_id,
+        project_path,
+        json!({"entryId":entry_id}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_create(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    entry: Value,
+    request_id: Option<String>,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_create",
+        project_id,
+        project_path,
+        json!({"entry":entry,"requestId":request_id}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_update(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    entry_id: String,
+    changes: Value,
+    request_id: Option<String>,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_update",
+        project_id,
+        project_path,
+        json!({"entryId":entry_id,"changes":changes,"requestId":request_id}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_delete(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    entry_id: String,
+    request_id: Option<String>,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_delete",
+        project_id,
+        project_path,
+        json!({"entryId":entry_id,"requestId":request_id}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_search(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    query: String,
+    types: Option<Vec<String>>,
+    tags: Option<Vec<String>>,
+    limit: Option<u64>,
+    request_id: Option<String>,
+) -> HostResult {
+    request_knowledge_host(state.inner().clone(), app, "knowledge_search", project_id, project_path, json!({"query":query,"types":types.unwrap_or_default(),"tags":tags.unwrap_or_default(),"limit":limit.unwrap_or(25),"requestId":request_id})).await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_import(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    filename: String,
+    content: String,
+    format: String,
+    request_id: Option<String>,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_import",
+        project_id,
+        project_path,
+        json!({"filename":filename,"content":content,"format":format,"requestId":request_id}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_export(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    format: String,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_export",
+        project_id,
+        project_path,
+        json!({"format":format}),
+    )
+    .await
+}
+
+#[tauri::command(rename_all = "camelCase")]
+async fn knowledge_events(
+    app: AppHandle,
+    state: State<'_, Arc<WorkflowHostManager>>,
+    project_id: String,
+    project_path: String,
+    limit: Option<u64>,
+) -> HostResult {
+    request_knowledge_host(
+        state.inner().clone(),
+        app,
+        "knowledge_events",
+        project_id,
+        project_path,
+        json!({"limit":limit.unwrap_or(100)}),
+    )
+    .await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .manage(Arc::new(AIHostManager::default()))
         .manage(Arc::new(WorkflowHostManager::default()))
+        .manage(ActiveKnowledgeScope::default())
         .invoke_handler(tauri::generate_handler![
             vision_capture_frame,
             ai_discover,
@@ -1370,6 +1653,17 @@ pub fn run() {
             workflow_input_status,
             workflow_emergency_stop,
             workflow_plugin_register,
+            knowledge_activate,
+            knowledge_status,
+            knowledge_list,
+            knowledge_get,
+            knowledge_create,
+            knowledge_update,
+            knowledge_delete,
+            knowledge_search,
+            knowledge_import,
+            knowledge_export,
+            knowledge_events,
             project_select_directory,
             project_session_remember,
             project_session_restore,
@@ -1464,5 +1758,32 @@ mod hardening_tests {
             Some(project.to_string_lossy().into_owned())
         );
         fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn knowledge_ipc_payload_preserves_scope_and_correlation() {
+        let value = knowledge_payload(
+            "project-a".to_owned(),
+            r"C:\Atlas\Project".to_owned(),
+            json!({"query":"Atlas","requestId":"request-16"}),
+        )
+        .unwrap();
+        assert_eq!(value["projectId"], "project-a");
+        assert_eq!(value["projectPath"], r"C:\Atlas\Project");
+        assert_eq!(value["requestId"], "request-16");
+        assert!(knowledge_payload("a".to_owned(), "b".to_owned(), Value::Null).is_err());
+    }
+
+    #[test]
+    fn ai_boundary_selects_only_typed_knowledge_references() {
+        let request = json!({"contextReferences":[
+            {"kind":"vision","metadata":{"knowledgeReference":{"entryId":"wrong"}}},
+            {"kind":"knowledge","metadata":{"knowledgeReference":{"entryId":"right","projectId":"project-a"}}}
+        ]});
+        let references = selected_knowledge_references(&request);
+        assert_eq!(
+            references,
+            vec![json!({"entryId":"right","projectId":"project-a"})]
+        );
     }
 }

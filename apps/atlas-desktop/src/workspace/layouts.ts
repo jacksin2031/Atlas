@@ -67,9 +67,27 @@ export const DEFAULT_LAYOUTS: Record<WorkspaceId, IJsonModel> = {
       ]},
     ]},
   },
+  knowledge: {
+    global,
+    borders: [],
+    layout: { type: "row", children: [
+      { type: "tabset", id: "knowledge-left", weight: 20, enableDeleteWhenEmpty: false, children: [
+        tab("knowledge.explorer", "Knowledge Explorer", false), tab("shared.project-explorer", "Project Explorer"),
+      ]},
+      { type: "row", weight: 58, children: [
+        { type: "tabset", id: "knowledge-center", weight: 68, enableDeleteWhenEmpty: false, children: [tab("knowledge.editor", "Knowledge Editor", false)] },
+        { type: "tabset", id: "knowledge-bottom", weight: 32, selected: 0, children: [
+          tab("knowledge.search", "Search"), tab("knowledge.retrieval", "Retrieval"), tab("knowledge.activity", "Activity"), tab("knowledge.health", "Health"), tab("shared.console", "Console"), tab("shared.problems", "Problems"),
+        ]},
+      ]},
+      { type: "tabset", id: "knowledge-right", weight: 22, selected: 0, children: [
+        tab("knowledge.metadata", "Metadata & Provenance", false), tab("knowledge.import", "Import"),
+      ]},
+    ]},
+  },
 };
 
-export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas", ai: "ai.editor" };
+export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas", ai: "ai.editor", knowledge: "knowledge.editor" };
 
 export function cloneDefaultLayout(id: WorkspaceId): IJsonModel {
   return structuredClone(DEFAULT_LAYOUTS[id]);

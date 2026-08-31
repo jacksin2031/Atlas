@@ -3,9 +3,20 @@ import type { ProjectDescriptor } from "../types";
 import { clearProjectSession, rememberProjectSession, restoreProjectSession } from "../ipc/bridge";
 import { projectAssetService } from "./project-assets";
 
+export function stableProjectId(projectPath: string): string {
+  const normalized = projectPath.replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase();
+  let hash = 0xcbf29ce484222325n;
+  for (const character of normalized) {
+    hash ^= BigInt(character.codePointAt(0) ?? 0);
+    hash = BigInt.asUintN(64, hash * 0x100000001b3n);
+  }
+  return `project-${hash.toString(16).padStart(16, "0")}`;
+}
+
 export class ProjectService {
 
   openProject(project: ProjectDescriptor): void {
+    project = { ...project, id: stableProjectId(project.path) };
     useProjectStore.getState().openProject(project);
     useProjectStore.getState().addRecentProject(project);
     void rememberProjectSession(project.path).then(() => projectAssetService.open(project.path)).catch((error) => useProjectStore.getState().addNotification({
@@ -36,7 +47,7 @@ export class ProjectService {
     if (!path) return false;
     const name = path.split(/[\\/]/).filter(Boolean).at(-1) ?? "Atlas Project";
     const now = Date.now();
-    this.openProject({ id: `project-restored-${now}`, name, path, createdAt: now, updatedAt: now, settings: { theme: "system", language: "en", autoSave: true, tabSize: 2 } });
+    this.openProject({ id: stableProjectId(path), name, path, createdAt: now, updatedAt: now, settings: { theme: "system", language: "en", autoSave: true, tabSize: 2 } });
     return true;
   }
 

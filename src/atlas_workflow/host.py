@@ -12,6 +12,7 @@ from typing import Any
 
 from atlas_automation import reference_bundle
 from atlas_input import InputSafetyPolicy, InputService, default_input_service
+from atlas_knowledge import KnowledgeRuntime, ProjectScope
 from atlas_workflow.common import WorkflowEvent
 from atlas_workflow.node_registry import NodeDefinition
 from atlas_workflow.runtime import WorkflowRuntime
@@ -76,6 +77,8 @@ class DesktopWorkflowHost:
         self._sessions: dict[str, dict[str, Any]] = {}
         self.runtime = WorkflowRuntime()
         self.runtime.event_bus.subscribe_all(self._on_runtime_event)
+        self.knowledge_runtime = KnowledgeRuntime()
+        self.knowledge_runtime.add_event_listener(self._on_knowledge_event)
         self.bridge = BridgeClient(self.write)
         self.input_service = input_service or default_input_service()
         self.input_service.add_emergency_stop_listener(self._cancel_active_for_emergency)
@@ -124,6 +127,10 @@ class DesktopWorkflowHost:
         self._register("vision_validate", self._vision_validate, ["vision"])
         self._register("ai_operation", self._ai_inference, ["ai"])
         self._register("vision_operation", self._vision_current_frame, ["vision"])
+        self._register("knowledge_operation", self._knowledge_operation, ["knowledge"])
+        self._register("knowledge_search", self._knowledge_search, ["knowledge"])
+        self._register("knowledge_write", self._knowledge_write, ["knowledge"])
+        self._register("knowledge_validate", self._knowledge_validate, ["knowledge"])
         self._register("plugin_test", self._plugin_test, ["plugin"])
         for node_type in (
             "mouse_move", "mouse_click", "mouse_double_click", "mouse_drag", "mouse_scroll",
@@ -245,11 +252,16 @@ class DesktopWorkflowHost:
         if not provider_id or not model_id:
             raise RuntimeError("AI node requires providerId and modelId")
         request_id = f"workflow-ai-{context.instance_id if context else uuid.uuid4()}-{node_id}"
+        context_references = inputs.get("context", [])
+        knowledge_context: list[dict[str, Any]] = []
+        if isinstance(context_references, list) and context_references:
+            scope = self._workflow_project_scope(context)
+            knowledge_context = self.knowledge_runtime.assemble_ai_context(scope, context_references)
         response = self.bridge.request("ai", "ai_infer", {"request": {
             "requestId": request_id, "providerId": provider_id, "modelId": model_id,
             "messages": [{"id": f"msg-{node_id}", "role": "user", "content": prompt}],
             "parameters": {"stream": True}, "attachments": inputs.get("attachments", []),
-            "contextReferences": inputs.get("context", []), "tools": [],
+            "contextReferences": context_references, "knowledgeContext": knowledge_context, "tools": [],
         }})
         return {"response": response, "text": (response or {}).get("content", "")}
 
@@ -287,7 +299,8 @@ class DesktopWorkflowHost:
             if not isinstance(matches, list) or not matches or not isinstance(matches[0], dict):
                 raise RuntimeError(f"Vision {operation} did not resolve a target")
             references = reference_bundle(matches[0], frame, node_id)
-            return {**references, "matches": matches, "providerResult": raw}
+            text = str(matches[0].get("text", matches[0].get("label", ""))) if operation == "ocr" else ""
+            return {**references, "text": text, "matches": matches, "providerResult": raw, "frame": frame}
         return handler
 
     def _vision_validate(self, node_id: str, configuration: dict[str, Any], inputs: dict[str, Any], metadata: dict[str, Any]) -> dict[str, Any]:
@@ -298,6 +311,160 @@ class DesktopWorkflowHost:
         expected = str(configuration.get("expect", "present")).lower()
         valid = matched if expected == "present" else not matched
         return {"valid": valid, "result": {"valid": valid, "expected": expected, "operation": operation, "providerResult": raw}}
+
+    def _workflow_project_scope(self, context: Any) -> ProjectScope:
+        if context is None:
+            raise RuntimeError("Knowledge workflow operation requires execution context")
+        with self._session_lock:
+            session = self._sessions.get(str(context.instance_id))
+            project = dict(session.get("projectContext") or {}) if session else {}
+        return self._project_scope(project)
+
+    @staticmethod
+    def _project_scope(value: dict[str, Any]) -> ProjectScope:
+        return ProjectScope(
+            project_id=str(value.get("projectId", value.get("project_id", ""))),
+            project_path=str(value.get("projectPath", value.get("path", value.get("project_path", "")))),
+        )
+
+    @staticmethod
+    def _knowledge_value(inputs: dict[str, Any], configuration: dict[str, Any], key: str, default: Any = None) -> Any:
+        value = inputs.get(key)
+        if value is not None:
+            return value
+        return configuration.get(key, default)
+
+    def _knowledge_search(
+        self,
+        node_id: str,
+        configuration: dict[str, Any],
+        inputs: dict[str, Any],
+        metadata: dict[str, Any],
+        context: Any = None,
+    ) -> dict[str, Any]:
+        del metadata
+        scope = self._workflow_project_scope(context)
+        query = str(self._knowledge_value(inputs, configuration, "query", ""))
+        response = self.knowledge_runtime.search(
+            scope,
+            query,
+            entry_types=list(configuration.get("types") or []),
+            tags=list(configuration.get("tags") or []),
+            limit=int(configuration.get("limit", 25)),
+            request_id=f"workflow-{context.instance_id}-{node_id}",
+        )
+        references = [item["reference"] for item in response["results"]]
+        return {"results": response["results"], "references": references, "context": references, "retrieval": response}
+
+    def _knowledge_write(
+        self,
+        node_id: str,
+        configuration: dict[str, Any],
+        inputs: dict[str, Any],
+        metadata: dict[str, Any],
+        context: Any = None,
+    ) -> dict[str, Any]:
+        del metadata
+        scope = self._workflow_project_scope(context)
+        content_value = self._knowledge_value(inputs, configuration, "content")
+        if content_value is None:
+            content_value = self._first(inputs, "")
+        if isinstance(content_value, (dict, list)):
+            content = json.dumps(content_value, ensure_ascii=False, default=str)
+        else:
+            content = str(content_value)
+        source = dict(configuration.get("source") or {"type": "workflow", "workflow_id": context.workflow_id, "node_id": node_id})
+        provider_result = inputs.get("providerResult")
+        if isinstance(provider_result, dict) and provider_result.get("operation") == "ocr":
+            frame = inputs.get("frame")
+            source = {"type": "vision_ocr", "workflow_id": context.workflow_id, "node_id": node_id}
+            if isinstance(frame, dict) and frame.get("frameId"):
+                source["frame_reference"] = str(frame["frameId"])
+        entry = self.knowledge_runtime.create(scope, {
+            "type": configuration.get("type", "observation" if source.get("type") == "vision_ocr" else "fact"),
+            "title": self._knowledge_value(inputs, configuration, "title", "Workflow knowledge"),
+            "content": content,
+            "tags": configuration.get("tags", []),
+            "metadata": {**dict(configuration.get("metadata") or {}), "workflow_id": context.workflow_id, "workflow_node_id": node_id},
+            "source": source,
+            "provenance": dict(configuration.get("provenance") or {}),
+        }, correlation_id=f"workflow-{context.instance_id}-{node_id}")
+        return {"entry": entry.to_dict(), "reference": entry.reference.to_dict(), "persistentId": entry.id}
+
+    def _knowledge_validate(
+        self,
+        node_id: str,
+        configuration: dict[str, Any],
+        inputs: dict[str, Any],
+        metadata: dict[str, Any],
+        context: Any = None,
+    ) -> dict[str, Any]:
+        del node_id, metadata, context
+        value = self._knowledge_value(inputs, configuration, "results", self._first(inputs, []))
+        expected = str(self._knowledge_value(inputs, configuration, "expected", "")).strip()
+        if not expected:
+            raise RuntimeError("Knowledge validation requires an expected value")
+        serialized = json.dumps(value, ensure_ascii=False, default=str)
+        valid = expected.casefold() in serialized.casefold()
+        result = {"valid": valid, "expected": expected, "results": value}
+        if not valid and bool(configuration.get("failOnInvalid", True)):
+            raise RuntimeError(f"Knowledge validation failed: expected {expected!r}")
+        return {"valid": valid, "result": result}
+
+    def _knowledge_operation(
+        self,
+        node_id: str,
+        configuration: dict[str, Any],
+        inputs: dict[str, Any],
+        metadata: dict[str, Any],
+        context: Any = None,
+    ) -> dict[str, Any]:
+        operation = str(configuration.get("operation", "search")).lower()
+        if operation in {"search", "query"}:
+            return self._knowledge_search(node_id, configuration, inputs, metadata, context)
+        if operation in {"create", "write"}:
+            return self._knowledge_write(node_id, configuration, inputs, metadata, context)
+        scope = self._workflow_project_scope(context)
+        entry_id = str(self._knowledge_value(inputs, configuration, "entryId", self._knowledge_value(inputs, configuration, "entry_id", "")))
+        if operation == "get":
+            entry = self.knowledge_runtime.get(scope, entry_id)
+            return {"entry": entry.to_dict(), "reference": entry.reference.to_dict()}
+        if operation == "update":
+            changes = dict(configuration.get("changes") or {})
+            if "content" in inputs:
+                changes["content"] = inputs["content"]
+            entry = self.knowledge_runtime.update(scope, entry_id, changes, correlation_id=f"workflow-{context.instance_id}-{node_id}")
+            return {"entry": entry.to_dict(), "reference": entry.reference.to_dict()}
+        if operation == "delete":
+            return self.knowledge_runtime.delete(scope, entry_id, correlation_id=f"workflow-{context.instance_id}-{node_id}")
+        raise RuntimeError(f"Unsupported Knowledge operation: {operation}")
+
+    def knowledge_command(self, command: str, payload: dict[str, Any]) -> Any:
+        scope = self._project_scope(payload)
+        correlation_id = str(payload.get("requestId", "")) or None
+        if command == "knowledge_status":
+            return self.knowledge_runtime.status(scope)
+        if command == "knowledge_list":
+            return self.knowledge_runtime.list_entries(scope, entry_type=payload.get("type"), tags=list(payload.get("tags") or []), offset=int(payload.get("offset", 0)), limit=int(payload.get("limit", 100)))
+        if command == "knowledge_get":
+            return self.knowledge_runtime.get(scope, str(payload.get("entryId", ""))).to_dict()
+        if command == "knowledge_create":
+            return self.knowledge_runtime.create(scope, dict(payload.get("entry") or {}), correlation_id=correlation_id).to_dict()
+        if command == "knowledge_update":
+            return self.knowledge_runtime.update(scope, str(payload.get("entryId", "")), dict(payload.get("changes") or {}), correlation_id=correlation_id).to_dict()
+        if command == "knowledge_delete":
+            return self.knowledge_runtime.delete(scope, str(payload.get("entryId", "")), correlation_id=correlation_id)
+        if command == "knowledge_search":
+            return self.knowledge_runtime.search(scope, str(payload.get("query", "")), entry_types=list(payload.get("types") or []), tags=list(payload.get("tags") or []), limit=int(payload.get("limit", 25)), request_id=correlation_id)
+        if command == "knowledge_import":
+            return self.knowledge_runtime.import_content(scope, filename=str(payload.get("filename", "")), content=str(payload.get("content", "")), format_name=str(payload.get("format", "")), correlation_id=correlation_id)
+        if command == "knowledge_export":
+            return self.knowledge_runtime.export(scope, str(payload.get("format", "json")))
+        if command == "knowledge_events":
+            return self.knowledge_runtime.events(scope, int(payload.get("limit", 100)))
+        if command == "knowledge_context":
+            return self.knowledge_runtime.assemble_ai_context(scope, list(payload.get("references") or []))
+        raise RuntimeError(f"Unknown Knowledge host command: {command}")
 
     @staticmethod
     def _plugin_test(node_id: str, configuration: dict[str, Any], inputs: dict[str, Any], metadata: dict[str, Any]) -> dict[str, Any]:
@@ -338,6 +505,9 @@ class DesktopWorkflowHost:
                 if event_type == "VariableChanged":
                     session["variables"][str(raw["data"].get("name", ""))] = raw["data"].get("value")
         self.emit(payload)
+
+    def _on_knowledge_event(self, event: Any) -> None:
+        self.write({"kind": "event", "event": "knowledge://runtime-event", "payload": event.to_dict()})
 
     def _cancel_active_for_emergency(self) -> None:
         with self._session_lock:
@@ -505,6 +675,8 @@ class DesktopWorkflowHost:
                 result = self.input_service.emergency_stop()
             elif command == "workflow_plugin_register":
                 result = self.register_plugin(payload)
+            elif command.startswith("knowledge_"):
+                result = self.knowledge_command(command, payload)
             else:
                 raise RuntimeError(f"Unknown Workflow host command: {command}")
             self.respond(command_id, result)

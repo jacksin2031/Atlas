@@ -1,0 +1,10 @@
+[project]
+name = "atlas-knowledge"
+version = "0.16.0a0"
+description = "Atlas project knowledge runtime"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

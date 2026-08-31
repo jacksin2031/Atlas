@@ -252,3 +252,18 @@ export async function loadProjectAssets(projectPath: string): Promise<Record<str
 export async function saveProjectAssets(projectPath: string, assets: Record<string, unknown>): Promise<void> {
   await invokeRequired("project_assets_save", { projectPath, assets });
 }
+
+export interface KnowledgeProjectScope { projectId: string; projectPath: string }
+const knowledgeArgs=(scope:KnowledgeProjectScope,args:Record<string,unknown>={}):Record<string,unknown>=>({...scope,...args});
+export async function activateKnowledgeProject(scope:KnowledgeProjectScope):Promise<void>{await invokeRequired("knowledge_activate",knowledgeArgs(scope));}
+export async function getKnowledgeStatus(scope:KnowledgeProjectScope):Promise<unknown>{return invokeRequired("knowledge_status",knowledgeArgs(scope));}
+export async function listKnowledgeEntries(scope:KnowledgeProjectScope,options:{type?:string;tags?:string[];offset?:number;limit?:number}={}):Promise<unknown>{return invokeRequired("knowledge_list",knowledgeArgs(scope,{entryType:options.type,tags:options.tags,offset:options.offset,limit:options.limit}));}
+export async function getKnowledgeEntry(scope:KnowledgeProjectScope,entryId:string):Promise<unknown>{return invokeRequired("knowledge_get",knowledgeArgs(scope,{entryId}));}
+export async function createKnowledgeEntry(scope:KnowledgeProjectScope,entry:Record<string,unknown>,requestId?:string):Promise<unknown>{return invokeRequired("knowledge_create",knowledgeArgs(scope,{entry,requestId}));}
+export async function updateKnowledgeEntry(scope:KnowledgeProjectScope,entryId:string,changes:Record<string,unknown>,requestId?:string):Promise<unknown>{return invokeRequired("knowledge_update",knowledgeArgs(scope,{entryId,changes,requestId}));}
+export async function deleteKnowledgeEntry(scope:KnowledgeProjectScope,entryId:string,requestId?:string):Promise<unknown>{return invokeRequired("knowledge_delete",knowledgeArgs(scope,{entryId,requestId}));}
+export async function searchKnowledge(scope:KnowledgeProjectScope,request:{query:string;types?:string[];tags?:string[];limit?:number;requestId?:string}):Promise<unknown>{return invokeRequired("knowledge_search",knowledgeArgs(scope,request));}
+export async function importKnowledgeContent(scope:KnowledgeProjectScope,request:{filename:string;content:string;format:string;requestId?:string}):Promise<unknown>{return invokeRequired("knowledge_import",knowledgeArgs(scope,request));}
+export async function exportKnowledge(scope:KnowledgeProjectScope,format:"json"|"md"):Promise<unknown>{return invokeRequired("knowledge_export",knowledgeArgs(scope,{format}));}
+export async function listKnowledgeEvents(scope:KnowledgeProjectScope,limit=100):Promise<unknown>{return invokeRequired("knowledge_events",knowledgeArgs(scope,{limit}));}
+export async function listenKnowledgeRuntimeEvents(handler:(event:unknown)=>void):Promise<UnlistenFn>{try{return await listen<unknown>("knowledge://runtime-event",({payload})=>handler(payload));}catch(error){console.debug("[IPC] knowledge://runtime-event unavailable",error);return()=>undefined;}}

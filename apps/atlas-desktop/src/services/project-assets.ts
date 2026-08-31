@@ -33,7 +33,7 @@ export function interruptRecoverableRuns(runs: Record<string, WorkflowRun>): Rec
 
 const layouts = (): Record<string, unknown> => {
   if (typeof localStorage === "undefined") return {};
-  return Object.fromEntries((["workflow", "vision", "ai"] as WorkspaceId[]).flatMap((workspace) => {
+  return Object.fromEntries((["workflow", "vision", "ai", "knowledge"] as WorkspaceId[]).flatMap((workspace) => {
     const raw = localStorage.getItem(layoutStorageKey(workspace));
     if (!raw) return [];
     try { return [[workspace, JSON.parse(raw) as unknown]]; } catch { return []; }
@@ -76,8 +76,8 @@ export function restoreProjectAssets(assets: Record<string, unknown>): void {
     useVisionTimelineStore.setState({ ...(vision as unknown as Partial<ReturnType<typeof useVisionTimelineStore.getState>>), playing: false });
   }
   const workspace = record(assets.workspace), savedLayouts = record(workspace?.layouts);
-  if (typeof localStorage !== "undefined" && savedLayouts) for (const id of ["workflow", "vision", "ai"] as WorkspaceId[]) if (savedLayouts[id]) localStorage.setItem(layoutStorageKey(id), JSON.stringify(savedLayouts[id]));
-  if (workspace && ["workflow", "vision", "ai"].includes(String(workspace.activeWorkspace))) useWorkspaceStore.getState().setActiveWorkspace(workspace.activeWorkspace as WorkspaceId);
+  if (typeof localStorage !== "undefined" && savedLayouts) for (const id of ["workflow", "vision", "ai", "knowledge"] as WorkspaceId[]) if (savedLayouts[id]) localStorage.setItem(layoutStorageKey(id), JSON.stringify(savedLayouts[id]));
+  if (workspace && ["workflow", "vision", "ai", "knowledge"].includes(String(workspace.activeWorkspace))) useWorkspaceStore.getState().setActiveWorkspace(workspace.activeWorkspace as WorkspaceId);
   if (typeof window !== "undefined") window.dispatchEvent(new Event("atlas:project-assets-restored"));
 }
 

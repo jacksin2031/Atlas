@@ -323,6 +323,21 @@ class DesktopAIHost:
         try:
             if not provider or provider_id in self._disabled:
                 raise RuntimeError(f"Provider {provider_id or 'unknown'} is unavailable.")
+            knowledge_context = request.get("knowledgeContext") or []
+            if knowledge_context:
+                sections = []
+                for item in knowledge_context[:50]:
+                    reference = item.get("reference") or {}
+                    sections.append(
+                        f"[Knowledge reference {reference.get('entry_id', '')}: {item.get('title', '')}]\n{item.get('content', '')}"
+                    )
+                request = {
+                    **request,
+                    "messages": [
+                        {"role": "system", "content": "Use the following explicitly selected Atlas project knowledge as context.\n\n" + "\n\n".join(sections)},
+                        *list(request.get("messages") or []),
+                    ],
+                }
             prompt = "\n".join(str(item.get("content", "")) for item in request.get("messages", []))
             runtime_request = InferenceRequest(prompt=prompt, model_id=model_id, request_id=request_id, stream=bool((request.get("parameters") or {}).get("stream")))
             content = ""
@@ -349,7 +364,7 @@ class DesktopAIHost:
                 return
             latency_ms = (time.monotonic() - started) * 1000
             result = InferenceResult(request_id=request_id, text=content, token_count=int(usage.get("outputTokens", 0)), model_id=runtime_request.model_id, finish_reason=finish_reason, usage={"input_tokens": int(usage.get("inputTokens", 0)), "output_tokens": int(usage.get("outputTokens", 0)), "total_tokens": int(usage.get("totalTokens", 0))}, duration_ms=latency_ms)
-            response = {"requestId": request_id, "correlationId": request_id, "providerId": provider_id, "modelId": model_id, "content": result.text, "finishReason": result.finish_reason, "latencyMs": result.duration_ms, "usage": usage, "metadata": {"firstTokenLatencyMs": first_token_ms, "runtime": "atlas-ai-python"}}
+            response = {"requestId": request_id, "correlationId": request_id, "providerId": provider_id, "modelId": model_id, "content": result.text, "finishReason": result.finish_reason, "latencyMs": result.duration_ms, "usage": usage, "metadata": {"firstTokenLatencyMs": first_token_ms, "runtime": "atlas-ai-python", "knowledgeReferenceCount": len(knowledge_context), "knowledgeReferenceIds": [str((item.get("reference") or {}).get("entry_id", "")) for item in knowledge_context]}}
             self._metrics["successCount"] += 1
             for key in ("inputTokens", "outputTokens", "totalTokens"):
                 self._metrics[key] += int(usage.get(key, 0))

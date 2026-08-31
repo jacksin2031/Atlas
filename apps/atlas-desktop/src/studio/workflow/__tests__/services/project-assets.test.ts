@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assertCredentialFree, interruptRecoverableRuns } from "../../../../services/project-assets";
+import { stableProjectId } from "../../../../services/project";
 import type { WorkflowRun } from "../../types";
 
 const run = (status: WorkflowRun["status"]): WorkflowRun => ({
@@ -18,5 +19,10 @@ describe("project asset hardening", () => {
     expect(restored.active?.status).toBe("interrupted");
     expect(restored.active?.errors.at(-1)?.errorCode).toBe("INTERRUPTED");
     expect(restored.done?.status).toBe("completed");
+  });
+
+  it("derives stable project ownership across restart and path spelling", () => {
+    expect(stableProjectId("C:\\Atlas\\Project\\")).toBe(stableProjectId("c:/atlas/project"));
+    expect(stableProjectId("C:\\Atlas\\Project-B")).not.toBe(stableProjectId("C:\\Atlas\\Project-A"));
   });
 });

@@ -13,6 +13,7 @@ from atlas_ai.host import DesktopAIHost
 
 
 class _OpenAIHandler(BaseHTTPRequestHandler):
+    last_payload: dict[str, object] | None = None
     def log_message(self, *_args: object) -> None:
         return
 
@@ -28,6 +29,7 @@ class _OpenAIHandler(BaseHTTPRequestHandler):
             return
         length = int(self.headers.get("Content-Length", "0"))
         payload = json.loads(self.rfile.read(length))
+        _OpenAIHandler.last_payload = payload
         if not payload.get("stream"):
             self._json({"choices": [{"message": {"content": "Hello Atlas"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 2, "completion_tokens": 2, "total_tokens": 4}})
             return
@@ -54,6 +56,7 @@ class _OpenAIHandler(BaseHTTPRequestHandler):
 
 class TestDesktopAIHost(unittest.TestCase):
     def setUp(self) -> None:
+        _OpenAIHandler.last_payload = None
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), _OpenAIHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -133,6 +136,30 @@ class TestDesktopAIHost(unittest.TestCase):
         self.assertFalse(response["ok"])
         self.assertEqual(response["error"], "Inference cancelled.")
         self.assertTrue(any(item["eventType"] == "inference_cancelled" for item in events))
+
+    def test_selected_knowledge_context_is_assembled_at_ai_runtime_boundary(self) -> None:
+        request = {
+            "requestId": "request-knowledge",
+            "providerId": "openai",
+            "modelId": "gpt-host-test",
+            "messages": [{"role": "user", "content": "What is the animal?"}],
+            "parameters": {"stream": False},
+            "attachments": [],
+            "knowledgeContext": [{
+                "reference": {"entry_id": "knowledge-animal", "project_id": "project-a"},
+                "title": "Acceptance animal",
+                "content": "The Atlas secret acceptance animal is ORANGE CAPYBARA.",
+            }],
+        }
+        self.host.infer_async("command-knowledge", request)
+        deadline = time.time() + 3
+        while time.time() < deadline and not any(item.get("kind") == "response" for item in self.messages):
+            time.sleep(.01)
+        payload = _OpenAIHandler.last_payload
+        self.assertIsNotNone(payload)
+        self.assertIn("ORANGE CAPYBARA", str(payload["messages"][0]))  # type: ignore[index]
+        response = next(item for item in self.messages if item.get("kind") == "response")
+        self.assertEqual(response["result"]["metadata"]["knowledgeReferenceIds"], ["knowledge-animal"])  # type: ignore[index]
 
 
 if __name__ == "__main__":

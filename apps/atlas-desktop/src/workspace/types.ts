@@ -1,6 +1,6 @@
 import type React from "react";
 
-export type WorkspaceId = "workflow" | "vision" | "ai";
+export type WorkspaceId = "workflow" | "vision" | "ai" | "knowledge";
 
 export interface PanelDefinition {
   id: string;

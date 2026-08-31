@@ -7,6 +7,7 @@ import { VariableManager } from "../studio/workflow/components/variables/variabl
 import { DebuggerPanel } from "../studio/workflow/components/toolbar/debugger-panel";
 import { ColorPanel, DetectionPanel, OcrPanel, TemplatePanel, TimelinePanel, VisionCanvas, VisionProperties, VisionToolbox } from "../studio/vision";
 import { AIContextInspector, AIEditor, AIEventsPanel, AIMemoryPanel, AIMetricsPanel, AIModelBrowser, AIPromptComparisonPanel, AIProviderPanel, AIRequestInspector, AIResponseInspector, AIRetrievalPanel, AISessionsPanel, AIToolsPanel } from "../studio/ai";
+import { KnowledgeActivityPanel, KnowledgeEditor, KnowledgeExplorer, KnowledgeHealthPanel, KnowledgeImportPanel, KnowledgeMetadataPanel, KnowledgeSearchPanel, RetrievalInspector } from "../studio/knowledge";
 import type { PanelDefinition, WorkspaceId } from "./types";
 
 const fill = (Component: React.ComponentType): React.FC => function PanelFill() { return <div className="panel-fill"><Component/></div>; };
@@ -41,6 +42,14 @@ export const panelDefinitions: readonly PanelDefinition[] = [
   { id: "ai.metrics", title: "Metrics", workspace: "ai", component: fill(AIMetricsPanel), closable: true, dockable: true, defaultTabset: "ai-bottom" },
   { id: "ai.events", title: "Events", workspace: "ai", component: fill(AIEventsPanel), closable: true, dockable: true, defaultTabset: "ai-bottom" },
   { id: "ai.comparison", title: "Comparison", workspace: "ai", component: fill(AIPromptComparisonPanel), closable: true, dockable: true, defaultTabset: "ai-bottom" },
+  { id: "knowledge.explorer", title: "Knowledge Explorer", workspace: "knowledge", component: fill(KnowledgeExplorer), closable: false, dockable: true, defaultTabset: "knowledge-left", icon: "folder" },
+  { id: "knowledge.editor", title: "Knowledge Editor", workspace: "knowledge", component: fill(KnowledgeEditor), closable: false, dockable: true, defaultTabset: "knowledge-center", icon: "folder" },
+  { id: "knowledge.search", title: "Knowledge Search", workspace: "knowledge", component: fill(KnowledgeSearchPanel), closable: true, dockable: true, defaultTabset: "knowledge-bottom", icon: "folder" },
+  { id: "knowledge.metadata", title: "Metadata & Provenance", workspace: "knowledge", component: fill(KnowledgeMetadataPanel), closable: false, dockable: true, defaultTabset: "knowledge-right" },
+  { id: "knowledge.retrieval", title: "Retrieval Inspector", workspace: "knowledge", component: fill(RetrievalInspector), closable: true, dockable: true, defaultTabset: "knowledge-bottom" },
+  { id: "knowledge.import", title: "Import", workspace: "knowledge", component: fill(KnowledgeImportPanel), closable: true, dockable: true, defaultTabset: "knowledge-right" },
+  { id: "knowledge.activity", title: "Activity", workspace: "knowledge", component: fill(KnowledgeActivityPanel), closable: true, dockable: true, defaultTabset: "knowledge-bottom" },
+  { id: "knowledge.health", title: "Metrics & Health", workspace: "knowledge", component: fill(KnowledgeHealthPanel), closable: true, dockable: true, defaultTabset: "knowledge-bottom" },
 ] as const;
 
 const byId = new Map(panelDefinitions.map((panel) => [panel.id, panel]));

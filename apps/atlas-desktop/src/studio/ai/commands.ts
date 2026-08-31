@@ -28,7 +28,7 @@ export function registerAICommands():void {
     item("ai.model.settings","Model Settings","AI / Model",()=>workspaceService.openPanel("ai.models")),
     item("ai.context.image","Add Image Context","AI / Context",openImagePicker),
     item("ai.context.vision","Add Current Vision Frame","AI / Context",addCurrentVisionFrame),
-    item("ai.context.knowledge","Add Knowledge Context","AI / Context",()=>{workspaceService.openPanel("ai.retrieval");useAIStudioStore.getState().setError("Knowledge retrieval must be supplied by Knowledge Runtime; it is not executed in React.");}),
+    item("ai.context.knowledge","Add Knowledge Context","AI / Context",()=>{workspaceService.switchWorkspace("knowledge");workspaceService.openPanel("knowledge.search");}),
     item("ai.context.file","Add File Context","AI / Context",()=>useAIStudioStore.getState().setError("File context is not supported by the selected Runtime bridge.")),
     item("ai.context.clear","Clear AI Context","AI / Context",()=>useAIStudioStore.getState().clearContext()),
     item("ai.inspect.request","Inspect AI Request","AI / Debug",()=>workspaceService.openPanel("ai.request")),

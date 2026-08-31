@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.local/contracts/knowledge.schema.json",
+  "title": "Atlas Project Knowledge Contract",
+  "description": "Canonical mutable project-knowledge record owned by Knowledge Runtime. Knowledge Pack manifests remain governed by ADR-0007.",
+  "type": "object",
+  "required": ["id", "project_id", "type", "title", "content", "metadata", "tags", "source", "provenance", "created_at", "updated_at", "version"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "project_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$" },
+    "type": { "enum": ["note", "document", "fact", "observation"] },
+    "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "content": { "type": "string", "maxLength": 2000000 },
+    "metadata": { "type": "object" },
+    "tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "source": {
+      "type": "object",
+      "required": ["type"],
+      "properties": { "type": { "enum": ["user", "import", "workflow", "vision_ocr", "vision", "ai", "plugin"] } },
+      "additionalProperties": true
+    },
+    "provenance": { "type": "object" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "required": ["entry_id", "project_id", "entry_type", "title", "source_type"],
+      "properties": {
+        "entry_id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "entry_type": { "enum": ["note", "document", "fact", "observation"] },
+        "title": { "type": "string" },
+        "source_type": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

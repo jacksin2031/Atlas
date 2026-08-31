@@ -2,6 +2,7 @@
 import { useThemeStore, useProjectStore } from "../../stores";
 import { useWorkspaceStore } from "../../workspace";
 import { useAIStudioStore } from "../../studio/ai";
+import { useKnowledgeStudioStore } from "../../studio/knowledge";
 
 export const StatusBar: React.FC = () => {
   const resolvedTheme = useThemeStore((s) => s.resolvedTheme);
@@ -14,6 +15,7 @@ export const StatusBar: React.FC = () => {
   const aiHealth = useAIStudioStore((s) => s.runtimeHealth);
   const aiRunning = useAIStudioStore((s) => s.running);
   const usage = useAIStudioStore((s) => s.lastResponse?.usage?.totalTokens);
+  const knowledgeHealth = useKnowledgeStudioStore((s) => s.health);
 
   return (
     <div
@@ -30,6 +32,7 @@ export const StatusBar: React.FC = () => {
     >
       <span>{currentProject ? `Project: ${currentProject.name}` : "No project open"}</span>
       {activeWorkspace === "ai" && <><span>Provider: {provider ?? "None"}</span><span>Model: {model ?? "None"}</span><span>AI Runtime: {aiHealth}</span>{usage !== undefined && <span>{usage} tokens</span>}{aiRunning && <span role="status">Generating</span>}</>}
+      {activeWorkspace === "knowledge" && <><span>Knowledge Runtime: {knowledgeHealth.status}</span><span>{knowledgeHealth.entryCount} entries</span><span>Index: {knowledgeHealth.index?.state ?? "unavailable"}</span></>}
       <div style={{ flex: 1 }} />
       {unacknowledged > 0 && (
         <span title={`Unacknowledged: ${unacknowledged}`}>&#9888; {unacknowledged}</span>

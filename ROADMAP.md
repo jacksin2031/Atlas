@@ -1,9 +1,9 @@
 ﻿# Atlas Roadmap
 
-> **Last Updated**: 2026-08-24
+> **Last Updated**: 2026-09-04
 > **Current Version**: 0.15.0-alpha
-> **Current Sprint**: Sprint 15.2 — Workflow Execution Integration
-> **Next Milestone**: Live-provider AI and Vision→AI acceptance
+> **Current Sprint**: Sprint 17 — Marketplace
+> **Next Milestone**: Marketplace acceptance
 
 ---
 
@@ -250,23 +250,24 @@
 - AI, Vision, and Plugin execution boundaries reuse their existing runtimes/bridges
 - Real visual loop, target relocation, missing-target/no-click, project restart, interrupted recovery, unarmed recovery, no replay, and manual restart verified
 
-### Sprint 16 — Marketplace
+### Sprint 16 — Knowledge Studio & Runtime Integration
 **Version**: 0.16.0-alpha
+**Status**: ✅ Complete — stable development baseline `bd384d6`
+- Project-scoped Knowledge CRUD, lexical retrieval, persistence, recovery, import, export, events, and health
+- Knowledge Studio workspace and Workflow/Vision/AI integration boundaries
+- Deleted Knowledge references are visibly invalidated and excluded from AI requests
+- AI Studio real-Tauri rendering regression fixed; live-provider acceptance remains pending an external provider
+
+### Sprint 17 — Marketplace
+**Version**: 0.17.0-alpha
 **Status**: ⬜ Planned
 - Plugin marketplace
 - Knowledge pack distribution
 - Provider marketplace
 - Rating and review system
 
-### Sprint 17 — Cloud Sync
-**Version**: 0.17.0-alpha
-**Status**: ⬜ Planned
-- Cross-device synchronization
-- Cloud backup and restore
-- Collaborative workspaces
-- Remote execution
-
-### Sprint 18 — Beta**Version**: 1.0.0-beta
+### Sprint 18 — Beta
+**Version**: 1.0.0-beta
 **Status**: ⬜ Planned
 - All Runtime modules implemented
 - API freeze
@@ -276,6 +277,12 @@
 ---
 
 ## Future Milestones
+
+### Cloud Sync
+- Cross-device synchronization
+- Cloud backup and restore
+- Collaborative workspaces
+- Remote execution
 
 ### RC Phase
 - Conformance tests pass

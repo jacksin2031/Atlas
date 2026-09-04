@@ -39,6 +39,7 @@ does not claim or simulate those capabilities.
 
 - `HEAD` before Sprint 16 work: `1f2d0480a618e9c3fda314a24a9091c9a431f02d`
 - Frozen tag: `v0.15.0-alpha`
+- Stable development baseline after acceptance hotfix: `bd384d6`
 - `git merge-base --is-ancestor 1f2d048 HEAD`: PASS
 - Frozen tag/history changed: No
 - Baseline regression before implementation: 310 root Python, 110 AI
@@ -497,6 +498,6 @@ Acceptance” entry was deleted after action-time user confirmation; following a
 restart, the project reported zero entries and its unique marker returned zero
 search candidates.
 
-After Sprint 16 acceptance, the recommended product step is a contract-first
-decision for durable events and relationship/entity semantics before adding a
-graph UI or semantic/vector backend.
+After Sprint 16 acceptance, proceed to Sprint 17 — Marketplace. AI Studio stays
+feature-frozen until a real OpenAI credential or local Ollama model is available
+for the remaining live-provider acceptance path.

@@ -60,7 +60,7 @@
 | Sprint 13 | Desktop Shell implementation |
 | Sprint 14 | Workflow Studio |
 | Sprint 15 | Vision Studio |
-| Sprint 16 | AI Studio |
+| Sprint 16 | Knowledge Studio & Runtime Integration |
 | Sprint 17 | Marketplace |
 | Sprint 18 | Beta release preparation |
 | Future | Post-1.0 features and roadmap |

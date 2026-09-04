@@ -22,9 +22,9 @@ Build automation that understands intent instead of recording coordinates.
 | Attribute | Value |
 |---|---|
 | **Version** | 0.15.0-alpha |
-| **Current Focus** | Sprint 15 frozen; preparing Sprint 16 Marketplace |
-| **Implemented Packages** | 6 Rust workspace crates, 3 Python runtimes, 1 desktop app |
-| **Automated Tests** | 1,074 passing in the Sprint 15 freeze |
+| **Current Focus** | Sprint 16 stable baseline `bd384d6`; preparing Sprint 17 Marketplace |
+| **Implemented Packages** | 6 Rust workspace crates, 4 Python runtimes, 1 desktop app |
+| **Automated Tests** | 1,116 passing across the accepted baseline suites |
 | **Specification Status** | RFCs are present across the planned runtimes; implementation coverage varies |
 | **License** | Apache 2.0 |
 
@@ -125,8 +125,8 @@ Build automation that understands intent instead of recording coordinates.
 - 105 test cases, 174 exported symbols
 
 ### Knowledge Runtime (Sprint 8)
-- RFC specifications and architecture documentation are present.
-- The `packages/knowledge` implementation and its previously reported 247 tests are not present in this snapshot.
+- Project-scoped immutable entry/reference models, CRUD, versioning, deterministic lexical retrieval, persistence, recovery, import/export, events, health, and integration boundaries.
+- Knowledge Studio and Workflow/Vision/AI integration were completed in Sprint 16.
 
 ### Project Runtime (Sprint 9)
 - RFC specifications and architecture documentation are present.
@@ -240,7 +240,7 @@ Atlas/
 
 Apache 2.0
 
-| **Current Focus** | Sprint 15.2 Workflow Execution Integration; live-provider acceptance pending |
+| **Current Focus** | Sprint 17 Marketplace; live-provider acceptance deferred until a real provider is available |
 | **Desktop Shell** | apps/atlas-desktop/ — Alpha GUI with Tauri 2 + React |
 
 ### Desktop Shell (Sprint 12, alpha)

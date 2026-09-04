@@ -77,7 +77,7 @@ MILESTONES = [
     {"title": "Sprint 13", "description": "Desktop Shell implementation", "state": "active"},
     {"title": "Sprint 14", "description": "Workflow Studio", "state": "active"},
     {"title": "Sprint 15", "description": "Vision Studio", "state": "active"},
-    {"title": "Sprint 16", "description": "AI Studio", "state": "active"},
+    {"title": "Sprint 16", "description": "Knowledge Studio & Runtime Integration", "state": "active"},
     {"title": "Sprint 17", "description": "Marketplace", "state": "active"},
     {"title": "Sprint 18", "description": "Beta release preparation", "state": "active"},
     {"title": "Future", "description": "Post-1.0 features and roadmap", "state": "active"},

@@ -1,15 +1,13 @@
 # Atlas Sprint 16 — Knowledge Studio & Runtime Integration
 
-Date: 2026-08-31
+Date: 2026-09-04
 
-Current verdict: **SPRINT 16: PARTIAL**
+Current verdict: **SPRINT 16: COMPLETE**
 
-The implementation and every automated mandatory scenario pass. Real Tauri
-steps 1–10 pass, including create, read, update, search, a process restart, and
-Version 2 recovery. The final destructive UI step (delete the disposable entry
-and verify deletion after another restart) is awaiting the required action-time
-Windows UI confirmation. This report must not be changed to COMPLETE until that
-step passes.
+The implementation and every automated mandatory scenario pass. The full real
+Tauri acceptance path also passes: create, read, update, search, process restart,
+Version 2 recovery, action-time-confirmed deletion of the disposable entry, and
+a second restart followed by a zero-result marker search.
 
 ## 1. Sprint 16 Initial Audit
 
@@ -409,16 +407,16 @@ mode.
 | Restart process/project | App reopened same project and listed v2 | PASS |
 | Read after restart | Editor showed Version 2 edited content and metadata | PASS |
 | AI Context Inspector | Knowledge category showed 1 typed reference/title | PASS |
-| Delete disposable entry | Requires action-time Windows UI confirmation | NOT EXECUTED — ENVIRONMENT LIMITATION |
-| Restart/search deletion | Blocked on preceding confirmation | NOT EXECUTED — ENVIRONMENT LIMITATION |
+| Delete disposable entry | User-confirmed UI delete removed “Real Tauri Acceptance” | PASS |
+| Restart/search deletion | Reopened project reported 0 entries; marker search returned 0/0 and “No matching knowledge” | PASS |
 
-Automated Runtime acceptance independently proves delete persistence after a new
-Runtime instance, but it does not replace the two mandatory real-UI steps.
+Automated Runtime acceptance also proves delete persistence after a new Runtime
+instance; the same deletion path is now confirmed through the real desktop UI.
 
 ## 30. Mandatory scenario results
 
-- K-A CRUD: automated PASS; real Tauri create/read/update PASS, delete pending
-  confirmation.
+- K-A CRUD: PASS automated and real Tauri, including confirmed deletion and
+  post-restart absence.
 - K-B Search: PASS automated and real Tauri.
 - K-C Persistence: PASS automated and real Tauri (Version 2 after restart).
 - K-D Project Isolation: PASS automated; Project B returns zero Project A secret
@@ -468,13 +466,12 @@ pass. The frozen tag remains unchanged.
 - Duplicate content is allowed; there is no content-hash deduplication UI.
 - Search is bounded/synchronous, so no backend cancellation endpoint exists.
 - Live RAG and multimodal provider acceptance require a healthy external model.
-- Real Tauri destructive deletion is awaiting explicit action-time confirmation.
 
 ## 34. Final acceptance matrix
 
 | Capability | Automated | Real Tauri | Persistence | Integration | Result |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Knowledge CRUD | PASS | delete pending | PASS | PASS | NOT EXECUTED — ENVIRONMENT LIMITATION |
+| Knowledge CRUD | PASS | PASS | PASS | PASS | PASS |
 | Search | PASS | PASS | PASS | PASS | PASS |
 | Indexing | PASS | PASS | PASS | PASS | PASS |
 | Project Isolation | PASS | NOT APPLICABLE | PASS | PASS | PASS |
@@ -491,18 +488,14 @@ pass. The frozen tag remains unchanged.
 ## 35. Final verdict and recommended next step
 
 ```text
-SPRINT 16: PARTIAL
+SPRINT 16: COMPLETE
 ```
 
-Reason: the implementation, automated acceptance, restart persistence and all
-non-destructive real Tauri steps pass, but Definition of Done requires real Tauri
-delete and post-delete confirmation. The Windows automation confirmation policy
-does not permit that destructive action without an action-time user confirmation.
-
-Recommended immediate next step: authorize deletion of the disposable “Real
-Tauri Acceptance” entry, then rerun the app, search for
-`REAL_TAURI_KNOWLEDGE_1600`, record zero results, update this report/matrix to
-PASS, and change the verdict to `SPRINT 16: COMPLETE`.
+Reason: implementation, automated acceptance, production quality gates, and the
+complete real-Tauri CRUD/persistence path pass. The disposable “Real Tauri
+Acceptance” entry was deleted after action-time user confirmation; following a
+restart, the project reported zero entries and its unique marker returned zero
+search candidates.
 
 After Sprint 16 acceptance, the recommended product step is a contract-first
 decision for durable events and relationship/entity semantics before adding a

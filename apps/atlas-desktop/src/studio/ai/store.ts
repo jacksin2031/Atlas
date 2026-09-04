@@ -83,3 +83,17 @@ export const validateAIRequest = (state: Pick<AIStudioState,"selectedProviderId"
   if(state.contexts.some((context)=>context.kind==="vision")&&!model?.capabilities.includes("vision"))return "The selected model does not support Vision input.";
   return null;
 };
+
+export const isContextAvailableForRequest = (context: AIContextReference): boolean =>
+  context.kind !== "knowledge" || context.availability === "available";
+
+export const sanitizeRestoredAIContexts = (value: unknown): AIContextReference[] => {
+  if(!Array.isArray(value))return [];
+  return value.flatMap((item):AIContextReference[]=>{
+    if(!item||typeof item!=="object"||Array.isArray(item))return [];
+    const context=item as Partial<AIContextReference>;
+    if(typeof context.id!=="string"||typeof context.kind!=="string"||typeof context.label!=="string")return [];
+    if(context.kind!=="knowledge")return [context as AIContextReference];
+    return [{...context as AIContextReference,preview:undefined,includedInRequest:false,availability:"resolving",unavailableReason:"Resolving Knowledge reference…"}];
+  });
+};

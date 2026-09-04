@@ -33,6 +33,7 @@ export const AppLayout: React.FC = () => {
   React.useEffect(() => { if(activeWorkspace==='ai'&&!aiDiscoveryStarted.current){aiDiscoveryStarted.current=true;void aiStudioService.refresh();} }, [activeWorkspace]);
   React.useEffect(() => { if(activeWorkspace==='knowledge')void knowledgeStudioService.initialize(); }, [activeWorkspace]);
   React.useEffect(() => { if(currentProject)void knowledgeStudioService.activateProject().catch(()=>undefined); }, [currentProject]);
+  React.useEffect(() => { const reconcile=()=>void knowledgeStudioService.activateProject().catch(()=>undefined);window.addEventListener("atlas:project-assets-restored",reconcile);return()=>window.removeEventListener("atlas:project-assets-restored",reconcile); }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>

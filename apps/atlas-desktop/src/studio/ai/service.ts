@@ -1,6 +1,6 @@
 import { cancelAIInference, controlAIProvider, discoverAIRuntime, executeAIInference, listenAIRuntimeEvents } from "../../ipc/bridge";
 import { useVisionDocumentStore } from "../vision/stores";
-import { createAIMessage, useAIStudioStore, validateAIRequest } from "./store";
+import { createAIMessage, isContextAvailableForRequest, useAIStudioStore, validateAIRequest } from "./store";
 import type { AINormalizedRequest, AINormalizedResponse, AIRuntimeSnapshot, AIRuntimeTransportEvent } from "./types";
 
 export interface AIStudioAdapter {
@@ -33,12 +33,13 @@ const inspectorRequest = (request: AINormalizedRequest): AINormalizedRequest => 
 export const createNormalizedRequest = (): AINormalizedRequest | null => {
   const state=useAIStudioStore.getState();
   if(!state.selectedProviderId||!state.selectedModelId)return null;
+  const contexts=state.contexts.filter(isContextAvailableForRequest);
   const messages=[...(state.systemPrompt.trim()?[createAIMessage("system",state.systemPrompt.trim())]:[]),...state.messages,createAIMessage("user",state.userInput.trim())];
   const model=state.models.find((item)=>item.modelId===state.selectedModelId);
   return {
     requestId:requestId(),timestamp:new Date().toISOString(),providerId:state.selectedProviderId,modelId:state.selectedModelId,messages,
-    parameters:safeParameters(model,state.parameters),tools:state.tools.filter((tool)=>tool.enabled).map((tool)=>tool.toolId),contextReferences:state.contexts,
-    attachments:state.contexts.filter((context)=>context.kind==="vision").map((context)=>({id:context.id,kind:context.kind,label:context.label,dataUrl:attachmentDataUrl(context),metadata:context.metadata})),
+    parameters:safeParameters(model,state.parameters),tools:state.tools.filter((tool)=>tool.enabled).map((tool)=>tool.toolId),contextReferences:contexts,
+    attachments:contexts.filter((context)=>context.kind==="vision").map((context)=>({id:context.id,kind:context.kind,label:context.label,dataUrl:attachmentDataUrl(context),metadata:context.metadata})),
   };
 };
 
@@ -110,7 +111,8 @@ class AIStudioService {
     if(!state.prompt.userTemplate.trim()||!state.promptB.trim()){state.setError("Enter both Prompt A and Prompt B before comparing.");return;}
     const build=(content:string):AINormalizedRequest=>{
       const model=state.models.find((item)=>item.modelId===state.selectedModelId);
-      return {requestId:requestId(),timestamp:new Date().toISOString(),providerId:state.selectedProviderId!,modelId:state.selectedModelId!,messages:[...(state.prompt.systemPrompt.trim()?[createAIMessage("system",state.prompt.systemPrompt.trim())]:[]),createAIMessage("user",content)],parameters:safeParameters(model,state.parameters),tools:state.tools.filter((tool)=>tool.enabled).map((tool)=>tool.toolId),contextReferences:state.contexts,attachments:state.contexts.filter((context)=>context.kind==="vision").map((context)=>({id:context.id,kind:context.kind,label:context.label,dataUrl:attachmentDataUrl(context),metadata:context.metadata}))};
+      const contexts=state.contexts.filter(isContextAvailableForRequest);
+      return {requestId:requestId(),timestamp:new Date().toISOString(),providerId:state.selectedProviderId!,modelId:state.selectedModelId!,messages:[...(state.prompt.systemPrompt.trim()?[createAIMessage("system",state.prompt.systemPrompt.trim())]:[]),createAIMessage("user",content)],parameters:safeParameters(model,state.parameters),tools:state.tools.filter((tool)=>tool.enabled).map((tool)=>tool.toolId),contextReferences:contexts,attachments:contexts.filter((context)=>context.kind==="vision").map((context)=>({id:context.id,kind:context.kind,label:context.label,dataUrl:attachmentDataUrl(context),metadata:context.metadata}))};
     };
     const requestA=build(state.prompt.userTemplate),requestB=build(state.promptB);state.setExecution(true);state.setError(null);state.setComparison(null);
     const [a,b]=await Promise.allSettled([this.adapter.infer(requestA),this.adapter.infer(requestB)]);const latest=useAIStudioStore.getState();latest.setExecution(false);

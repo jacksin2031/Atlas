@@ -1,5 +1,5 @@
 import { loadProjectAssets, saveProjectAssets } from "../ipc/bridge";
-import { useAIStudioStore } from "../studio/ai/store";
+import { sanitizeRestoredAIContexts, useAIStudioStore } from "../studio/ai/store";
 import { useVisionDocumentStore, useVisionTimelineStore } from "../studio/vision/stores";
 import { useExecutionStore, useWorkflowStore } from "../studio/workflow/stores";
 import type { WorkflowDefinition, WorkflowRun, WorkflowRunStatus } from "../studio/workflow/types";
@@ -60,7 +60,7 @@ const record = (value: unknown): Record<string, unknown> | null => value && type
 export function restoreProjectAssets(assets: Record<string, unknown>): void {
   assertCredentialFree(assets);
   const ai = record(assets.ai) as ReturnType<typeof useAIStudioStore.getState> | null;
-  if (ai) useAIStudioStore.setState({ mode: ai.mode, sessions: ai.sessions, activeSessionId: ai.activeSessionId, selectedProviderId: ai.selectedProviderId, selectedModelId: ai.selectedModelId, systemPrompt: ai.systemPrompt, userInput: ai.userInput, messages: ai.messages, parameters: ai.parameters, contexts: ai.contexts, prompt: ai.prompt, promptB: ai.promptB, running: false, streaming: false, startedAt: null, lastRequest: null, lastResponse: null, streamContent: "", error: null });
+  if (ai) useAIStudioStore.setState({ mode: ai.mode, sessions: ai.sessions, activeSessionId: ai.activeSessionId, selectedProviderId: ai.selectedProviderId, selectedModelId: ai.selectedModelId, systemPrompt: ai.systemPrompt, userInput: ai.userInput, messages: ai.messages, parameters: ai.parameters, contexts: sanitizeRestoredAIContexts(ai.contexts), prompt: ai.prompt, promptB: ai.promptB, running: false, streaming: false, startedAt: null, lastRequest: null, lastResponse: null, streamContent: "", error: null });
   const workflow = record(assets.workflow);
   if (workflow) useWorkflowStore.getState().loadFromDefinition(workflow as unknown as WorkflowDefinition);
   const execution = record(assets.execution);

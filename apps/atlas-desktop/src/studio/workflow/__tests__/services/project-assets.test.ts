@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { assertCredentialFree, interruptRecoverableRuns } from "../../../../services/project-assets";
 import { stableProjectId } from "../../../../services/project";
+import { sanitizeRestoredAIContexts } from "../../../ai/store";
 import type { WorkflowRun } from "../../types";
 
 const run = (status: WorkflowRun["status"]): WorkflowRun => ({
@@ -24,5 +25,11 @@ describe("project asset hardening", () => {
   it("derives stable project ownership across restart and path spelling", () => {
     expect(stableProjectId("C:\\Atlas\\Project\\")).toBe(stableProjectId("c:/atlas/project"));
     expect(stableProjectId("C:\\Atlas\\Project-B")).not.toBe(stableProjectId("C:\\Atlas\\Project-A"));
+  });
+
+  it("restores Knowledge references as unresolved without stale content", () => {
+    const contexts = sanitizeRestoredAIContexts([{ id:"knowledge:project-a:deleted", kind:"knowledge", label:"Deleted", preview:"stale content", includedInRequest:true }]);
+    expect(contexts[0]).toMatchObject({ availability:"resolving", includedInRequest:false });
+    expect(contexts[0]?.preview).toBeUndefined();
   });
 });

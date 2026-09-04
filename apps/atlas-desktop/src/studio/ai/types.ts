@@ -8,6 +8,7 @@ export type AIConnectionState = "connected" | "disconnected" | "connecting" | "e
 export type AIStudioMode = "playground" | "prompt" | "conversation" | "agent" | "memory" | "tools";
 export type AIMessageRole = "system" | "user" | "assistant" | "tool";
 export type AIContextKind = "prompt" | "vision" | "knowledge" | "memory" | "tool";
+export type AIContextAvailability = "available" | "resolving" | "missing" | "unavailable";
 
 export interface AIProviderDescriptor {
   providerId: string;
@@ -61,6 +62,8 @@ export interface AIContextReference {
   source?: string;
   preview?: string;
   includedInRequest?: boolean;
+  availability?: AIContextAvailability;
+  unavailableReason?: string;
   metadata?: Record<string, unknown>;
 }
 

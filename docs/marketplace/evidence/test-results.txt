@@ -67,4 +67,3 @@ $ tsc --noEmit
 
 sprint17-tauri-build.log
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.00s
-

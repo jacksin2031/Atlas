@@ -13,7 +13,7 @@ from typing import Any
 from atlas_automation import reference_bundle
 from atlas_input import InputSafetyPolicy, InputService, default_input_service
 from atlas_knowledge import KnowledgeRuntime, ProjectScope
-from atlas_workflow.common import WorkflowEvent
+from atlas_workflow.common import WorkflowEvent, PluginError
 from atlas_workflow.node_registry import NodeDefinition
 from atlas_workflow.runtime import WorkflowRuntime
 
@@ -83,6 +83,8 @@ class DesktopWorkflowHost:
         self.input_service = input_service or default_input_service()
         self.input_service.add_emergency_stop_listener(self._cancel_active_for_emergency)
         self._dynamic_plugins: dict[str, set[str]] = {}
+        self._marketplace_nodes: dict[str, dict[str, Any]] = {}
+        self._marketplace_revision = -1
         self._register_nodes()
 
     def write(self, value: dict[str, Any]) -> None:
@@ -214,6 +216,59 @@ class DesktopWorkflowHost:
             })
         self._dynamic_plugins[plugin_id] = registered_types
         return {"pluginId": plugin_id, "registrations": registrations}
+
+    def sync_marketplace(self, payload: dict[str, Any]) -> dict[str, Any]:
+        revision = int(payload.get("revision", -1))
+        if revision <= self._marketplace_revision:
+            return {"revision": self._marketplace_revision}
+        registrations = payload.get("registrations", [])
+        incoming = {}
+        definitions = {}
+        owned_ids = {old["nodeId"] for old in self._marketplace_nodes.values()}
+        incoming_ids = set()
+        for registration in registrations:
+            node_type = registration["typeName"]
+            plugin_id = registration["pluginId"]
+            if not node_type.startswith(plugin_id + ".") or node_type in incoming:
+                raise RuntimeError("Invalid Marketplace node ownership")
+            if self.runtime.plugin_bridge.has_handler(node_type) and node_type not in self._marketplace_nodes:
+                raise RuntimeError("Marketplace node type conflicts with existing registration")
+            node_id = registration["nodeId"]
+            if not node_id.startswith(plugin_id + ".") or node_id in incoming_ids or (self.runtime.node_registry.lookup(node_id) and node_id not in owned_ids):
+                raise RuntimeError("Marketplace node identity conflicts with existing registration")
+            capabilities = registration["capabilities"]
+            if not isinstance(capabilities, list) or not all(isinstance(cap, str) for cap in capabilities):
+                raise RuntimeError("Invalid Marketplace capabilities")
+            definitions[node_type] = NodeDefinition(node_id=node_id, node_type=node_type,
+                label=registration["label"], capabilities=capabilities,
+                version=registration.get("version", "1.0.0"))
+            incoming_ids.add(node_id)
+            incoming[node_type] = registration
+        for node_type, old in self._marketplace_nodes.items():
+            self.runtime.plugin_bridge.unregister_handler(node_type)
+            self.runtime.node_registry.unregister(old["nodeId"])
+        self._marketplace_nodes = incoming
+        for node_type, registration in incoming.items():
+            self.runtime.node_registry.register(definitions[node_type])
+            self.runtime.plugin_bridge.register_handler(node_type, self._marketplace_handler(registration["pluginId"], node_type))
+        self._marketplace_revision = revision
+        return {"revision": revision, "registrations": registrations}
+
+    def _marketplace_handler(self, plugin_id: str, node_type: str) -> Any:
+        def handler(node_id: str, configuration: dict[str, Any], inputs: dict[str, Any], metadata: dict[str, Any]) -> dict[str, Any]:
+            try:
+                return self.bridge.request("plugin", "execute", {
+                    "pluginId": plugin_id, "nodeType": node_type,
+                    "configuration": configuration, "inputs": inputs,
+                    "requestId": f"plugin-node-{node_id}-{uuid.uuid4().hex}",
+                }, timeout=30)
+            except RuntimeError as error:
+                try:
+                    detail = json.loads(str(error))
+                except ValueError:
+                    detail = {"code": "PLUGIN_UNAVAILABLE", "message": "Plugin Runtime bridge unavailable"}
+                raise PluginError(detail.get("message", "Plugin execution failed"), plugin_name=plugin_id, details=detail) from error
+        return handler
 
     def _input_handler(self, action: str) -> Any:
         def handler(node_id: str, configuration: dict[str, Any], inputs: dict[str, Any], metadata: dict[str, Any], context: Any = None) -> dict[str, Any]:
@@ -538,6 +593,10 @@ class DesktopWorkflowHost:
 
     def validate(self, definition: dict[str, Any]) -> dict[str, Any]:
         try:
+            for node in definition.get("nodes", []):
+                plugin_id = (node.get("metadata") or {}).get("plugin_id")
+                if plugin_id and plugin_id != "builtin" and not self.runtime.plugin_bridge.has_handler(node.get("type", "")):
+                    raise PluginError("PLUGIN_UNAVAILABLE: " + str(plugin_id), plugin_name=str(plugin_id), details={"code": "PLUGIN_UNAVAILABLE", "node_id": node.get("id")})
             manifest = self.runtime.create_manifest(definition)
             graph = self.runtime.compile(manifest)
             return {"valid": True, "errors": [], "plan": graph.topological_order()}
@@ -673,6 +732,8 @@ class DesktopWorkflowHost:
                 result = self.input_service.safety_status()
             elif command == "workflow_emergency_stop":
                 result = self.input_service.emergency_stop()
+            elif command == "workflow_plugin_sync":
+                result = self.sync_marketplace(payload)
             elif command == "workflow_plugin_register":
                 result = self.register_plugin(payload)
             elif command.startswith("knowledge_"):

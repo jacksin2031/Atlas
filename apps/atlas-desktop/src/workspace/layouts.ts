@@ -17,6 +17,15 @@ const global = {
 };
 
 export const DEFAULT_LAYOUTS: Record<WorkspaceId, IJsonModel> = {
+  marketplace: {
+    global, borders: [], layout: { type: "row", children: [
+      { type: "tabset", id: "marketplace-center", weight: 58, enableDeleteWhenEmpty: false, children: [tab("marketplace.browser", "Marketplace", false)] },
+      { type: "row", weight: 42, children: [
+        { type: "tabset", id: "marketplace-right", weight: 75, children: [tab("marketplace.details", "Plugin Details", false)] },
+        { type: "tabset", id: "marketplace-bottom", weight: 25, children: [tab("marketplace.activity", "Package Activity")] },
+      ] },
+    ] },
+  },
   workflow: {
     global,
     borders: [],
@@ -87,7 +96,7 @@ export const DEFAULT_LAYOUTS: Record<WorkspaceId, IJsonModel> = {
   },
 };
 
-export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas", ai: "ai.editor", knowledge: "knowledge.editor" };
+export const REQUIRED_PANELS: Record<WorkspaceId, string> = { workflow: "workflow.canvas", vision: "vision.canvas", ai: "ai.editor", knowledge: "knowledge.editor", marketplace: "marketplace.browser" };
 
 export function cloneDefaultLayout(id: WorkspaceId): IJsonModel {
   return structuredClone(DEFAULT_LAYOUTS[id]);

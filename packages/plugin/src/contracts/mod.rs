@@ -45,6 +45,19 @@ pub trait Plugin: Send + Sync {
     fn dispose(&self);
     /// Report the plugin's current health.
     fn health_check(&self) -> PluginHealthState;
+    /// Optional Workflow integration contract. Providers deny unsupported execution.
+    fn execute_workflow_node(
+        &self,
+        _node_type: &str,
+        _configuration: &serde_json::Value,
+        _inputs: &serde_json::Value,
+    ) -> Result<serde_json::Value, PluginError> {
+        Err(crate::error::LifecycleError::OperationFailed(
+            self.metadata().id.clone(),
+            "PLUGIN_UNAVAILABLE: workflow execution unsupported".into(),
+        )
+        .into())
+    }
 }
 
 /// Factory that creates plugin instances from a manifest (RFC-0209).

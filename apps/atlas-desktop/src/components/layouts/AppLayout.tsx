@@ -1,3 +1,4 @@
+import { marketplaceService, registerMarketplaceCommands } from "../../studio/marketplace/service";
 // Atlas Desktop — App Layout
 // New layout: Menu | Toolbar | [Sidebar | Canvas | Inspector] | [Bottom Tabbed Panel] | StatusBar
 
@@ -21,8 +22,13 @@ export const AppLayout: React.FC = () => {
   const activeWorkspace = useWorkspaceStore((s) => s.activeWorkspace);
   const currentProject = useProjectStore((s) => s.currentProject);
   const aiDiscoveryStarted = React.useRef(false);
+  React.useEffect(() => {
+    let disposed = false; let cleanup: (() => void) | undefined;
+    void marketplaceService.connect().then((stop) => { if (disposed) stop(); else cleanup = stop; });
+    return () => { disposed = true; cleanup?.(); };
+  }, []);
 
-  React.useEffect(() => { registerVisionCommands(); registerAICommands(); registerWorkflowCommands(); registerKnowledgeCommands(); if(aiDemoModeEnabled)aiStudioService.setAdapter(createAIDemoAdapter()); if (visionDemoModeEnabled) { const demo=createVisionDemoData(); useVisionResultsStore.getState().setOcr(demo.ocr); useVisionResultsStore.getState().setDetections(demo.detections); demo.colors.forEach((color)=>useVisionResultsStore.getState().addColor(color)); useVisionResultsStore.getState().setTemplates(demo.templates); useVisionTimelineStore.getState().setFrames(demo.frames); } }, []);
+  React.useEffect(() => { registerVisionCommands(); registerAICommands(); registerWorkflowCommands(); registerKnowledgeCommands(); registerMarketplaceCommands(); if(aiDemoModeEnabled)aiStudioService.setAdapter(createAIDemoAdapter()); if (visionDemoModeEnabled) { const demo=createVisionDemoData(); useVisionResultsStore.getState().setOcr(demo.ocr); useVisionResultsStore.getState().setDetections(demo.detections); demo.colors.forEach((color)=>useVisionResultsStore.getState().addColor(color)); useVisionResultsStore.getState().setTemplates(demo.templates); useVisionTimelineStore.getState().setFrames(demo.frames); } }, []);
   React.useEffect(() => { let dispose:(()=>void)|undefined;void aiStudioService.connectRuntimeEvents().then((unlisten)=>{dispose=unlisten;});return()=>dispose?.(); }, []);
   React.useEffect(() => { let dispose:(()=>void)|undefined;void executorService.connectRuntimeEvents().then((unlisten)=>{dispose=unlisten;});return()=>dispose?.(); }, []);
   React.useEffect(() => { let dispose:(()=>void)|undefined;void knowledgeStudioService.connectRuntimeEvents().then((unlisten)=>{dispose=unlisten;});return()=>dispose?.(); }, []);

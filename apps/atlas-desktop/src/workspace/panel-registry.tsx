@@ -1,3 +1,4 @@
+import { MarketplaceBrowser, MarketplaceDetails, MarketplaceActivity } from "../studio/marketplace/panels";
 import React from "react";
 import { ProjectExplorerPanel, ConsolePanel, ProblemsPanel, OutputPanel } from "../components/panels";
 import { WorkflowCanvasView } from "../components/layouts/WorkflowCanvasView";
@@ -12,6 +13,9 @@ import type { PanelDefinition, WorkspaceId } from "./types";
 
 const fill = (Component: React.ComponentType): React.FC => function PanelFill() { return <div className="panel-fill"><Component/></div>; };
 export const panelDefinitions: readonly PanelDefinition[] = [
+  { id: "marketplace.browser", title: "Marketplace", workspace: "marketplace", component: fill(MarketplaceBrowser), closable: false, dockable: true, defaultTabset: "marketplace-center", icon: "folder" },
+  { id: "marketplace.details", title: "Plugin Details", workspace: "marketplace", component: fill(MarketplaceDetails), closable: false, dockable: true, defaultTabset: "marketplace-right" },
+  { id: "marketplace.activity", title: "Package Activity", workspace: "marketplace", component: fill(MarketplaceActivity), closable: true, dockable: true, defaultTabset: "marketplace-bottom" },
   { id: "shared.project-explorer", title: "Project Explorer", workspace: "shared", component: fill(ProjectExplorerPanel), closable: true, dockable: true, defaultTabset: "workflow-left", icon: "folder" },
   { id: "shared.console", title: "Console", workspace: "shared", component: fill(ConsolePanel), closable: true, dockable: true, defaultTabset: "workflow-bottom" },
   { id: "shared.problems", title: "Problems", workspace: "shared", component: fill(ProblemsPanel), closable: true, dockable: true, defaultTabset: "workflow-bottom" },

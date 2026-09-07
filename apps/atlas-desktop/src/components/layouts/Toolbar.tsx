@@ -11,5 +11,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onToggleCommandPalette }) => {
     <button role="tab" aria-selected={active === "vision"} className={active === "vision" ? "active" : ""} onClick={() => workspaceService.switchWorkspace("vision")}><Icon name="vision"/>Vision</button>
     <button role="tab" aria-selected={active === "ai"} className={active === "ai" ? "active" : ""} onClick={() => workspaceService.switchWorkspace("ai")}><Icon name="ai"/>AI</button>
     <button role="tab" aria-selected={active === "knowledge"} className={active === "knowledge" ? "active" : ""} onClick={() => workspaceService.switchWorkspace("knowledge")}><Icon name="folder"/>Knowledge</button>
+    <button role="tab" aria-selected={active === "marketplace"} className={active === "marketplace" ? "active" : ""} onClick={() => workspaceService.switchWorkspace("marketplace")}><Icon name="folder"/>Marketplace</button>
   </div><div className="toolbar-spacer"/><IconButton icon="command" label="Command Palette (Ctrl+Shift+P)" onClick={onToggleCommandPalette}/></div>;
 };

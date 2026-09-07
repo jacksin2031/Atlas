@@ -1,0 +1,38 @@
+[
+  {
+    "digest": "b4701b99b81e9db55265bc70141daa85849005b4aaba24f92699e7e28a680635",
+    "filename": "atlas.acceptance.echo-1.0.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.echo",
+    "version": "1.0.0"
+  },
+  {
+    "digest": "e80e28967400a0184e1b2d7eb3da22efe8a64231beed690651546a8ce4c6be9f",
+    "filename": "atlas.acceptance.echo-1.1.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.echo",
+    "version": "1.1.0"
+  },
+  {
+    "digest": "6e21225cd0cb94c093158504f1a0f46dfb39c83a2121bb3860117fd30b6a6fb5",
+    "filename": "atlas.acceptance.echo-1.2.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.echo",
+    "version": "1.2.0"
+  },
+  {
+    "digest": "03d9404b369a736c656a225427e8f192868ab0ca7b3336d5aa18d8357637878e",
+    "filename": "atlas.acceptance.failure-1.0.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.failure",
+    "version": "1.0.0"
+  },
+  {
+    "digest": "63ae64058e0f602a5dd7789914565bee1dc8d5d05ff837ecf8865a523182f365",
+    "filename": "atlas.acceptance.denied-1.0.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.denied",
+    "version": "1.0.0"
+  },
+  {
+    "digest": "73e6885f5a4322fa6e75e2602b2e21488f5143a92e936d34468ffc8bd0939bf3",
+    "filename": "atlas.acceptance.unhealthy-1.0.0.atlas-plugin",
+    "pluginId": "atlas.acceptance.unhealthy",
+    "version": "1.0.0"
+  }
+]

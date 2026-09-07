@@ -1,0 +1,162 @@
+{
+  "id": "wf_marketplace_acceptance",
+  "version": "1.0.0",
+  "name": "Marketplace Echo Acceptance",
+  "description": "Signed package executed through Workflow Runtime, Plugin Bridge, Tauri and Rust Plugin Runtime.",
+  "nodes": [
+    {
+      "id": "entry",
+      "type": "entry",
+      "label": "Entry",
+      "category": "core",
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "entry_out",
+          "name": "output",
+          "type": "any"
+        }
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "constant",
+      "type": "constant",
+      "label": "Atlas Value",
+      "category": "core",
+      "inputs": [
+        {
+          "id": "constant_trigger",
+          "name": "trigger",
+          "type": "any"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "constant_value",
+          "name": "value",
+          "type": "any"
+        }
+      ],
+      "parameters": {
+        "value": "ATLAS_MARKETPLACE_1700"
+      }
+    },
+    {
+      "id": "plugin",
+      "type": "atlas.acceptance.echo.echo",
+      "label": "Marketplace Echo",
+      "category": "plugin",
+      "inputs": [
+        {
+          "id": "plugin_input",
+          "name": "input",
+          "type": "any"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "plugin_value",
+          "name": "value",
+          "type": "string"
+        }
+      ],
+      "parameters": {},
+      "capabilities": [
+        "workflow"
+      ],
+      "pluginId": "atlas.acceptance.echo",
+      "requiredPlugins": [
+        "atlas.acceptance.echo"
+      ]
+    },
+    {
+      "id": "output",
+      "type": "output",
+      "label": "Plugin Output",
+      "category": "core",
+      "inputs": [
+        {
+          "id": "output_input",
+          "name": "input",
+          "type": "any"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output_value",
+          "name": "value",
+          "type": "any"
+        }
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "exit",
+      "type": "exit",
+      "label": "Exit",
+      "category": "core",
+      "inputs": [
+        {
+          "id": "exit_input",
+          "name": "input",
+          "type": "any"
+        }
+      ],
+      "outputs": [],
+      "parameters": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "entry_constant",
+      "source": "entry",
+      "sourcePort": "entry_out",
+      "target": "constant",
+      "targetPort": "constant_trigger",
+      "edgeType": "data"
+    },
+    {
+      "id": "constant_plugin",
+      "source": "constant",
+      "sourcePort": "constant_value",
+      "target": "plugin",
+      "targetPort": "plugin_input",
+      "edgeType": "data"
+    },
+    {
+      "id": "plugin_output",
+      "source": "plugin",
+      "sourcePort": "plugin_value",
+      "target": "output",
+      "targetPort": "output_input",
+      "edgeType": "data"
+    },
+    {
+      "id": "output_exit",
+      "source": "output",
+      "sourcePort": "output_value",
+      "target": "exit",
+      "targetPort": "exit_input",
+      "edgeType": "data"
+    }
+  ],
+  "variables": [],
+  "parameters": {},
+  "requiredCapabilities": [
+    "workflow"
+  ],
+  "requiredPlugins": [
+    "atlas.acceptance.echo"
+  ],
+  "metadata": {
+    "createdAt": 1788051200000,
+    "updatedAt": 1788051200000,
+    "createdBy": "Sprint 17 acceptance",
+    "tags": [
+      "sample",
+      "marketplace",
+      "real-tauri"
+    ]
+  }
+}

@@ -1,4 +1,5 @@
-﻿// Atlas Workflow Studio - Custom Node Component
+import { useNodeRegistryStore } from "../../stores/node-registry-store";
+// Atlas Workflow Studio - Custom Node Component
 // Renders workflow nodes with inputs, outputs, status indicators
 
 import { memo } from 'react';
@@ -44,6 +45,8 @@ const CATEGORY_STYLES: Record<string, { accent: string; surface: string; header:
 };
 
 export const WorkflowNode = memo(({ data, selected }: any) => {
+  const registration = useNodeRegistryStore((state) => Array.from(state.registrations.values()).find((entry) => entry.pluginId === data.pluginId && entry.typeName === data.type));
+  const unavailable = data.pluginId && data.pluginId !== "builtin" && !registration;
   const {
     label,
     description,
@@ -114,6 +117,7 @@ export const WorkflowNode = memo(({ data, selected }: any) => {
         </span>
       </div>
 
+      {data.pluginId && data.pluginId !== 'builtin' && <div role={unavailable ? 'status' : undefined} style={{ padding: '6px 10px', fontSize: 11 }}>{unavailable ? 'Missing or disabled plugin: ' : 'Provided by: '}{data.pluginId}</div>}
       {/* Description */}
       {description && (
         <div style={{ padding: '4px 10px', fontSize: 11, color: '#999', borderBottom: '1px solid #3a3a3a' }}>

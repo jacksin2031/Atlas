@@ -1,3 +1,4 @@
+mod marketplace;
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use image::{codecs::png::PngEncoder, ColorType, ImageEncoder, RgbaImage};
 use screenshots::Screen;
@@ -1223,6 +1224,7 @@ fn start_workflow_host(app: AppHandle) -> Result<WorkflowHostProcess, String> {
                                     worker_app.state::<Arc<AIHostManager>>().inner().clone();
                                 manager.request(worker_app.clone(), command, payload)
                             }
+                            ("plugin", "execute") => worker_app.state::<marketplace::MarketplaceHost>().execute(&worker_app, &payload),
                             ("vision", "vision_capture_frame") => {
                                 vision_capture_frame().and_then(|frame| {
                                     serde_json::to_value(frame).map_err(|error| error.to_string())
@@ -1273,7 +1275,12 @@ async fn request_workflow_host(
     command: &'static str,
     payload: Value,
 ) -> HostResult {
-    tauri::async_runtime::spawn_blocking(move || manager.request(app, command, payload))
+    tauri::async_runtime::spawn_blocking(move || {
+        if matches!(command, "workflow_start" | "workflow_validate" | "workflow_restart") {
+            marketplace::sync(&app, &manager)?;
+        }
+        manager.request(app, command, payload)
+    })
         .await
         .map_err(|error| format!("Workflow Runtime host task failed: {error}"))?
 }
@@ -1631,6 +1638,7 @@ pub fn run() {
         .manage(Arc::new(AIHostManager::default()))
         .manage(Arc::new(WorkflowHostManager::default()))
         .manage(ActiveKnowledgeScope::default())
+        .manage(marketplace::MarketplaceHost::default())
         .invoke_handler(tauri::generate_handler![
             vision_capture_frame,
             ai_discover,
@@ -1653,6 +1661,7 @@ pub fn run() {
             workflow_input_status,
             workflow_emergency_stop,
             workflow_plugin_register,
+            marketplace::marketplace_request,
             knowledge_activate,
             knowledge_status,
             knowledge_list,

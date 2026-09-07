@@ -124,6 +124,26 @@ impl PluginManagerImpl {
             .expect("manager runtime state mutex poisoned")
     }
 
+    /// Installed metadata alone never authorizes Workflow execution.
+    pub fn execute_workflow_node(
+        &self,
+        plugin_id: &str,
+        node_type: &str,
+        configuration: &serde_json::Value,
+        inputs: &serde_json::Value,
+    ) -> Result<serde_json::Value, PluginError> {
+        self.require_runtime_compatible(PluginState::Running)?;
+        let plugin = self.active_plugin(plugin_id)?;
+        if !self.registry.is_enabled(plugin_id) || plugin.state() != PluginState::Running {
+            return Err(LifecycleError::OperationFailed(
+                plugin_id.into(),
+                "PLUGIN_UNAVAILABLE".into(),
+            )
+            .into());
+        }
+        plugin.execute_workflow_node(node_type, configuration, inputs)
+    }
+
     /// The event bus used for plugin events.
     pub fn event_bus(&self) -> Arc<PluginEventBusImpl> {
         self.event_bus.clone()

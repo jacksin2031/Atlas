@@ -1,0 +1,17 @@
+.marketplace-panel { height: 100%; overflow: auto; padding: 18px; box-sizing: border-box; color: var(--text-primary, inherit); }
+.marketplace-panel h2 { margin: 0 0 10px; font-size: 19px; }
+.marketplace-panel h3 { margin: 20px 0 8px; font-size: 14px; }
+.marketplace-panel p { line-height: 1.6; }
+.marketplace-panel nav, .marketplace-actions, .marketplace-panel form { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; align-items: end; }
+.marketplace-panel input { padding: 7px; color: inherit; background: var(--bg-secondary, #242424); border: 1px solid var(--border-color, #666); border-radius: 4px; }
+.marketplace-panel button[aria-pressed="true"] { outline: 2px solid var(--accent-color, #63b3ed); }
+.marketplace-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; padding: 4px; list-style: none; }
+.marketplace-list button { color: inherit; background: var(--bg-secondary, #242424); border: 1px solid var(--border-color, #555); border-radius: 6px; text-align: left; padding: 16px; width: 100%; height: 100%; cursor: pointer; }
+.marketplace-list strong, .marketplace-list span, .marketplace-list small { display: block; margin-bottom: 8px; }
+.marketplace-panel dt { font-weight: 600; margin-top: 9px; }
+.marketplace-panel dd { margin: 4px 0; }
+.marketplace-panel pre { white-space: pre-wrap; }
+.marketplace-digest { display: block; overflow-wrap: anywhere; font-size: 11px; }
+.marketplace-panel dialog { color: inherit; background: var(--bg-secondary, #252526); border: 1px solid var(--border-color, #777); border-radius: 8px; max-width: 540px; padding: 24px; }
+.marketplace-panel dialog::backdrop { background: #0009; }
+.marketplace-panel :focus-visible { outline: 2px solid var(--accent-color, #63b3ed); outline-offset: 3px; }

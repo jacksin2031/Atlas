@@ -149,8 +149,8 @@ function Get-MachineEvidence {
     screenLayout = $screenLayout
     webView2Runtime = $webView2
     account = [ordered]@{
-      userName = $identity.Name
       elevatedAdministrator = $isAdministrator
+      note = "User identity is intentionally not recorded."
     }
     desktopDpi = [ordered]@{
       logPixels = $(if ($dpi -and $dpi.PSObject.Properties["LogPixels"]) { $dpi.PSObject.Properties["LogPixels"].Value } else { $null })

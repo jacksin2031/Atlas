@@ -112,11 +112,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run lint
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prime complete locked Rust dependency metadata
+        run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml
       - name: Bundle pinned Python runtime
         run: |
           python scripts/bundle_runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/bundle_notices.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build locked Windows installer
         working-directory: apps/atlas-desktop
         run: node node_modules/@tauri-apps/cli/tauri.js build --target x86_64-pc-windows-msvc --bundles nsis -- --locked

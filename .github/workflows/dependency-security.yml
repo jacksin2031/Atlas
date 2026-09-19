@@ -38,7 +38,7 @@ jobs:
         run: cargo audit
       - name: Trace vulnerable desktop transitive dependency
         working-directory: apps/atlas-desktop/src-tauri
-        run: cargo tree -i quick-xml || true
+        run: cargo tree -i quick-xml@0.28.2 || true
       - name: Audit desktop Rust lockfile
         working-directory: apps/atlas-desktop/src-tauri
         run: cargo audit

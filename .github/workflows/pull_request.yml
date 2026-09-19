@@ -8,7 +8,7 @@ on:
 env:
   PYTHON_VERSION: "3.12"
   PYTHONPATH: "src:packages/vision/src:packages/ai/src:packages/knowledge/src"
-  RUST_TOOLCHAIN: "1.80"
+  RUST_TOOLCHAIN: "stable"
 
 jobs:
   architecture-check:

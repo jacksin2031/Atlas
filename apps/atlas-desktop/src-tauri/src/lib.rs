@@ -1434,11 +1434,25 @@ async fn request_knowledge_host(
     request_workflow_host(manager, app, command, payload).await
 }
 
+fn validate_knowledge_scope(project_id: &str, project_path: &str) -> Result<(), String> {
+    if project_id.is_empty()
+        || project_id.len() > 128
+        || !project_id
+            .chars()
+            .all(|value| value.is_ascii_alphanumeric() || "_.:-".contains(value))
+    {
+        return Err("Knowledge project id contains unsupported characters.".to_owned());
+    }
+    project_asset_paths(project_path)?;
+    Ok(())
+}
+
 fn knowledge_payload(
     project_id: String,
     project_path: String,
     mut payload: Value,
 ) -> Result<Value, String> {
+    validate_knowledge_scope(&project_id, &project_path)?;
     let object = payload
         .as_object_mut()
         .ok_or_else(|| "Knowledge command payload must be an object.".to_owned())?;
@@ -1453,15 +1467,7 @@ fn knowledge_activate(
     project_id: String,
     project_path: String,
 ) -> Result<(), String> {
-    if project_id.is_empty()
-        || project_id.len() > 128
-        || !project_id
-            .chars()
-            .all(|value| value.is_ascii_alphanumeric() || "_.:-".contains(value))
-    {
-        return Err("Knowledge project id contains unsupported characters.".to_owned());
-    }
-    project_asset_paths(&project_path)?;
+    validate_knowledge_scope(&project_id, &project_path)?;
     *state
         .value
         .lock()
@@ -1845,17 +1851,32 @@ mod hardening_tests {
     }
 
     #[test]
-    fn knowledge_ipc_payload_preserves_scope_and_correlation() {
+    fn knowledge_ipc_payload_preserves_scope_and_rejects_untrusted_scope() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = env::temp_dir().join(format!(
+            "atlas-knowledge-scope-{}-{unique}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&root).unwrap();
+        let path = root.to_string_lossy().into_owned();
+
         let value = knowledge_payload(
             "project-a".to_owned(),
-            r"C:\Atlas\Project".to_owned(),
+            path.clone(),
             json!({"query":"Atlas","requestId":"request-16"}),
         )
         .unwrap();
         assert_eq!(value["projectId"], "project-a");
-        assert_eq!(value["projectPath"], r"C:\Atlas\Project");
+        assert_eq!(value["projectPath"], path);
         assert_eq!(value["requestId"], "request-16");
-        assert!(knowledge_payload("a".to_owned(), "b".to_owned(), Value::Null).is_err());
+
+        assert!(knowledge_payload("../project".to_owned(), path.clone(), json!({})).is_err());
+        assert!(knowledge_payload("project-a".to_owned(), "relative/path".to_owned(), json!({})).is_err());
+        assert!(knowledge_payload("project-a".to_owned(), path, Value::Null).is_err());
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

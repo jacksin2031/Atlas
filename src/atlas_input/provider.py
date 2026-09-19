@@ -4,7 +4,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .contracts import InputRequest, KeyStateRequest, request_dict
+from .contracts import InputReleaseAllRequest, InputRequest, KeyStateRequest, request_dict
 
 
 class InputProvider(ABC):
@@ -72,6 +72,11 @@ class UnavailableInputProvider(InputProvider):
         self.reason = reason
 
     def execute(self, request: InputRequest) -> dict[str, Any]:
+        # Release-all is an idempotent safety cleanup. If no OS input provider
+        # exists there is nothing to release, so cancellation/shutdown must not
+        # be converted into a platform-availability failure.
+        if isinstance(request, InputReleaseAllRequest):
+            return {"accepted": True, "released": False, "provider_available": False}
         raise RuntimeError(self.reason)
 
     def is_key_down(self, request: KeyStateRequest) -> bool:

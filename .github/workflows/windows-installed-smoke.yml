@@ -30,6 +30,8 @@ jobs:
       - name: Install locked frontend dependencies
         working-directory: apps/atlas-desktop
         run: pnpm install --frozen-lockfile
+      - name: Prime locked Rust dependency metadata
+        run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml --target x86_64-pc-windows-msvc
       - name: Bundle pinned production runtime
         run: |
           python scripts/bundle_runtime.py

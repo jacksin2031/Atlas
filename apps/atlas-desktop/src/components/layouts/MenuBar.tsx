@@ -24,7 +24,9 @@ export const MenuBar: React.FC<MenuBarProps> = ({ onToggleCommandPalette }) => {
 const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({ label, items }) => {
   const [open, setOpen] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const root = React.useRef<HTMLDivElement>(null);
   const trigger = React.useRef<HTMLButtonElement>(null);
+  const pendingFocus = React.useRef<"first" | "last" | "next" | "previous" | null>(null);
   const menuId = React.useId();
   const show = () => { if (timer.current) clearTimeout(timer.current); setOpen(true); };
   const hide = () => { timer.current = setTimeout(() => setOpen(false), 2000); };
@@ -38,7 +40,13 @@ const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({
     else if (direction === "previous") index = current < 0 ? buttons.length - 1 : (current - 1 + buttons.length) % buttons.length;
     buttons[index]?.focus();
   };
+  React.useLayoutEffect(() => {
+    if (!open || !pendingFocus.current || !root.current) return;
+    focusItem(root.current, pendingFocus.current);
+    pendingFocus.current = null;
+  }, [open]);
   return <div
+    ref={root}
     className="menu-dropdown"
     onMouseEnter={show}
     onMouseLeave={hide}
@@ -54,9 +62,13 @@ const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({
       }
       if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
         event.preventDefault();
-        if (!open) setOpen(true);
         const direction = event.key === "ArrowDown" ? "next" : event.key === "ArrowUp" ? "previous" : event.key === "Home" ? "first" : "last";
-        queueMicrotask(() => focusItem(event.currentTarget, direction));
+        if (!open) {
+          pendingFocus.current = direction;
+          setOpen(true);
+        } else {
+          focusItem(event.currentTarget, direction);
+        }
       }
     }}
   >

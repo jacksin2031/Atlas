@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  PYTHONPATH: "src"
+  PYTHONPATH: "src:packages/vision/src:packages/ai/src:packages/knowledge/src"
   RUST_TOOLCHAIN: "1.80"
 
 jobs:
@@ -123,7 +123,7 @@ jobs:
           pip install pytest ruff
 
       - name: Run all Python tests
-        run: python -m pytest tests/ -v --tb=short --color=yes
+        run: python -m pytest tests packages/vision/tests packages/ai/tests packages/knowledge/tests --import-mode=importlib -v --tb=short --color=yes
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master

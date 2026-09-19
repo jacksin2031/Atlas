@@ -1,0 +1,119 @@
+name: Windows Installed-Product Smoke
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  installed-smoke:
+    name: Fresh Windows installer smoke
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "11.9.0"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Install locked frontend dependencies
+        working-directory: apps/atlas-desktop
+        run: pnpm install --frozen-lockfile
+      - name: Bundle pinned production runtime
+        run: |
+          python scripts/bundle_runtime.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/bundle_notices.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build NSIS candidate
+        working-directory: apps/atlas-desktop
+        run: node node_modules/@tauri-apps/cli/tauri.js build --target x86_64-pc-windows-msvc --bundles nsis -- --locked
+      - name: Silent install into Unicode and space path
+        id: install
+        shell: pwsh
+        run: |
+          $bundle = Resolve-Path 'apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis'
+          $installer = @(Get-ChildItem -LiteralPath $bundle -Filter '*.exe')
+          if ($installer.Count -ne 1) { throw "Expected exactly one NSIS installer, got $($installer.Count)" }
+          $installDir = Join-Path $env:RUNNER_TEMP 'Atlas 驗收 日本語 Space'
+          New-Item -ItemType Directory -Force -Path $installDir | Out-Null
+          $proc = Start-Process -FilePath $installer[0].FullName -ArgumentList @('/S', "/D=$installDir") -Wait -PassThru
+          if ($proc.ExitCode -ne 0) { throw "Installer failed: $($proc.ExitCode)" }
+          $exe = Join-Path $installDir 'Atlas.exe'
+          if (-not (Test-Path -LiteralPath $exe)) { throw "Installed Atlas.exe missing at $exe" }
+          $runtime = Join-Path $installDir 'resources/runtime/python.exe'
+          if (-not (Test-Path -LiteralPath $runtime)) { throw "Bundled python.exe missing at $runtime" }
+          "install_dir=$installDir" >> $env:GITHUB_OUTPUT
+          "exe=$exe" >> $env:GITHUB_OUTPUT
+          "sha256=$((Get-FileHash -LiteralPath $installer[0].FullName -Algorithm SHA256).Hash.ToLower())" >> $env:GITHUB_OUTPUT
+      - name: Verify installed runtime is repository-independent
+        shell: pwsh
+        env:
+          INSTALL_DIR: ${{ steps.install.outputs.install_dir }}
+        run: |
+          $runtime = Join-Path $env:INSTALL_DIR 'resources/runtime/python.exe'
+          $oldPath = $env:PATH
+          try {
+            $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+            $outside = Join-Path $env:RUNNER_TEMP 'outside-repository'
+            New-Item -ItemType Directory -Force -Path $outside | Out-Null
+            Push-Location $outside
+            & $runtime -I -B -c "import atlas_workflow, atlas_ai, atlas_knowledge; print('ATLAS_BUNDLED_RUNTIME_OK')"
+            if ($LASTEXITCODE -ne 0) { throw 'Bundled runtime import smoke failed outside checkout' }
+            Pop-Location
+          } finally {
+            $env:PATH = $oldPath
+          }
+      - name: Launch installed desktop without development PATH
+        shell: pwsh
+        env:
+          ATLAS_EXE: ${{ steps.install.outputs.exe }}
+          INSTALL_DIR: ${{ steps.install.outputs.install_dir }}
+        run: |
+          $oldPath = $env:PATH
+          try {
+            $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot;$env:INSTALL_DIR"
+            $p = Start-Process -FilePath $env:ATLAS_EXE -WorkingDirectory $env:RUNNER_TEMP -PassThru
+            Start-Sleep -Seconds 8
+            if ($p.HasExited) { throw "Installed Atlas exited early with code $($p.ExitCode)" }
+            $children = Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id }
+            $bad = @($children | Where-Object { $_.ExecutablePath -and $_.ExecutablePath -notlike "$env:INSTALL_DIR*" })
+            if ($bad.Count -gt 0) { throw "Atlas spawned child outside install directory: $($bad.ExecutablePath -join ', ')" }
+            Stop-Process -Id $p.Id -Force
+            Start-Sleep -Seconds 3
+            $orphans = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -like "$env:INSTALL_DIR*" -and $_.Name -match 'python|Atlas' })
+            if ($orphans.Count -gt 0) { throw "Installed Atlas left orphan processes: $($orphans.ProcessId -join ', ')" }
+          } finally {
+            $env:PATH = $oldPath
+          }
+      - name: Silent uninstall
+        shell: pwsh
+        env:
+          INSTALL_DIR: ${{ steps.install.outputs.install_dir }}
+        run: |
+          $uninstaller = Join-Path $env:INSTALL_DIR 'uninstall.exe'
+          if (-not (Test-Path -LiteralPath $uninstaller)) { throw 'NSIS uninstaller missing' }
+          $p = Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Uninstaller failed: $($p.ExitCode)" }
+          Start-Sleep -Seconds 2
+          if (Test-Path -LiteralPath (Join-Path $env:INSTALL_DIR 'Atlas.exe')) { throw 'Atlas.exe remains after uninstall' }
+      - name: Record smoke scope
+        shell: pwsh
+        run: |
+          @'
+          Fresh GitHub-hosted Windows VM smoke passed only if this job is green.
+          This validates build, Unicode/space silent install, bundled-runtime imports outside the checkout,
+          launch without development PATH, child-process containment, forced-close orphan cleanup, and uninstall.
+          It does NOT establish interactive GUI, Input, mixed-DPI, accessibility, or full 20-step clean-machine acceptance.
+          '@ | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY

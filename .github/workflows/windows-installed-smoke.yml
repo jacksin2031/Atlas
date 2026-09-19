@@ -32,6 +32,23 @@ jobs:
         working-directory: apps/atlas-desktop
         run: pnpm install --frozen-lockfile
 
+      - name: Validate real-machine acceptance harness
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'scripts/real_machine_acceptance.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            throw 'Real-machine acceptance harness has PowerShell parse errors'
+          }
+          & ./scripts/real_machine_acceptance.ps1 -PlanOnly | Out-Null
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Prime complete locked Rust dependency metadata
         run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml
 

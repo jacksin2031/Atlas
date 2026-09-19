@@ -2,6 +2,7 @@
 param(
   [string]$InstallerPath,
   [string]$AtlasExe,
+  [string]$ProjectPath,
   [string]$EvidenceDir = (Join-Path (Get-Location) "atlas-real-machine-evidence"),
   [ValidateRange(1, 100)]
   [int]$LifecycleCycles = 10,
@@ -77,6 +78,38 @@ function Get-MachineEvidence {
     }
   })
   $dpi = Get-ItemProperty -LiteralPath "HKCU:\Control Panel\Desktop" -ErrorAction SilentlyContinue
+  $screenLayout = @()
+  try {
+    Add-Type -AssemblyName System.Windows.Forms
+    $screenLayout = @([System.Windows.Forms.Screen]::AllScreens | ForEach-Object {
+      [ordered]@{
+        deviceName = $_.DeviceName
+        primary = $_.Primary
+        bounds = [ordered]@{ x = $_.Bounds.X; y = $_.Bounds.Y; width = $_.Bounds.Width; height = $_.Bounds.Height }
+        workingArea = [ordered]@{ x = $_.WorkingArea.X; y = $_.WorkingArea.Y; width = $_.WorkingArea.Width; height = $_.WorkingArea.Height }
+      }
+    })
+  } catch {
+    $screenLayout = @([ordered]@{ unavailable = $true; reason = "System.Windows.Forms screen enumeration unavailable" })
+  }
+
+  $webView2 = @()
+  $uninstallRoots = @(
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
+  )
+  foreach ($root in $uninstallRoots) {
+    $webView2 += @(Get-ItemProperty -Path $root -ErrorAction SilentlyContinue | Where-Object {
+      $_.DisplayName -like "*WebView2*Runtime*"
+    } | ForEach-Object {
+      [ordered]@{ displayName = $_.DisplayName; displayVersion = $_.DisplayVersion; installLocation = $_.InstallLocation }
+    })
+  }
+
+  $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+  $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+  $isAdministrator = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
   $perMonitor = @()
   if (Test-Path -LiteralPath "HKCU:\Control Panel\Desktop\PerMonitorSettings") {
     $perMonitor = @(Get-ChildItem -LiteralPath "HKCU:\Control Panel\Desktop\PerMonitorSettings" | ForEach-Object {
@@ -104,6 +137,12 @@ function Get-MachineEvidence {
     processArchitecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
     gpu = $video
     monitors = $monitors
+    screenLayout = $screenLayout
+    webView2Runtime = $webView2
+    account = [ordered]@{
+      userName = $identity.Name
+      elevatedAdministrator = $isAdministrator
+    }
     desktopDpi = [ordered]@{
       logPixels = $dpi.LogPixels
       win8DpiScaling = $dpi.Win8DpiScaling
@@ -202,6 +241,7 @@ $plan = [ordered]@{
   evidenceDirectory = [IO.Path]::GetFullPath($EvidenceDir)
   installerPath = $InstallerPath
   atlasExe = $AtlasExe
+  projectPath = $ProjectPath
   lifecycleCycles = $LifecycleCycles
   soakMinutes = $SoakMinutes
   soakSampleMinutes = $SoakSampleMinutes
@@ -222,6 +262,16 @@ if ($PlanOnly) {
 New-Item -ItemType Directory -Path $EvidenceDir -Force | Out-Null
 Write-JsonFile -Value $plan -Path (Join-Path $EvidenceDir "plan.json")
 Write-JsonFile -Value (Get-MachineEvidence) -Path (Join-Path $EvidenceDir "machine.json")
+
+if ($ProjectPath) {
+  $resolvedProject = [IO.Path]::GetFullPath($ProjectPath)
+  Write-JsonFile -Value ([ordered]@{
+    path = $resolvedProject
+    exists = (Test-Path -LiteralPath $resolvedProject)
+    containsNonAscii = [bool]($resolvedProject -match '[^\x00-\x7F]')
+    containsSpaces = $resolvedProject.Contains(' ')
+  }) -Path (Join-Path $EvidenceDir "project-path.json")
+}
 
 if ($InstallerPath) {
   $resolvedInstaller = (Resolve-Path -LiteralPath $InstallerPath).Path

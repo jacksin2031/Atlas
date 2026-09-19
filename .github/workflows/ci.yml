@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  PYTHONPATH: "src"
+  PYTHONPATH: "src:packages/vision/src:packages/ai/src:packages/knowledge/src"
   RUST_TOOLCHAIN: "1.80"
 
 jobs:
@@ -96,14 +96,8 @@ jobs:
             echo "No conformance tests found"
           fi
 
-      - name: Run full test suite
-        run: python -m pytest tests/ -v --tb=short -q
-
-      - name: Run AI package tests
-        run: PYTHONPATH=packages/ai/src python -m pytest packages/ai/tests/ -v --tb=short -q
-
-      - name: Run Vision package tests
-        run: PYTHONPATH=packages/vision/src python -m pytest packages/vision/tests/ -v --tb=short -q
+      - name: Run complete Python regression
+        run: python -m pytest tests packages/vision/tests packages/ai/tests packages/knowledge/tests --import-mode=importlib -v --tb=short -q
 
   desktop-tests:
     name: Desktop Build and Test

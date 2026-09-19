@@ -2,6 +2,22 @@
 
 This checklist begins only after repository CI and the GitHub-hosted Windows installed-product smoke are green. It is intentionally limited to evidence that cannot be established faithfully by headless CI. Do not convert an unobserved item to PASS.
 
+## Acceptance helper
+
+After installing the exact candidate, use the repository helper only on the designated acceptance machine:
+
+```powershell
+pwsh -NoProfile -File .\scripts\real_machine_acceptance.ps1 `
+  -InstallerPath "C:\path\Atlas_0.18.0-alpha_x64-setup.exe" `
+  -AtlasExe "C:\path\to\installed\atlas-desktop.exe" `
+  -EvidenceDir ".\atlas-real-machine-evidence" `
+  -RunLifecycle
+```
+
+This captures machine/installer metadata and performs the 10-cycle **normal close** process/orphan check without arming Input. For the 60-minute RM-G session, run the same helper with `-RunSoak -SoakMinutes 60 -SoakSampleMinutes 15` and use Atlas interactively during the sampling period. The script writes conservative `NOT RUN` / `PARTIAL` evidence scaffolding; it never converts interactive gates to PASS automatically.
+
+Use `-PlanOnly` first if you only want to inspect the planned non-destructive operations. The helper never supplies credentials, arms Input, clicks third-party applications, edits project data, or simulates Narrator/DPI/visual-loop evidence.
+
 ## Environment record
 
 Record before testing:

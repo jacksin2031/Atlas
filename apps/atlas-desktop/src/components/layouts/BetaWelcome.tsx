@@ -1,15 +1,10 @@
 import React from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { Button } from "../../design-system";
 import { useProjectStore } from "../../stores";
 import { projectService } from "../../services/project";
-import { selectProjectDirectory } from "../../ipc/bridge";
+import { exportDiagnostics, getBetaSystemInfo, selectProjectDirectory, type BetaSystemInfo } from "../../ipc/bridge";
 import type { ProjectDescriptor } from "../../types";
 
-export interface BetaSystemInfo {
-  version: string; platform: string; architecture: string; buildType: string; commit: string;
-  runtimes: Array<{ name: string; status: string; detail: string }>;
-}
 export const showBetaHelp = (): void => { window.dispatchEvent(new Event("atlas:beta-help")); };
 
 export function GettingStarted() {
@@ -34,7 +29,7 @@ export function BetaWelcome() {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [info, setInfo] = React.useState<BetaSystemInfo | null>(null);
-  React.useEffect(() => { let alive = true; void invoke<BetaSystemInfo>("beta_system_info").then((value) => { if (alive) setInfo(value); }).catch(() => { if (alive) setError("Runtime health is unavailable. Open About / Diagnostics to retry; the installed backend must be running."); }); return () => { alive = false; }; }, []);
+  React.useEffect(() => { let alive = true; void getBetaSystemInfo().then((value) => { if (alive) setInfo(value); }).catch(() => { if (alive) setError("Runtime health is unavailable. Open About / Diagnostics to retry; the installed backend must be running."); }); return () => { alive = false; }; }, []);
   const open = async (project?: ProjectDescriptor) => {
     setBusy(true); setError(null);
     try {
@@ -56,9 +51,9 @@ export function BetaHelp() {
   const [info, setInfo] = React.useState<BetaSystemInfo | null>(null);
   const [message, setMessage] = React.useState("");
   const [busy, setBusy] = React.useState(false);
-  const refresh = () => { setInfo(null); setMessage(""); void invoke<BetaSystemInfo>("beta_system_info").then(setInfo).catch(() => setMessage("Could not query the installed backend. Restart Atlas and retry.")); };
+  const refresh = () => { setInfo(null); setMessage(""); void getBetaSystemInfo().then(setInfo).catch(() => setMessage("Could not query the installed backend. Restart Atlas and retry.")); };
   React.useEffect(() => { const show = () => { dialog.current?.showModal(); refresh(); }; window.addEventListener("atlas:beta-help", show); return () => window.removeEventListener("atlas:beta-help", show); }, []);
-  const exportBundle = async () => { setBusy(true); setMessage(""); try { const result = await invoke<{ path: string | null }>("export_diagnostics"); setMessage(result.path ? `Diagnostics saved: ${result.path}` : "Export cancelled."); } catch { setMessage("Diagnostics export failed. Check destination permissions and retry."); } finally { setBusy(false); } };
+  const exportBundle = async () => { setBusy(true); setMessage(""); try { const result = await exportDiagnostics(); setMessage(result.path ? `Diagnostics saved: ${result.path}` : "Export cancelled."); } catch { setMessage("Diagnostics export failed. Check destination permissions and retry."); } finally { setBusy(false); } };
   return <dialog ref={dialog} className="beta-help" aria-labelledby="beta-help-title"><h1 id="beta-help-title">About Atlas / Diagnostics</h1><Button onClick={() => dialog.current?.close()}>Close</Button>
     {info && <p>Atlas {info.version} · {info.platform} / {info.architecture} · {info.buildType} · {info.commit}</p>}<RuntimeHealth info={info}/>
     <p>Diagnostics are saved locally only. The export includes allowlisted version, system and runtime metadata. It excludes credentials, Knowledge content, AI conversations, screenshots and arbitrary project files.</p>

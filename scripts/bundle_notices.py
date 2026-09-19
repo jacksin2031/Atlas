@@ -159,8 +159,15 @@ def main():
                f"\n\n## Unresolved frontend dependencies ({len(unresolved)})\n\n" +
                ("\n".join(f"- `{item['parent']}` → `{item['dependency']}` (optional: {item['optional']})." for item in unresolved) if unresolved else "None.") + "\n")
     (ROOT / "docs/beta/NOTICES.md").write_text(summary, encoding="utf-8")
-    print(json.dumps({"npm": len(npm), "cargo": len(cargo), "license_files": sum(len(p['license_texts']) for p in packages),
-                      "review_required": len(review), "unresolved_frontend": len(unresolved)}))
+    print(json.dumps({
+        "npm": len(npm),
+        "cargo": len(cargo),
+        "license_files": sum(len(p["license_texts"]) for p in packages),
+        "review_required": len(review),
+        "review_required_packages": review,
+        "unresolved_frontend": len(unresolved),
+        "unresolved_frontend_dependencies": unresolved,
+    }, ensure_ascii=False))
 
 
 if __name__ == "__main__":

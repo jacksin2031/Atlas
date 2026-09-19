@@ -58,7 +58,7 @@ jobs:
             $found = @(Get-ChildItem -LiteralPath $installDir -Filter '*.exe' -File -ErrorAction SilentlyContinue)
             throw "Installed desktop executable missing at $exe; found: $($found.Name -join ', ')"
           }
-          $runtime = Join-Path $installDir 'resources/runtime/python.exe'
+          $runtime = Join-Path $installDir 'runtime/python.exe'
           if (-not (Test-Path -LiteralPath $runtime)) { throw "Bundled python.exe missing at $runtime" }
           "install_dir=$installDir" >> $env:GITHUB_OUTPUT
           "exe=$exe" >> $env:GITHUB_OUTPUT
@@ -68,7 +68,7 @@ jobs:
         env:
           INSTALL_DIR: ${{ steps.install.outputs.install_dir }}
         run: |
-          $runtime = Join-Path $env:INSTALL_DIR 'resources/runtime/python.exe'
+          $runtime = Join-Path $env:INSTALL_DIR 'runtime/python.exe'
           $oldPath = $env:PATH
           try {
             $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"

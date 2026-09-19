@@ -167,6 +167,9 @@ jobs:
         run: pnpm test
       - name: Build frontend
         run: pnpm run build
+      - name: Prime Windows-target Rust metadata for notices
+        working-directory: ${{ github.workspace }}
+        run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml --target x86_64-pc-windows-msvc
       - name: Generate packaged notices
         working-directory: ${{ github.workspace }}
         run: python scripts/bundle_notices.py

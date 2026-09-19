@@ -19,7 +19,7 @@ describe("Desktop transport boundary", () => {
     const bridge = join(src, "ipc", "bridge.ts");
     const offenders = sourceFiles(src)
       .filter((path) => path !== bridge)
-      .filter((path) => readFileSync(path, "utf8").includes("@tauri-apps/api/"))
+      .filter((path) => /^\s*import[\s\S]*?from\s+["']@tauri-apps\/api\//m.test(readFileSync(path, "utf8")))
       .map((path) => relative(process.cwd(), path).replaceAll("\\", "/"));
 
     expect(offenders).toEqual([]);

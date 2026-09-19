@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: windows-installed-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   installed-smoke:
     name: Fresh Windows installer smoke
@@ -215,6 +219,32 @@ jobs:
           if (Test-Path -LiteralPath (Join-Path $env:INSTALL_DIR 'atlas-desktop.exe')) {
             throw 'Desktop executable remains after uninstall'
           }
+
+      - name: Write candidate metadata
+        if: ${{ success() }}
+        shell: pwsh
+        env:
+          INSTALLER_SHA256: ${{ steps.install.outputs.sha256 }}
+        run: |
+          $bundle = Resolve-Path 'apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis'
+          @{
+            commit = '${{ github.sha }}'
+            workflowRun = '${{ github.run_id }}'
+            target = 'x86_64-pc-windows-msvc'
+            signing = 'unsigned'
+            installerSha256 = $env:INSTALLER_SHA256
+            hostedWindowsSmoke = 'PASS'
+            interactiveRealMachineAcceptance = 'NOT ESTABLISHED'
+          } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $bundle 'smoke-metadata.json')
+
+      - name: Upload accepted installer candidate
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Atlas-Windows-smoke-${{ github.sha }}
+          path: apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Record smoke scope
         if: ${{ success() }}

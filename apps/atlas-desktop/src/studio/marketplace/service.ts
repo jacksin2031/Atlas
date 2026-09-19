@@ -1,5 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { listenMarketplaceChanged, requestMarketplace } from "../../ipc/bridge";
 import { create } from "zustand";
 import { useNodeRegistryStore } from "../workflow/stores/node-registry-store";
 import type { PluginNodeRegistration } from "../workflow/types";
@@ -34,7 +33,7 @@ export class MarketplaceService {
   private owners = new Set<string>();
   constructor(private request: <T>(command: string, payload: Record<string, unknown>) => Promise<T> = (command, payload) => {
     if (!("__TAURI_INTERNALS__" in window)) return Promise.reject({ code: "MARKETPLACE_UNAVAILABLE", message: "Marketplace backend unavailable. Run Atlas Desktop to manage plugins." });
-    return invoke("marketplace_request", { command, payload });
+    return requestMarketplace(command, payload);
   }) {}
   private report(error: unknown): void {
     const value = error && typeof error === "object" && "code" in error && "message" in error ? error as PackageError : { code: "MARKETPLACE_UNAVAILABLE", message: error instanceof Error ? error.message : String(error) };
@@ -79,8 +78,8 @@ export class MarketplaceService {
   }
   async connect(): Promise<() => void> {
     if (!("__TAURI_INTERNALS__" in window)) { await this.refresh(); return () => undefined; }
-    const stop = await listen<{ revision: number }>("plugin://marketplace-changed", ({ payload }) => {
-      if (payload.revision > (useMarketplaceStore.getState().snapshot?.revision ?? -1)) void this.refresh();
+    const stop = await listenMarketplaceChanged((revision) => {
+      if (revision > (useMarketplaceStore.getState().snapshot?.revision ?? -1)) void this.refresh();
     });
     await this.refresh(); return stop;
   }

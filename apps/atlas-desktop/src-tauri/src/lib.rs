@@ -15,6 +15,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{mpsc, Arc, Mutex};
+#[cfg(windows)]
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -560,6 +561,7 @@ fn project_assets_save(project_path: String, assets: Value) -> Result<(), String
 
 type HostResult = Result<Value, String>;
 type PendingRequests = Arc<Mutex<HashMap<String, mpsc::SyncSender<HostResult>>>>;
+#[cfg(windows)]
 const CREDENTIAL_SERVICE: &str = "Atlas AI Provider";
 
 fn validate_provider_id(provider_id: &str) -> Result<(), String> {

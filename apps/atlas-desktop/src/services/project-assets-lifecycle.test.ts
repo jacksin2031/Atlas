@@ -4,7 +4,7 @@ import { projectAssetService, restoreProjectAssets } from "./project-assets";
 import { loadProjectAssets, saveProjectAssets } from "../ipc/bridge";
 import { useAIStudioStore } from "../studio/ai/store";
 import { useWorkspaceStore } from "../workspace/store";
-import { collectPanelIds, layoutStorageKey, loadWorkspaceLayout, saveWorkspaceLayout } from "../workspace/persistence";
+import { collectPanelIds, layoutStorageKey, loadWorkspaceLayout } from "../workspace/persistence";
 import { cloneDefaultLayout } from "../workspace/layouts";
 import { getAllowedPanelIds } from "../workspace/panel-registry";
 import type { WorkspaceId } from "../workspace/types";

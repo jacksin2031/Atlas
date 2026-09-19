@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   rustsec:
@@ -51,6 +51,8 @@ jobs:
         working-directory: apps/atlas-desktop
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: pnpm/action-setup@v4
         with:
           version: 11.9.0
@@ -61,6 +63,19 @@ jobs:
           cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
       - name: Refresh patched dependency resolutions
         run: pnpm update postcss nanoid browserslist vitest baseline-browser-mapping --lockfile-only --depth Infinity
+      - name: Commit refreshed lockfile on same-repository pull request
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore: refresh audited frontend lockfile"
+          git push origin "HEAD:${{ github.head_ref }}"
       - name: Upload refreshed lockfile for review
         uses: actions/upload-artifact@v4
         with:

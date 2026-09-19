@@ -139,10 +139,41 @@ jobs:
       - name: Run Rust tests
         run: cargo test --workspace
 
+  desktop-tests:
+    name: Desktop Build and Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: apps/atlas-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
+      - name: Install Tauri system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint frontend
+        run: pnpm run lint
+      - name: Test frontend
+        run: pnpm test
+      - name: Build frontend
+        run: pnpm run build
+      - name: Check Tauri backend
+        run: cargo check --manifest-path src-tauri/Cargo.toml
+
   conformance:
     name: Conformance Suite
     runs-on: ubuntu-22.04
-    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests]
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, desktop-tests]
     steps:
       - uses: actions/checkout@v4
 
@@ -171,7 +202,7 @@ jobs:
   pr-summary:
     name: PR Summary
     runs-on: ubuntu-22.04
-    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, conformance]
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, desktop-tests, conformance]
     if: always()
     steps:
       - name: PR Check Summary
@@ -185,6 +216,7 @@ jobs:
           echo "| ADR Validation | ${{ needs.adr-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Documentation | ${{ needs.documentation-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Tests | ${{ needs.tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Desktop | ${{ needs.desktop-tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Conformance | ${{ needs.conformance.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ needs.architecture-check.result }}" = "success" ] && \
@@ -192,6 +224,7 @@ jobs:
              [ "${{ needs.adr-check.result }}" = "success" ] && \
              [ "${{ needs.documentation-check.result }}" = "success" ] && \
              [ "${{ needs.tests.result }}" = "success" ] && \
+             [ "${{ needs.desktop-tests.result }}" = "success" ] && \
              [ "${{ needs.conformance.result }}" = "success" ]; then
             echo "All checks passed. Ready for review." >> "$GITHUB_STEP_SUMMARY"
           else

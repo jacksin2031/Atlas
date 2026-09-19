@@ -63,7 +63,7 @@ class FrameCaptured(Event):
     duration_ms: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
-        d = super().to_dict()
+        d = Event.to_dict(self)
         d.update({"frame_id": self.frame_id, "source_id": self.source_id})
         return d
 

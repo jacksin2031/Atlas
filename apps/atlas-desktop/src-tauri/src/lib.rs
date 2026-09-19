@@ -420,6 +420,7 @@ fn write_project_session(path: &Path, project_path: &str) -> Result<(), String> 
     if !project.is_absolute() || !project.is_dir() {
         return Err("Project session requires an existing absolute project directory.".to_owned());
     }
+    project_persistence::check_path(&project)?;
     let directory = path
         .parent()
         .ok_or_else(|| "Project session directory is invalid.".to_owned())?;
@@ -458,6 +459,7 @@ fn read_project_session(path: &Path) -> Result<Option<String>, String> {
     if !project.is_absolute() || !project.is_dir() {
         return Ok(None);
     }
+    project_persistence::check_path(&project)?;
     Ok(Some(project_path.to_owned()))
 }
 
@@ -946,6 +948,10 @@ async fn ai_provider_action(
     provider_id: String,
     action: String,
 ) -> Result<bool, String> {
+    validate_provider_id(&provider_id)?;
+    if !matches!(action.as_str(), "connect" | "disconnect" | "refresh" | "test") {
+        return Err("Unsupported AI provider action.".to_owned());
+    }
     let value = request_ai_host(
         state.inner().clone(),
         app,
@@ -1783,6 +1789,31 @@ mod hardening_tests {
     fn provider_ids_are_bounded_before_keyring_access() {
         assert!(validate_provider_id("openai-compatible_1").is_ok());
         assert!(validate_provider_id("../openai").is_err());
+    }
+
+    #[test]
+    fn project_session_rejects_redirected_project_scope() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = env::temp_dir().join(format!(
+            "atlas-session-scope-{}-{unique}",
+            std::process::id()
+        ));
+        let project = root.join("project");
+        fs::create_dir_all(&project).unwrap();
+        let pointer = root.join("state/project-session.v1.json");
+        assert!(write_project_session(&pointer, &project.to_string_lossy()).is_ok());
+
+        #[cfg(not(windows))]
+        {
+            let redirected = root.join("redirected");
+            std::os::unix::fs::symlink(&project, &redirected).unwrap();
+            assert!(write_project_session(&pointer, &redirected.to_string_lossy()).is_err());
+        }
+
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[cfg(windows)]

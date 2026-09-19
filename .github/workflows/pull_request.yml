@@ -5,6 +5,10 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, edited]
 
+concurrency:
+  group: pull-request-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   PYTHON_VERSION: "3.12"
   PYTHONPATH: "src:packages/vision/src:packages/ai/src:packages/knowledge/src"

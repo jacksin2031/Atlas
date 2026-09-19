@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MenuBar } from "./MenuBar";
 
-const execute = vi.fn();
+const { execute } = vi.hoisted(() => ({ execute: vi.fn() }));
 vi.mock("../../services", () => ({ commandPaletteService: { execute } }));
 vi.mock("../../stores", () => ({
   useThemeStore: (select: (state: { resolvedTheme: string }) => unknown) => select({ resolvedTheme: "dark" }),

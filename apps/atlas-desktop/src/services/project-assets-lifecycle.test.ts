@@ -4,7 +4,10 @@ import { projectAssetService, restoreProjectAssets } from "./project-assets";
 import { loadProjectAssets, saveProjectAssets } from "../ipc/bridge";
 import { useAIStudioStore } from "../studio/ai/store";
 import { useWorkspaceStore } from "../workspace/store";
-import { layoutStorageKey } from "../workspace/persistence";
+import { collectPanelIds, layoutStorageKey, loadWorkspaceLayout, saveWorkspaceLayout } from "../workspace/persistence";
+import { cloneDefaultLayout } from "../workspace/layouts";
+import { getAllowedPanelIds } from "../workspace/panel-registry";
+import type { WorkspaceId } from "../workspace/types";
 
 vi.mock("../ipc/bridge", () => ({ loadProjectAssets: vi.fn(), saveProjectAssets: vi.fn() }));
 describe("project assets activation safety", () => {
@@ -41,6 +44,23 @@ describe("project assets activation safety", () => {
     await projectAssetService.open("C:/fresh-layout");
     expect(useWorkspaceStore.getState().activeWorkspace).toBe("workflow");
     expect(localStorage.getItem(layoutStorageKey("ai"))).toBeNull();
+  });
+  it("restores all product workspace layouts from project assets", async () => {
+    const ids: WorkspaceId[] = ["workflow", "vision", "ai", "knowledge", "marketplace"];
+    const layouts = Object.fromEntries(ids.map((id) => [id, { version: 1, workspace: id, layout: cloneDefaultLayout(id) }]));
+    vi.mocked(loadProjectAssets).mockResolvedValue({ workspace: { activeWorkspace: "marketplace", layouts } });
+    await projectAssetService.open("C:/Atlas Projects/全工作區");
+    expect(useWorkspaceStore.getState().activeWorkspace).toBe("marketplace");
+    for (const id of ids) {
+      expect(localStorage.getItem(layoutStorageKey(id))).not.toBeNull();
+      expect(collectPanelIds(loadWorkspaceLayout(id, getAllowedPanelIds(id)))).toContain(collectPanelIds(cloneDefaultLayout(id))[0]);
+    }
+  });
+  it("falls back safely when a restored workspace layout is corrupt", async () => {
+    const id: WorkspaceId = "marketplace";
+    vi.mocked(loadProjectAssets).mockResolvedValue({ workspace: { activeWorkspace: id, layouts: { [id]: { version: 1, workspace: id, layout: { invalid: true } } } } });
+    await projectAssetService.open("C:/Atlas Projects/corrupt-layout");
+    expect(collectPanelIds(loadWorkspaceLayout(id, getAllowedPanelIds(id))).length).toBeGreaterThan(0);
   });
   it("rejects malformed execution before changing AI state", () => {
     useAIStudioStore.setState({ userInput: "keep current" });

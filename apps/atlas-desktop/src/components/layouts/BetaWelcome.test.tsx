@@ -6,11 +6,15 @@ import { BetaWelcome, RuntimeHealth } from "./BetaWelcome";
 import { PanelErrorBoundary } from "../PanelErrorBoundary";
 import { useProjectStore } from "../../stores";
 
-vi.mock("../../ipc/bridge", () => ({
-  selectProjectDirectory: vi.fn(),
-  getBetaSystemInfo: vi.fn().mockRejectedValue(new Error("backend unavailable")),
-  exportDiagnostics: vi.fn(),
-}));
+vi.mock("../../ipc/bridge", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../ipc/bridge")>();
+  return {
+    ...actual,
+    selectProjectDirectory: vi.fn(),
+    getBetaSystemInfo: vi.fn().mockRejectedValue(new Error("backend unavailable")),
+    exportDiagnostics: vi.fn(),
+  };
+});
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 async function render(element: React.ReactNode) {
   const container = document.createElement("div"), root = createRoot(container);

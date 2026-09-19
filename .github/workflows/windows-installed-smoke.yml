@@ -53,10 +53,10 @@ jobs:
           $arguments = "/S /D=$installDir"
           $proc = Start-Process -FilePath $installer[0].FullName -ArgumentList $arguments -Wait -PassThru
           if ($proc.ExitCode -ne 0) { throw "Installer failed: $($proc.ExitCode)" }
-          $exe = Join-Path $installDir 'Atlas.exe'
+          $exe = Join-Path $installDir 'atlas-desktop.exe'
           if (-not (Test-Path -LiteralPath $exe)) {
             $found = @(Get-ChildItem -LiteralPath $installDir -Filter '*.exe' -File -ErrorAction SilentlyContinue)
-            throw "Installed Atlas.exe missing at $exe; found: $($found.Name -join ', ')"
+            throw "Installed desktop executable missing at $exe; found: $($found.Name -join ', ')"
           }
           $runtime = Join-Path $installDir 'resources/runtime/python.exe'
           if (-not (Test-Path -LiteralPath $runtime)) { throw "Bundled python.exe missing at $runtime" }
@@ -113,7 +113,7 @@ jobs:
           $p = Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw "Uninstaller failed: $($p.ExitCode)" }
           Start-Sleep -Seconds 2
-          if (Test-Path -LiteralPath (Join-Path $env:INSTALL_DIR 'Atlas.exe')) { throw 'Atlas.exe remains after uninstall' }
+          if (Test-Path -LiteralPath (Join-Path $env:INSTALL_DIR 'atlas-desktop.exe')) { throw 'Desktop executable remains after uninstall' }
       - name: Record smoke scope
         shell: pwsh
         run: |

@@ -1,0 +1,10 @@
+$ vitest run
+
+ RUN  v4.1.11 F:/資料夾/Desktop/Atlas/apps/atlas-desktop
+
+
+ Test Files  25 passed (25)
+      Tests  178 passed (178)
+   Start at  20:51:20
+   Duration  9.48s (transform 6.79s, setup 0ms, import 22.39s, tests 746ms, environment 47.57s)
+

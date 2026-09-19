@@ -1,0 +1,49 @@
+{
+  "artifactSha256": "F99BCD6C72B634F364FCC58A98B5FD819D98DA5AD56CD8EC6FE87E671871D941",
+  "artifactBytes": 227702216,
+  "installedBinarySha256": "5D6C469B146A9F4B6650CDFCF0BB47DE577DD9FD591DB830AA27D3D975F8BDB4",
+  "scope": "installed workstation",
+  "fixture": ".acceptance/sprint18/diagnostics-seeded.json",
+  "seededExecution": {
+    "result": "PASS",
+    "workflowId": "wf_sprint18_diagnostics_seeded",
+    "executionId": "execution-66416066-900b-4c81-b98f-d0eb1cb8bbe0",
+    "status": "completed",
+    "success": true,
+    "nodesCompleted": 4,
+    "nodesFailed": 0,
+    "automaticReplay": false,
+    "workflowOutputContainedSeededPrivateContent": true
+  },
+  "export": {
+    "result": "PASS",
+    "path": "C:\\Users\\jacks\\AppData\\Local\\Atlas Sprint 18 acceptance\\diagnostics-seeded-export.json",
+    "schemaVersion": 1,
+    "bytes": 4194,
+    "sha256": "0F5C85EFE685F7CC6C580381BFB556A229BB3C469E6196590415998D29ACEE1B",
+    "savedBy": "native create-new save dialog",
+    "uiConfirmation": "About Atlas / Diagnostics reported the local export policy and the save completed."
+  },
+  "redactionMatrix": {
+    "result": "PASS",
+    "forbiddenTokensChecked": [
+      "SPRINT18_DIAGNOSTICS_PRIVATE_20260911",
+      "sk-atlas-sprint18-NOT-A-REAL-KEY",
+      "ATLAS_SYNTHETIC_BEARER_20260911",
+      "ATLAS_SYNTHETIC_API_KEY_20260911",
+      "ATLAS_KNOWLEDGE_DIAGNOSTICS_20260911",
+      "data:image/png;base64",
+      "Authorization: Bearer",
+      "API_KEY="
+    ],
+    "forbiddenTokensFound": [],
+    "projectPathsFound": false,
+    "screenshotsFound": false,
+    "knowledgeOrConversationsFound": false,
+    "rawProviderOrStderrFound": false
+  },
+  "limitations": [
+    "Evidence is from the installed developer workstation.",
+    "Clean Windows machine acceptance remains outstanding."
+  ]
+}

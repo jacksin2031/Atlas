@@ -8,6 +8,9 @@ pub struct MarketplaceHost {
     service: Mutex<Option<MarketplaceService>>,
 }
 impl MarketplaceHost {
+    pub fn healthy(&self, app: &AppHandle) -> bool {
+        self.with(app, |_| Ok(())).is_ok()
+    }
     fn with<T>(
         &self,
         app: &AppHandle,
@@ -24,9 +27,8 @@ impl MarketplaceHost {
                 .map_err(|_| failure("STORAGE_FAILURE", "Application data directory unavailable"))?
                 .join("plugins")
                 .join("v1");
-            let registry = find_repo_root()
-                .map(|repo| repo.join("marketplace/local-development"))
-                .unwrap_or_else(|_| root.join("registry-unavailable"));
+            let registry =
+                production::registry_dir(app).unwrap_or_else(|_| root.join("registry-unavailable"));
             let provider = Arc::new(LocalRegistry::with_key(
                 registry,
                 include_str!("../../../../marketplace/local-development/public-key.txt"),

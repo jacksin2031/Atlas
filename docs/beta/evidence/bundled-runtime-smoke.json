@@ -1,0 +1,223 @@
+{
+  "status": "PASS",
+  "scope": "bundled-host component smoke, not installed app or clean VM",
+  "timestamp_utc": "2026-09-08T23:40:13.830703+00:00",
+  "command": "python scripts/verify_bundled_runtime.py",
+  "checks": [
+    {
+      "name": "ai_health_cycle_1",
+      "status": "PASS",
+      "duration_ms": 1197.71,
+      "result": {
+        "runtimeHealth": "available"
+      }
+    },
+    {
+      "name": "ai_eof_close_cycle_1",
+      "status": "PASS",
+      "duration_ms": 162.08,
+      "result": 0
+    },
+    {
+      "name": "ai_health_cycle_2",
+      "status": "PASS",
+      "duration_ms": 602.36,
+      "result": {
+        "runtimeHealth": "available"
+      }
+    },
+    {
+      "name": "ai_eof_close_cycle_2",
+      "status": "PASS",
+      "duration_ms": 67.48,
+      "result": 0
+    },
+    {
+      "name": "ai_health_cycle_3",
+      "status": "PASS",
+      "duration_ms": 752.83,
+      "result": {
+        "runtimeHealth": "available"
+      }
+    },
+    {
+      "name": "ai_eof_close_cycle_3",
+      "status": "PASS",
+      "duration_ms": 130.45,
+      "result": 0
+    },
+    {
+      "name": "workflow_starts_unarmed",
+      "status": "PASS",
+      "duration_ms": 584.76,
+      "result": {
+        "armed": false
+      }
+    },
+    {
+      "name": "safe_constant_workflow",
+      "status": "PASS",
+      "duration_ms": 64.55,
+      "result": {
+        "success": true,
+        "output": {
+          "value": "Atlas smoke"
+        }
+      }
+    },
+    {
+      "name": "knowledge_create",
+      "status": "PASS",
+      "duration_ms": 8.96,
+      "result": {
+        "id": "knowledge-62db66d1-45bc-46d7-b827-f87226248c31",
+        "project_id": "bundled-smoke",
+        "type": "note",
+        "title": "Smoke",
+        "content": "originalmarker",
+        "metadata": {},
+        "tags": [],
+        "source": {
+          "type": "user"
+        },
+        "provenance": {
+          "content_hash": "1645394676f5616ef5591288285a217f02baff071291307a18386626c80d1937"
+        },
+        "created_at": "2026-09-08T23:40:23.343938+00:00",
+        "updated_at": "2026-09-08T23:40:23.343938+00:00",
+        "version": 1
+      }
+    },
+    {
+      "name": "knowledge_search_created",
+      "status": "PASS",
+      "duration_ms": 23.26,
+      "result": {
+        "result_count": 1
+      }
+    },
+    {
+      "name": "knowledge_edit",
+      "status": "PASS",
+      "duration_ms": 34.76,
+      "result": {
+        "id": "knowledge-62db66d1-45bc-46d7-b827-f87226248c31",
+        "project_id": "bundled-smoke",
+        "type": "note",
+        "title": "Smoke",
+        "content": "updatedmarker",
+        "metadata": {},
+        "tags": [],
+        "source": {
+          "type": "user"
+        },
+        "provenance": {
+          "content_hash": "0d667d6c7f7980cc6110a2ef1a8c52737f5ff55b2c55e164c1db5e0ba33e2e1d"
+        },
+        "created_at": "2026-09-08T23:40:23.343938+00:00",
+        "updated_at": "2026-09-08T23:40:23.375908+00:00",
+        "version": 2
+      }
+    },
+    {
+      "name": "workflow_eof_close_1",
+      "status": "PASS",
+      "duration_ms": 210.55,
+      "result": 0
+    },
+    {
+      "name": "knowledge_edit_survives_restart",
+      "status": "PASS",
+      "duration_ms": 786.84,
+      "result": {
+        "result_count": 1
+      }
+    },
+    {
+      "name": "knowledge_old_content_absent",
+      "status": "PASS",
+      "duration_ms": 2.67,
+      "result": {
+        "result_count": 0
+      }
+    },
+    {
+      "name": "workflow_forced_kill",
+      "status": "PASS",
+      "duration_ms": 18.72,
+      "result": 1
+    },
+    {
+      "name": "knowledge_survives_forced_kill",
+      "status": "PASS",
+      "duration_ms": 744.41,
+      "result": {
+        "result_count": 1
+      }
+    },
+    {
+      "name": "input_unarmed_after_forced_restart",
+      "status": "PASS",
+      "duration_ms": 0.29,
+      "result": {
+        "armed": false
+      }
+    },
+    {
+      "name": "knowledge_delete",
+      "status": "PASS",
+      "duration_ms": 16.04,
+      "result": {
+        "deleted": true,
+        "entry_id": "knowledge-62db66d1-45bc-46d7-b827-f87226248c31"
+      }
+    },
+    {
+      "name": "workflow_eof_close_2",
+      "status": "PASS",
+      "duration_ms": 173.64,
+      "result": 0
+    },
+    {
+      "name": "knowledge_deleted_after_restart",
+      "status": "PASS",
+      "duration_ms": 716.59,
+      "result": {
+        "result_count": 0
+      }
+    },
+    {
+      "name": "workflow_eof_close_3",
+      "status": "PASS",
+      "duration_ms": 60.21,
+      "result": 0
+    }
+  ],
+  "limitations": [
+    "No installed UI, Tauri IPC, installer, clean VM, or live provider verification",
+    "Forced kill occurs while idle; no desktop input is armed or injected"
+  ],
+  "runtime_lock": {
+    "version": "3.13.12",
+    "target": "windows-x86_64",
+    "url": "https://www.python.org/ftp/python/3.13.12/python-3.13.12-embed-amd64.zip",
+    "sha256": "76f238f606250c87c6beac75dccd35ee99070a13490555936abb6cb64ecce3d0",
+    "thirdPartyPythonDependencies": []
+  },
+  "python_sha256": "a2a4eff8d0b0c845284c607d50a3b5b966ac5a3121736a2e38e165bd6644d9fe",
+  "runtime_tree_sha256": "b780f20f8c525bcc065ff5743ecb80110f576f5b1f72dd3c5dd0c1ea6fea4a1c",
+  "isolation": {
+    "path": "empty",
+    "environment_keys": [
+      "COMSPEC",
+      "PATH",
+      "SYSTEMROOT",
+      "TEMP",
+      "TMP",
+      "WINDIR"
+    ],
+    "cwd_outside_repository": true,
+    "runtime_path_has_spaces_and_unicode": true
+  },
+  "duration_ms": 12730.17
+}

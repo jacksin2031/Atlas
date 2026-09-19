@@ -1,0 +1,11 @@
+{
+  "sha256": "F99BCD6C72B634F364FCC58A98B5FD819D98DA5AD56CD8EC6FE87E671871D941",
+  "target": "x86_64-pc-windows-msvc",
+  "type": "NSIS",
+  "change": "Knowledge initialization waits for restored project; Windows global Pause/Break emergency stop",
+  "bytes": 227702216,
+  "version": "0.18.0-alpha",
+  "date": "2026-09-11",
+  "exitCode": 0,
+  "signatureStatus": "NotSigned"
+}

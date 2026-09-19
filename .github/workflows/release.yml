@@ -6,136 +6,144 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version tag (e.g., v0.12.0-beta)"
+        description: "Existing version tag (e.g., v0.18.0-alpha)"
         required: true
         type: string
-        default: ""
+
+permissions:
+  contents: read
 
 env:
   PYTHON_VERSION: "3.12"
-  PYTHONPATH: "src"
-  RUST_TOOLCHAIN: "1.80"
+  RELEASE_TAG: ${{ github.event.release.tag_name || inputs.version }}
 
 jobs:
   validate-release:
-    name: Validate Release
     runs-on: ubuntu-22.04
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.release.tag_name || inputs.version }}
-
-      - name: Verify tag format
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate existing tag and Desktop versions
+        id: commit
+        shell: bash
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.version }}"
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc\.[0-9]+)$ ]]; then
-            echo "::error::Invalid tag format: $TAG. Expected: vX.Y.Z-alpha, vX.Y.Z-beta, or vX.Y.Z-rc.N"
-            exit 1
-          fi
-          echo "Tag format valid: $TAG"
-
-      - name: Verify tag matches version docs
-        run: |
-          TAG="${{ github.event.release.tag_name || inputs.version }}"
-          VERSION="${TAG#v}"
-          if ! grep -q "$VERSION" CHANGELOG.md; then
-            echo "::error::Version $VERSION not found in CHANGELOG.md"
-            exit 1
-          fi
-          if ! grep -q "$VERSION" ROADMAP.md; then
-            echo "::error::Version $VERSION not found in ROADMAP.md"
-            exit 1
-          fi
-          echo "Version $VERSION verified in documentation"
+          python - <<'PY'
+          import json, os, pathlib, re, subprocess, tomllib
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'v\d+\.\d+\.\d+-(?:alpha|beta|rc\.\d+)', tag):
+              raise SystemExit('Invalid prerelease tag')
+          expected = tag[1:]
+          tagged = subprocess.check_output(['git', 'rev-parse', f'refs/tags/{tag}^{{commit}}'], text=True).strip()
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert tagged == head, 'Checkout is not the requested tag commit'
+          desktop = pathlib.Path('apps/atlas-desktop')
+          versions = {
+              'package.json': json.loads((desktop / 'package.json').read_text())['version'],
+              'tauri.conf.json': json.loads((desktop / 'src-tauri/tauri.conf.json').read_text())['version'],
+              'Cargo.toml': tomllib.loads((desktop / 'src-tauri/Cargo.toml').read_text())['package']['version'],
+          }
+          for name, actual in versions.items():
+              assert actual == expected, f'{name}: {actual} != {expected}'
+          for name in ['CHANGELOG.md', 'ROADMAP.md']:
+              assert expected in pathlib.Path(name).read_text(), f'{name} missing {expected}'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'sha={head}\n')
+          PY
 
   rust-release:
-    name: Rust Release Build
     runs-on: ubuntu-22.04
     needs: validate-release
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-          components: clippy,rustfmt
-
-      - name: Cache Cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Build release
-        run: cargo build --workspace --release
-
-      - name: Run release tests
-        run: cargo test --workspace
-
-      - name: Upload release binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: rust-release-binaries
-          path: target/release/
-          retention-days: 30
+          ref: ${{ needs.validate-release.outputs.sha }}
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --workspace --release --locked
+      - run: cargo test --workspace --locked
 
   python-tests:
-    name: Python Release Tests
     runs-on: ubuntu-22.04
+    needs: validate-release
+    env:
+      PYTHONPATH: src:packages/vision/src:packages/ai/src:packages/knowledge/src
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate-release.outputs.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: python -m pip install pytest==8.4.2
+      - run: python -m pytest tests packages/vision/tests packages/ai/tests packages/knowledge/tests --import-mode=importlib -q
+
+  windows-installer:
+    runs-on: windows-2022
     needs: validate-release
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+        with:
+          ref: ${{ needs.validate-release.outputs.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "11.9.0"
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Install locked frontend dependencies
+        working-directory: apps/atlas-desktop
+        run: pnpm install --frozen-lockfile
+      - name: Verify frontend
+        working-directory: apps/atlas-desktop
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest ruff
-
-      - name: Run full test suite
-        run: python -m pytest tests/ -v --tb=short
-
-      - name: Run conformance suite
-        run: python -m pytest tests/conformance/ -v --tb=short
-
-  generate-release-notes:
-    name: Generate Release Notes
-    runs-on: ubuntu-22.04
-    needs: [rust-release, python-tests]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Extract changelog section
+          pnpm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pnpm run lint
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Bundle pinned Python runtime
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.version }}"
-          VERSION="${TAG#v}"
-          echo "# Release $VERSION" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          if grep -A 100 "## \[$VERSION" CHANGELOG.md | head -50; then
-            echo "Changelog section found"
-          else
-            echo "No changelog section found for $VERSION"
-          fi
+          python scripts/bundle_runtime.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/bundle_notices.py
+      - name: Build locked Windows installer
+        working-directory: apps/atlas-desktop
+        run: node node_modules/@tauri-apps/cli/tauri.js build --target x86_64-pc-windows-msvc --bundles nsis -- --locked
+      - name: Create artifact metadata and checksums
+        shell: pwsh
+        run: |
+          $bundle = 'apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis'
+          $installers = @(Get-ChildItem -LiteralPath $bundle -Filter '*.exe')
+          if ($installers.Count -eq 0) { throw 'No NSIS installer produced' }
+          $installers | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name } | Set-Content -LiteralPath "$bundle/SHA256SUMS.txt"
+          @{ version = $env:RELEASE_TAG; commit = '${{ needs.validate-release.outputs.sha }}'; target = 'x86_64-pc-windows-msvc'; signing = 'unsigned'; cleanMachineAcceptance = 'not-established-by-build'; workflowRun = '${{ github.run_id }}' } | ConvertTo-Json | Set-Content -LiteralPath "$bundle/build-metadata.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Atlas-Windows-${{ env.RELEASE_TAG }}
+          path: apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/
+          if-no-files-found: error
+          retention-days: 30
 
   summary:
-    name: Release Summary
     runs-on: ubuntu-22.04
-    needs: [validate-release, rust-release, python-tests, generate-release-notes]
+    needs: [validate-release, rust-release, python-tests, windows-installer]
     if: always()
     steps:
-      - name: Release Result
+      - name: Release result
+        env:
+          RESULTS: ${{ toJSON(needs) }}
         run: |
-          echo "# Release Pipeline Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Step | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Validate | ${{ needs.validate-release.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Rust Build | ${{ needs.rust-release.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Python Tests | ${{ needs.python-tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Release Notes | ${{ needs.generate-release-notes.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo '# Release build results' >> "$GITHUB_STEP_SUMMARY"
+          echo "$RESULTS" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Artifacts are unsigned CI downloads. Installer compilation does not establish clean-machine acceptance. No tags or public releases are created by this workflow.' >> "$GITHUB_STEP_SUMMARY"

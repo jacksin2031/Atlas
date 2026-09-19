@@ -1,0 +1,71 @@
+{
+  "artifactSha256": "9c7dc4882fc18a786ccd583969c0b87b9f9aa99a5799fc1d82eb16cc6ec51873",
+  "scope": "installed workstation acceptance",
+  "targetScreen": "left monitor (Atlas window moved to originX -2560)",
+  "discover": {
+    "result": "PASS",
+    "source": "Local Development Registry",
+    "package": "atlas.acceptance.echo@1.2.0",
+    "trust": "Development"
+  },
+  "install": {
+    "result": "PASS",
+    "permissionReviewed": "PERM-NETWORK-OUTBOUND",
+    "permissionRisk": "Elevated Required",
+    "digest": "6e21225cd0cb94c093158504f1a0f46dfb39c83a2121bb3860117fd30b6a6fb5",
+    "audit": {
+      "action": "PEVT-INSTALLED",
+      "requestId": "90e13b80-3c8a-42ba-bdf1-1d96256e5a56",
+      "timestamp": "2026-09-10T12:41:47.399215300+00:00"
+    }
+  },
+  "enable": {
+    "result": "PASS",
+    "runtime": "Enabled · healthy",
+    "audit": {
+      "action": "PEVT-ACTIVATED",
+      "requestId": "a13bd79f-8141-4724-9740-75b6244888b1",
+      "timestamp": "2026-09-10T12:41:57.891254300+00:00"
+    }
+  },
+  "nodeExecute": {
+    "result": "PASS",
+    "workflowId": "wf_sprint_18_marketplace_echo",
+    "executionId": "execution-c51c3289-6d3c-4736-8ead-7941dc2a9cac",
+    "status": "completed",
+    "completedNodes": 4,
+    "failedNodes": 0,
+    "output": { "value": "ATLAS_MARKETPLACE_1710" }
+  },
+  "restart": {
+    "result": "PASS",
+    "normalClose": true,
+    "projectRestored": "測試 プロジェクト",
+    "runtimeAfterRestart": "Enabled · healthy"
+  },
+  "disable": {
+    "result": "PASS",
+    "runtime": "Disabled · unavailable",
+    "audit": {
+      "action": "PEVT-DEACTIVATED",
+      "requestId": "88b8f92c-e292-4b2b-b8a3-23ea30cff38d",
+      "timestamp": "2026-09-11T03:17:19.656069300+00:00"
+    }
+  },
+  "uninstall": {
+    "result": "PASS",
+    "installedPackagesAfter": 0,
+    "savedWorkflowRetained": true,
+    "audit": {
+      "action": "PEVT-REMOVED",
+      "pluginId": "atlas.acceptance.echo",
+      "requestId": "553db720-e3b1-4042-966a-d3aa08a36b73",
+      "timestamp": "2026-09-11T03:21:43.484663600+00:00"
+    }
+  },
+  "limitations": [
+    "Executed on the developer workstation; clean-machine proof remains outstanding.",
+    "The package came from the Local Development Registry with Development trust.",
+    "The saved workflow remains serialized with its pluginId after uninstall; it was not re-executed after removal."
+  ]
+}

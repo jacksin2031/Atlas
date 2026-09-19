@@ -14,14 +14,30 @@ export function stableProjectId(projectPath: string): string {
 }
 
 export class ProjectService {
+  private opening = false;
 
-  openProject(project: ProjectDescriptor): void {
+  async openProject(project: ProjectDescriptor): Promise<void> {
+    if (this.opening) throw new Error("PROJECT_OPEN_IN_PROGRESS");
+    this.opening = true;
     project = { ...project, id: stableProjectId(project.path) };
-    useProjectStore.getState().openProject(project);
-    useProjectStore.getState().addRecentProject(project);
-    void rememberProjectSession(project.path).then(() => projectAssetService.open(project.path)).catch((error) => useProjectStore.getState().addNotification({
-      title: "Project recovery failed", message: error instanceof Error ? error.message : String(error), severity: "error", acknowledged: false,
-    }));
+    try {
+      await projectAssetService.open(project.path);
+      await rememberProjectSession(project.path);
+      useProjectStore.getState().openProject(project);
+      useProjectStore.getState().addRecentProject(project);
+    } catch (error) {
+      const current = useProjectStore.getState().currentProject;
+      if (current && projectAssetService.isOpen(current.path)) {
+        useProjectStore.getState().addNotification({ title: "Project switch failed", message: "The current project remains open. Save its changes successfully before switching projects.", severity: "error", acknowledged: false });
+        throw error;
+      }
+      projectAssetService.stop();
+      useProjectStore.getState().closeProject();
+      useProjectStore.getState().addNotification({ title: "Project open failed", message: "Check folder permissions and project format compatibility. No project has been opened.", severity: "error", acknowledged: false });
+      throw error;
+    } finally {
+      this.opening = false;
+    }
     useLogStore.getState().addEntry({
       timestamp: Date.now(),
       level: "info",
@@ -32,8 +48,11 @@ export class ProjectService {
 
   closeProject(): void {
     const current = useProjectStore.getState().currentProject;
-    void projectAssetService.close().then(() => clearProjectSession());
-    useProjectStore.getState().closeProject();
+    void projectAssetService.saveNow().then(async () => {
+      await clearProjectSession();
+      projectAssetService.stop();
+      useProjectStore.getState().closeProject();
+    }).catch(() => useProjectStore.getState().addNotification({ title: "Project close failed", message: "The project remains open. Check folder access and retry so unsaved changes can be preserved.", severity: "error", acknowledged: false }));
     useLogStore.getState().addEntry({
       timestamp: Date.now(),
       level: "info",
@@ -47,7 +66,7 @@ export class ProjectService {
     if (!path) return false;
     const name = path.split(/[\\/]/).filter(Boolean).at(-1) ?? "Atlas Project";
     const now = Date.now();
-    this.openProject({ id: stableProjectId(path), name, path, createdAt: now, updatedAt: now, settings: { theme: "system", language: "en", autoSave: true, tabSize: 2 } });
+    await this.openProject({ id: stableProjectId(path), name, path, createdAt: now, updatedAt: now, settings: { theme: "system", language: "en", autoSave: true, tabSize: 2 } });
     return true;
   }
 

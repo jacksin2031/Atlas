@@ -1,5 +1,7 @@
 ﻿# apps/atlas-desktop
 
+> Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](../../docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
+
 ## Purpose
 
 Atlas Desktop Shell — the graphical user interface that hosts every Atlas runtime.

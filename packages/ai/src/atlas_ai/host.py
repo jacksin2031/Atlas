@@ -388,7 +388,9 @@ class DesktopAIHost:
         command = value.get("command")
         payload = value.get("payload") or {}
         try:
-            if command == "ai_discover":
+            if command == "ai_health":
+                self.respond(command_id, {"runtimeHealth": "available"})
+            elif command == "ai_discover":
                 self.respond(command_id, self.discover())
             elif command == "ai_infer":
                 self.infer_async(command_id, payload.get("request") or {})

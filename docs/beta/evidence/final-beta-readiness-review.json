@@ -1,0 +1,8 @@
+{
+  "reviewedAt": "2026-09-11",
+  "verdict": "PARTIAL",
+  "betaReadiness": "NOT YET",
+  "evidenceConsistency": {"workstationPassesAreScoped": true, "cleanMachinePassClaimed": false, "uninstallReinstallEvidencePresent": true, "dpiAccessibilityEvidencePresent": true, "performanceMemorySoakEvidencePresent": true, "dependencyLicenseEvidencePresent": true, "cleanWindowsEvidencePresent": true},
+  "openReleaseGates": ["Clean Windows 20-step lifecycle is NOT RUN.", "Complete DPI/accessibility matrix remains PARTIAL.", "Representative long-duration workflow/plugin soak remains NOT RUN.", "RustSec advisory scan is UNVERIFIED because cargo-audit is unavailable.", "Redistribution/license metadata obligations remain open."],
+  "validatedFiles": ["docs/beta/SPRINT_18_BETA_READINESS_REPORT.md", "docs/beta/evidence/clean-windows-lifecycle.json", "docs/beta/evidence/dependency-license-final-review.json", "docs/beta/evidence/installed-performance-memory-soak.json", "docs/beta/evidence/installed-dpi-accessibility.json", "docs/beta/evidence/installed-uninstall-reinstall.json"]
+}

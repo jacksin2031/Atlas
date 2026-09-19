@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "acceptance": "B-I / B-O installed Input safety and crash no-replay",
+  "artifact": {
+    "version": "0.18.0-alpha",
+    "scope": "installed workstation build",
+    "binarySha256": "5D6C469B146A9F4B6650CDFCF0BB47DE577DD9FD591DB830AA27D3D975F8BDB4",
+    "targetWindowTitle": "Atlas",
+    "targetWindowScreen": "left monitor (originX -2560 after restart)"
+  },
+  "defaultState": {
+    "result": "PASS",
+    "observed": "After the armed workflow crash and process restart, the toolbar showed Arm Input and the persisted execution showed interrupted.",
+    "projectRestored": true,
+    "executionId": "execution-3d298d5c-6346-448c-ae65-a387d70ebafe",
+    "persistedStatus": "interrupted",
+    "automaticReplay": false
+  },
+  "armedSafeTarget": {
+    "result": "PASS",
+    "permissionPromptAccepted": true,
+    "allowedForegroundWindowTitle": "Atlas",
+    "dangerousActionsAllowed": false,
+    "workflowId": "wf_sprint_18_safe_armed_move",
+    "safeAction": "mouse_move",
+    "safeTargetScreenPoint": {"x": -1800, "y": 300},
+    "executionId": "execution-5784df9b-6cd8-49dc-8861-7cbc881cfea5",
+    "status": "completed",
+    "nodes": "5/5",
+    "failedNodes": 0
+  },
+  "inAppEmergencyStop": {
+    "result": "PASS",
+    "executionId": "execution-325b98bd-3470-4d7e-9b03-c5cc8a4b3630",
+    "status": "cancelled",
+    "error": "Execution cancelled",
+    "completedNodes": 2,
+    "failedNodes": 1,
+    "postStopToolbar": "Arm Input"
+  },
+  "globalPauseBreak": {
+    "result": "PASS",
+    "key": "Pause/Break",
+    "watcher": "Windows RegisterHotKey(VK_PAUSE, MOD_NOREPEAT)",
+    "workflowId": "wf_sprint_18_pause_global",
+    "executionId": "execution-0e43d660-290b-45c8-b952-f8cd1e8bcbe8",
+    "status": "cancelled",
+    "completedNodes": 1,
+    "failedNodes": 1,
+    "automaticReplay": false,
+    "postStopToolbar": "Arm Input",
+    "observation": "With the installed workflow in running state, an OS-level Pause key event cancelled the active delay and returned the toolbar to Arm Input."
+  },
+  "armedCrashNoReplay": {
+    "result": "PASS",
+    "executionId": "execution-3d298d5c-6346-448c-ae65-a387d70ebafe",
+    "workflowId": "wf_sprint_18_safe_armed_move",
+    "crashedDesktopPid": 4348,
+    "crashPoint": "delay",
+    "persistedErrorCode": "INTERRUPTED",
+    "persistedStatus": "interrupted",
+    "restartProjectRestore": true,
+    "postRestartToolbar": "Arm Input",
+    "automaticReplay": false,
+    "evidencePath": "C:\\Users\\jacks\\AppData\\Local\\Atlas Sprint 18 acceptance\\測試 プロジェクト\\.atlas\\project-assets.v1.json"
+  },
+  "limitations": [
+    "The armed crash/no-replay record is the preceding installed acceptance; this rebuilt-binary retest targeted the newly added global watcher and confirmed the post-stop unarmed state.",
+    "This is developer-workstation evidence; clean-machine acceptance remains outstanding.",
+    "Windows AppContainer virtualization maps the logical LOCALAPPDATA acceptance path into the Codex package LocalCache."
+  ]
+}

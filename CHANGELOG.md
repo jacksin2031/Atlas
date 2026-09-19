@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](VERSIONING.md).
 
 ---
 
+## [0.18.0-alpha] — Unreleased
+
+- Add Windows NSIS candidate packaging with isolated, hash-pinned embedded Python hosts and WebView2 offline bootstrap resources.
+- Add first-run UX, executable version/runtime health, local metadata-only diagnostics and Studio error boundaries.
+- Harden v1 project/Knowledge version gates, backups, atomic writes, local paths and process lifetime/instance locks.
+- Add installed-product release checksums, dependency inventory and component acceptance scripts.
+- Beta readiness is not yet established. See [Sprint 18 report](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md); no tag or public release was created.
+
 ## [0.15.0-alpha] — 2026-08-30
 
 ### Sprint 15 Freeze

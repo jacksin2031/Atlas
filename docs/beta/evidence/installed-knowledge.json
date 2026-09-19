@@ -1,0 +1,10 @@
+{
+  "search": "PASS: one result",
+  "edit": "PASS: version 2",
+  "create": "PASS",
+  "scope": "Installed 0.18.0-alpha: create/search/edit on prior candidate; restart/search/delete/restart/absence on final Knowledge-fix artifact",
+  "delete": "PASS: installed UI deletion, second process restart, zero entries and search returned 0 of 0 candidates",
+  "id": "knowledge-609a85fa-c087-43b8-b511-055fffa41c77",
+  "restart": "PASS: automatic project restore, available health, one version-2 entry and matching search result",
+  "finalArtifactSha256": "9c7dc4882fc18a786ccd583969c0b87b9f9aa99a5799fc1d82eb16cc6ec51873"
+}

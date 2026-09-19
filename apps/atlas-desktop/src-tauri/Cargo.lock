@@ -276,10 +276,11 @@ dependencies = [
 
 [[package]]
 name = "atlas-desktop"
-version = "0.15.0-alpha"
+version = "0.18.0-alpha"
 dependencies = [
  "atlas-plugin",
  "base64 0.22.1",
+ "fs2",
  "image 0.25.10",
  "keyring",
  "rfd",

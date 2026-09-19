@@ -1,0 +1,1 @@
+{"version":1,"savedAt":1,"assets":{"workflow":{"nodes":[{"id":"node-1","pluginId":"acceptance.local"}],"edges":[]},"vision":{"frames":[]},"ai":{"prompts":["preserve me"]},"knowledge":{"projectId":"project-a"},"layout":{"workspace":"workflow"},"futureOptionalField":{"preserved":true}}}

@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import { useThemeStore, useProjectStore } from "../../stores";
+import { AppVersion } from "../AppVersion";
 import { useWorkspaceStore } from "../../workspace";
 import { useAIStudioStore } from "../../studio/ai";
 import { useKnowledgeStudioStore } from "../../studio/knowledge";
@@ -37,7 +38,7 @@ export const StatusBar: React.FC = () => {
       {unacknowledged > 0 && (
         <span title={`Unacknowledged: ${unacknowledged}`}>&#9888; {unacknowledged}</span>
       )}
-      <span>Atlas v0.15.0-alpha</span>
+      <AppVersion />
     </div>
   );
 };

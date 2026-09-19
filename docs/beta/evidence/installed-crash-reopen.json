@@ -1,0 +1,11 @@
+{
+  "runId": "execution-2653479f-d6c2-4b34-8319-847467c3e15c",
+  "observed": "2026-09-10",
+  "inputButton": "Arm Input",
+  "matchingRunCount": 1,
+  "uiStatus": "interrupted",
+  "scope": "Installed UI manual project reopen; no new execution after more than the configured 60-second delay; no desktop actions in test workflow. Backend armed-state check still separate.",
+  "statuses": [
+    "interrupted"
+  ]
+}

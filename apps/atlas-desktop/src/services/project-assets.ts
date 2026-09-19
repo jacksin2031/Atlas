@@ -24,6 +24,7 @@ export function assertCredentialFree(value: unknown, path = "assets"): void {
 
 export function interruptRecoverableRuns(runs: Record<string, WorkflowRun>): Record<string, WorkflowRun> {
   return Object.fromEntries(Object.entries(runs).map(([id, run]) => {
+    if (!run || typeof run !== "object" || !Array.isArray(run.errors) || typeof run.status !== "string") throw new Error(`Invalid restored execution: ${id}`);
     if (!RECOVERABLE.has(run.status)) return [id, run];
     return [id, { ...run, status: "interrupted" as WorkflowRunStatus, completedAt: Date.now(), errors: [...run.errors, {
       nodeId: run.currentNodeId ?? "", errorCode: "INTERRUPTED", message: "Execution was interrupted by a host or application restart.", timestamp: Date.now(),
@@ -59,14 +60,16 @@ const record = (value: unknown): Record<string, unknown> | null => value && type
 
 export function restoreProjectAssets(assets: Record<string, unknown>): void {
   assertCredentialFree(assets);
+  const execution = record(assets.execution);
+  if (execution?.runs !== undefined && !record(execution.runs)) throw new Error("Invalid restored execution runs");
+  const restoredRuns = execution ? interruptRecoverableRuns((record(execution.runs) ?? {}) as Record<string, WorkflowRun>) : {};
   const ai = record(assets.ai) as ReturnType<typeof useAIStudioStore.getState> | null;
   if (ai) useAIStudioStore.setState({ mode: ai.mode, sessions: ai.sessions, activeSessionId: ai.activeSessionId, selectedProviderId: ai.selectedProviderId, selectedModelId: ai.selectedModelId, systemPrompt: ai.systemPrompt, userInput: ai.userInput, messages: ai.messages, parameters: ai.parameters, contexts: sanitizeRestoredAIContexts(ai.contexts), prompt: ai.prompt, promptB: ai.promptB, running: false, streaming: false, startedAt: null, lastRequest: null, lastResponse: null, streamContent: "", error: null });
   const workflow = record(assets.workflow);
   if (workflow) useWorkflowStore.getState().loadFromDefinition(workflow as unknown as WorkflowDefinition);
-  const execution = record(assets.execution);
   if (execution) {
-    const runs = interruptRecoverableRuns((record(execution.runs) ?? {}) as Record<string, WorkflowRun>);
-    const active = typeof execution.activeRunId === "string" ? execution.activeRunId : null;
+    const runs = restoredRuns;
+    const active = typeof execution.activeRunId === "string" && Object.hasOwn(runs, execution.activeRunId) ? execution.activeRunId : null;
     const status: WorkflowRunStatus = active && runs[active] ? runs[active].status : "interrupted";
     useExecutionStore.setState({ runs, activeRunId: active, status, isRunning: false, isPaused: false, result: execution.result as ReturnType<typeof useExecutionStore.getState>["result"] });
   }
@@ -86,11 +89,31 @@ class ProjectAssetService {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private unsubscribers: Array<() => void> = [];
 
-  async open(projectPath: string): Promise<void> { this.stop(); this.projectPath = projectPath; const assets = await loadProjectAssets(projectPath); if (assets) restoreProjectAssets(assets); this.start(); if (!assets) await this.saveNow(); }
-  scheduleSave(): void { if (!this.projectPath) return; if (this.timer) clearTimeout(this.timer); this.timer = setTimeout(() => { this.timer = null; void this.saveNow(); }, 300); }
-  async saveNow(): Promise<void> { if (!this.projectPath) return; try { await saveProjectAssets(this.projectPath, collectProjectAssets()); } catch (error) { useProjectStore.getState().addNotification({ title: "Project persistence failed", message: error instanceof Error ? error.message : String(error), severity: "error", acknowledged: false }); } }
+  isOpen(projectPath: string): boolean { return this.projectPath === projectPath; }
+
+  async open(projectPath: string): Promise<void> {
+    if (this.projectPath) await this.saveNow();
+    this.stop(); this.projectPath = null;
+    const assets = await loadProjectAssets(projectPath);
+    // A newly selected project must never inherit another project's private data.
+    useAIStudioStore.setState(useAIStudioStore.getInitialState());
+    useVisionDocumentStore.setState(useVisionDocumentStore.getInitialState());
+    useVisionTimelineStore.setState(useVisionTimelineStore.getInitialState());
+    useWorkflowStore.setState(useWorkflowStore.getInitialState());
+    useExecutionStore.setState(useExecutionStore.getInitialState());
+    useWorkspaceStore.setState(useWorkspaceStore.getInitialState());
+    if (typeof localStorage !== "undefined") for (const id of ["workflow", "vision", "ai", "knowledge", "marketplace"] as WorkspaceId[]) localStorage.removeItem(layoutStorageKey(id));
+    if (assets) restoreProjectAssets(assets);
+    else {
+      await saveProjectAssets(projectPath, collectProjectAssets());
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("atlas:project-assets-restored"));
+    }
+    this.projectPath = projectPath; this.start();
+  }
+  scheduleSave(): void { if (!this.projectPath) return; if (this.timer) clearTimeout(this.timer); this.timer = setTimeout(() => { this.timer = null; void this.saveNow().catch(() => undefined); }, 300); }
+  async saveNow(): Promise<void> { if (!this.projectPath) return; try { await saveProjectAssets(this.projectPath, collectProjectAssets()); } catch (error) { useProjectStore.getState().addNotification({ title: "Project persistence failed", message: error instanceof Error ? error.message : String(error), severity: "error", acknowledged: false }); throw error; } }
   async close(): Promise<void> { await this.saveNow(); this.stop(); this.projectPath = null; }
-  stop(): void { if (this.timer) clearTimeout(this.timer); this.timer = null; this.unsubscribers.splice(0).forEach((unsubscribe) => unsubscribe()); }
+  stop(): void { if (this.timer) clearTimeout(this.timer); this.timer = null; this.projectPath = null; this.unsubscribers.splice(0).forEach((unsubscribe) => unsubscribe()); }
   private start(): void { const schedule = () => this.scheduleSave(); this.unsubscribers = [useAIStudioStore.subscribe(schedule), useWorkflowStore.subscribe(schedule), useExecutionStore.subscribe(schedule), useVisionDocumentStore.subscribe(schedule), useVisionTimelineStore.subscribe(schedule), useWorkspaceStore.subscribe(schedule)]; }
 }
 

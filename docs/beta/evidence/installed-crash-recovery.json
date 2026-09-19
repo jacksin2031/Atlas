@@ -1,0 +1,11 @@
+{
+  "desktopPid": 27748,
+  "desktopInputActions": 0,
+  "executionId": "execution-2653479f-d6c2-4b34-8319-847467c3e15c",
+  "observedBefore": "running",
+  "workflow": "wf_sprint18_safe_interruption",
+  "scenario": "Installed Desktop terminated during safe constant/delay workflow",
+  "persistedStatus": "interrupted",
+  "persistedErrorCode": "INTERRUPTED",
+  "observedAfter": "Read-only project file inspection on 2026-09-10; full UI/Input/no-replay acceptance still pending"
+}

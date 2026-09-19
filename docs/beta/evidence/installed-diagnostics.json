@@ -1,0 +1,101 @@
+{
+  "inclusionPolicy": "Version, OS family, architecture, build identity, runtime health and static diagnostic event codes only. No credentials, project paths/files, Knowledge, conversations, screenshots, provider responses or raw stderr. Local export only.",
+  "recentLogs": [
+    {
+      "code": "APPLICATION_STARTED",
+      "correlationId": null,
+      "severity": "INFO",
+      "subsystem": "desktop",
+      "timestamp": 1788955296305
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "workflow-desktop-27748-0",
+      "severity": "INFO",
+      "subsystem": "workflow",
+      "timestamp": 1788955296429
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "workflow-desktop-27748-1",
+      "severity": "INFO",
+      "subsystem": "workflow",
+      "timestamp": 1788955296443
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "desktop-27748-0",
+      "severity": "INFO",
+      "subsystem": "ai",
+      "timestamp": 1788955296705
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "workflow-desktop-27748-2",
+      "severity": "INFO",
+      "subsystem": "workflow",
+      "timestamp": 1788955354435
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "desktop-27748-1",
+      "severity": "INFO",
+      "subsystem": "ai",
+      "timestamp": 1788955354436
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "workflow-desktop-27748-3",
+      "severity": "INFO",
+      "subsystem": "workflow",
+      "timestamp": 1788955368320
+    },
+    {
+      "code": "REQUEST_STARTED",
+      "correlationId": "desktop-27748-2",
+      "severity": "INFO",
+      "subsystem": "ai",
+      "timestamp": 1788955368321
+    }
+  ],
+  "schemaVersion": 1,
+  "system": {
+    "architecture": "x86_64",
+    "buildType": "release-alpha",
+    "commit": "9fa08d477f26b3c9ea4ed2f0f48858a2406ba66e",
+    "platform": "windows",
+    "runtimes": [
+      {
+        "detail": "Host responsiveness; Input is never armed by this check.",
+        "name": "Workflow Runtime",
+        "status": "available"
+      },
+      {
+        "detail": "Native display enumeration; capture requires a separate action.",
+        "name": "Vision Runtime",
+        "status": "available"
+      },
+      {
+        "detail": "OpenAI credential not configured; live inference remains an external condition.",
+        "name": "AI Runtime",
+        "status": "available"
+      },
+      {
+        "detail": "Hosted with Workflow; project storage is checked when opened.",
+        "name": "Knowledge Runtime",
+        "status": "available"
+      },
+      {
+        "detail": "Local Development Registry; development trust only.",
+        "name": "Plugin Runtime",
+        "status": "available"
+      },
+      {
+        "detail": "Application data write probe.",
+        "name": "Storage",
+        "status": "available"
+      }
+    ],
+    "version": "0.18.0-alpha"
+  }
+}

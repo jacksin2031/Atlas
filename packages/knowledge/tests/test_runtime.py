@@ -170,3 +170,44 @@ def test_status_reports_real_storage_and_lexical_index(runtime, scope):
     assert status["status"] == "available"
     assert status["index"] == {"method": "lexical", "state": "ready", "document_count": 1}
     assert status["storage"]["location"].startswith("project://")
+
+@pytest.mark.parametrize("version", [2, True, "1"])
+def test_incompatible_primary_never_recovers_over_source(runtime, scope, version):
+    from pathlib import Path
+    from atlas_knowledge.storage import JsonProjectKnowledgeStorage
+    created = runtime.create(scope, entry())
+    runtime.update(scope, created.id, {"content": "second"})
+    path = Path(scope.project_path) / ".atlas" / "knowledge.v1.json"
+    value = json.loads(path.read_text())
+    value["schemaVersion"] = version
+    path.write_text(json.dumps(value))
+    original = path.read_bytes()
+    with pytest.raises(KnowledgeStorageError):
+        JsonProjectKnowledgeStorage().load(scope)
+    with pytest.raises(KnowledgeStorageError):
+        JsonProjectKnowledgeStorage().save(scope, [])
+    assert path.read_bytes() == original
+
+
+def test_malformed_entry_is_not_silently_discarded(scope):
+    from atlas_knowledge.storage import JsonProjectKnowledgeStorage
+    storage = JsonProjectKnowledgeStorage()
+    primary, _ = storage._paths(scope)
+    primary.write_text(json.dumps({"schemaVersion": 1, "projectId": scope.project_id, "entries": [42]}))
+    with pytest.raises(KnowledgeStorageError):
+        storage.load(scope)
+
+
+def test_failed_replace_preserves_original(runtime, scope, monkeypatch):
+    from pathlib import Path
+    import atlas_knowledge.storage as storage_module
+    created = runtime.create(scope, entry())
+    path = Path(scope.project_path) / ".atlas" / "knowledge.v1.json"
+    original = path.read_bytes()
+    def fail_replace(source, destination):
+        raise OSError("simulated commit failure")
+    monkeypatch.setattr(storage_module.os, "replace", fail_replace)
+    with pytest.raises(KnowledgeStorageError):
+        runtime.update(scope, created.id, {"content": "lost"})
+    assert path.read_bytes() == original
+    assert not list(path.parent.glob("*.tmp"))

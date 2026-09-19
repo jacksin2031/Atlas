@@ -1,0 +1,23 @@
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `pnpm run build`
+$ tsc -b && vite build
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 393 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                          0.62 kB │ gzip:   0.34 kB
+dist/assets/index-DJq1rH9_.css         119.64 kB │ gzip:  14.71 kB
+dist/assets/flow-engine-CzAzJSR7.js    178.18 kB │ gzip:  58.36 kB
+dist/assets/index-DdtNSdP7.js          357.75 kB │ gzip: 100.23 kB
+dist/assets/layout-engine-ZYiF_Rdw.js  366.11 kB │ gzip: 105.79 kB
+✓ built in 1.92s
+   Compiling atlas-desktop v0.18.0-alpha (F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri)
+    Finished `release` profile [optimized] target(s) in 1m 12s
+       Built application at: F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri\target\x86_64-pc-windows-msvc\release\atlas-desktop.exe
+        Info Patching F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri\target\x86_64-pc-windows-msvc\release\atlas-desktop.exe with bundle type information: nsis
+        Info Target: x64
+     Running makensis to produce F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri\target\x86_64-pc-windows-msvc\release\bundle\nsis\Atlas_0.18.0-alpha_x64-setup.exe
+    Finished 1 bundle at:
+        F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri\target\x86_64-pc-windows-msvc\release\bundle\nsis\Atlas_0.18.0-alpha_x64-setup.exe
+

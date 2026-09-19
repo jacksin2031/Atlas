@@ -1,0 +1,37 @@
+{
+  "scope": "installed workstation",
+  "installerPath": "apps/atlas-desktop/src-tauri/target/release/bundle/nsis/Atlas_0.18.0-alpha_x64-setup.exe",
+  "artifactSha256": "F99BCD6C72B634F364FCC58A98B5FD819D98DA5AD56CD8EC6FE87E671871D941",
+  "artifactBytes": 227702216,
+  "installedBinarySha256": "5D6C469B146A9F4B6650CDFCF0BB47DE577DD9FD591DB830AA27D3D975F8BDB4",
+  "applicationDirectory": "C:\\Users\\jacks\\AppData\\Local\\Atlas Sprint 18 acceptance\\Installed Atlas 測試 日本語",
+  "projectDirectory": "C:\\Users\\jacks\\AppData\\Local\\Atlas Sprint 18 acceptance\\測試 プロジェクト",
+  "uninstall": {
+    "result": "PASS",
+    "deleteApplicationDataCheckbox": false,
+    "applicationDirectoryExistsAfter": false,
+    "executableExistsAfter": false,
+    "uninstallerExistsAfter": false,
+    "processCountAfter": 0,
+    "startMenuShortcutExistsAfter": false,
+    "userDataRetained": true
+  },
+  "reinstall": {
+    "result": "PASS",
+    "installerUiReported": "Setup was completed successfully.",
+    "applicationDirectoryExistsAfter": true,
+    "executableExistsAfter": true,
+    "uninstallerExistsAfter": true,
+    "processCountAfter": 1,
+    "startMenuShortcutExistsAfter": true,
+    "desktopShortcutExistsAfter": false,
+    "projectRetained": true,
+    "workflowId": "wf_sprint_18_marketplace_echo",
+    "activeWorkspace": "marketplace",
+    "reopenedInstalledApp": true
+  },
+  "limitations": [
+    "Evidence is from the installed developer workstation.",
+    "Clean Windows machine acceptance remains outstanding."
+  ]
+}

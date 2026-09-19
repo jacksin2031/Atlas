@@ -1,4 +1,7 @@
+mod diagnostics;
 mod marketplace;
+mod production;
+mod project_persistence;
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use image::{codecs::png::PngEncoder, ColorType, ImageEncoder, RgbaImage};
 use screenshots::Screen;
@@ -12,8 +15,16 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager, State};
+
+#[cfg(windows)]
+use windows::Win32::UI::Input::KeyboardAndMouse::{
+    RegisterHotKey, UnregisterHotKey, MOD_NOREPEAT, VK_PAUSE,
+};
+#[cfg(windows)]
+use windows::Win32::UI::WindowsAndMessaging::{GetMessageW, MSG, WM_HOTKEY};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -94,7 +105,7 @@ fn decode_image_data_url_bytes(url: &str) -> Result<Vec<u8>, String> {
 
 fn parse_rgb(value: &str) -> Result<[u8; 3], String> {
     let hex = value.trim().trim_start_matches('#');
-    if hex.len() != 6 {
+    if hex.len() != 6 || !hex.is_ascii() {
         return Err("targetColor must use #RRGGBB format.".to_owned());
     }
     let channel = |start| {
@@ -376,7 +387,7 @@ fn vision_resolve_target(payload: &Value) -> HostResult {
     }
 }
 
-const PROJECT_ASSET_VERSION: u64 = 1;
+const PROJECT_ASSET_VERSION: u64 = project_persistence::VERSION;
 const PROJECT_SESSION_VERSION: u64 = 1;
 
 fn project_asset_paths(project_path: &str) -> Result<(PathBuf, PathBuf), String> {
@@ -386,7 +397,9 @@ fn project_asset_paths(project_path: &str) -> Result<(PathBuf, PathBuf), String>
             "Project asset persistence requires an existing absolute project directory.".to_owned(),
         );
     }
+    project_persistence::check_path(&root)?;
     let directory = root.join(".atlas");
+    project_persistence::check_path(&directory)?;
     Ok((
         directory.join("project-assets.v1.json"),
         directory.join("project-assets.v1.backup.json"),
@@ -409,21 +422,23 @@ fn write_project_session(path: &Path, project_path: &str) -> Result<(), String> 
     let directory = path
         .parent()
         .ok_or_else(|| "Project session directory is invalid.".to_owned())?;
+    project_persistence::check_path(path)?;
     fs::create_dir_all(directory)
         .map_err(|error| format!("Unable to create project session directory: {error}"))?;
-    let temporary = path.with_extension("tmp");
+    let _lock = project_persistence::lock(path)?;
+    if path.exists() {
+        read_project_session(path)?;
+    }
     let bytes = serde_json::to_vec(&json!({
         "version": PROJECT_SESSION_VERSION,
         "projectPath": project_path,
     }))
     .map_err(|error| format!("Unable to encode project session: {error}"))?;
-    fs::write(&temporary, bytes)
-        .map_err(|error| format!("Unable to write project session: {error}"))?;
-    fs::rename(&temporary, path)
-        .map_err(|error| format!("Unable to commit project session: {error}"))
+    project_persistence::atomic_write(path, &bytes)
 }
 
 fn read_project_session(path: &Path) -> Result<Option<String>, String> {
+    project_persistence::check_path(path)?;
     if !path.is_file() {
         return Ok(None);
     }
@@ -465,7 +480,9 @@ fn project_session_restore(app: AppHandle) -> Result<Option<String>, String> {
 #[tauri::command]
 fn project_session_clear(app: AppHandle) -> Result<(), String> {
     let path = project_session_path(&app)?;
+    project_persistence::check_path(&path)?;
     if path.is_file() {
+        let _lock = project_persistence::lock(&path)?;
         fs::remove_file(path)
             .map_err(|error| format!("Unable to clear project session: {error}"))?;
     }
@@ -520,72 +537,25 @@ fn reject_credentials(value: &Value, path: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn read_project_asset_file(path: &Path) -> Result<Value, String> {
-    let raw = fs::read_to_string(path)
-        .map_err(|error| format!("Unable to read project assets: {error}"))?;
-    let document: Value = serde_json::from_str(&raw)
-        .map_err(|error| format!("Unable to parse project assets: {error}"))?;
-    if document.get("version").and_then(Value::as_u64) != Some(PROJECT_ASSET_VERSION) {
-        return Err("Project asset version is not supported.".to_owned());
-    }
-    Ok(document.get("assets").cloned().unwrap_or_else(|| json!({})))
-}
-
 #[tauri::command(rename_all = "camelCase")]
 fn project_assets_load(project_path: String) -> HostResult {
     let (path, backup) = project_asset_paths(&project_path)?;
-    if path.is_file() {
-        match read_project_asset_file(&path) {
-            Ok(value) => return Ok(value),
-            Err(primary_error) if backup.is_file() => {
-                return read_project_asset_file(&backup).map_err(|backup_error| {
-                    format!("{primary_error} Recovery backup also failed: {backup_error}")
-                });
-            }
-            Err(error) => return Err(error),
-        }
-    }
-    if backup.is_file() {
-        return read_project_asset_file(&backup);
-    }
-    Ok(Value::Null)
+    project_persistence::load(&path, &backup)
 }
 
 #[tauri::command(rename_all = "camelCase")]
 fn project_assets_save(project_path: String, assets: Value) -> Result<(), String> {
     reject_credentials(&assets, "assets")?;
     let (path, backup) = project_asset_paths(&project_path)?;
-    let directory = path
-        .parent()
-        .ok_or_else(|| "Project asset directory is invalid.".to_owned())?;
-    fs::create_dir_all(directory)
-        .map_err(|error| format!("Unable to create project asset directory: {error}"))?;
-    let temporary = directory.join("project-assets.v1.tmp.json");
     let saved_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|error| error.to_string())?
         .as_millis();
-    let bytes = serde_json::to_vec_pretty(
-        &json!({"version": PROJECT_ASSET_VERSION, "savedAt": saved_at, "assets": assets}),
+    project_persistence::save(
+        &path,
+        &backup,
+        json!({"version": PROJECT_ASSET_VERSION, "savedAt": saved_at, "assets": assets}),
     )
-    .map_err(|error| format!("Unable to encode project assets: {error}"))?;
-    fs::write(&temporary, bytes)
-        .map_err(|error| format!("Unable to write project assets: {error}"))?;
-    if path.is_file() {
-        if backup.is_file() {
-            fs::remove_file(&backup)
-                .map_err(|error| format!("Unable to replace project recovery backup: {error}"))?;
-        }
-        fs::rename(&path, &backup)
-            .map_err(|error| format!("Unable to create project recovery backup: {error}"))?;
-    }
-    if let Err(error) = fs::rename(&temporary, &path) {
-        if backup.is_file() && !path.exists() {
-            let _ = fs::rename(&backup, &path);
-        }
-        return Err(format!("Unable to commit project assets: {error}"));
-    }
-    Ok(())
 }
 
 type HostResult = Result<Value, String>;
@@ -629,6 +599,8 @@ fn load_provider_credential(provider_id: &str) -> Result<Option<String>, String>
 
 struct AIHostProcess {
     child: Child,
+    #[cfg(windows)]
+    _job: production::RuntimeJob,
     stdin: Arc<Mutex<ChildStdin>>,
     pending: PendingRequests,
 }
@@ -662,6 +634,7 @@ impl AIHostManager {
             std::process::id(),
             self.next_id.fetch_add(1, Ordering::Relaxed)
         );
+        diagnostics::request_started("ai", &request_id);
         let (sender, receiver) = mpsc::sync_channel(1);
 
         {
@@ -721,6 +694,7 @@ impl AIHostManager {
     }
 }
 
+#[cfg(debug_assertions)]
 fn find_repo_root() -> Result<PathBuf, String> {
     if let Some(root) = env::var_os("ATLAS_ROOT").map(PathBuf::from) {
         if root.join("packages/ai/src/atlas_ai/host.py").is_file() {
@@ -743,6 +717,7 @@ fn find_repo_root() -> Result<PathBuf, String> {
     )
 }
 
+#[cfg(debug_assertions)]
 fn workflow_python_path(root: &Path) -> Result<std::ffi::OsString, String> {
     let mut paths = vec![
         root.join("src"),
@@ -757,6 +732,7 @@ fn workflow_python_path(root: &Path) -> Result<std::ffi::OsString, String> {
         .map_err(|error| format!("Unable to configure Workflow Python module path: {error}"))
 }
 
+#[cfg(debug_assertions)]
 fn python_path(root: &Path) -> Result<std::ffi::OsString, String> {
     let mut paths = vec![root.join("packages/ai/src")];
     if let Some(existing) = env::var_os("PYTHONPATH") {
@@ -767,15 +743,8 @@ fn python_path(root: &Path) -> Result<std::ffi::OsString, String> {
 }
 
 fn start_ai_host(app: AppHandle) -> Result<AIHostProcess, String> {
-    let root = find_repo_root()?;
-    let python = env::var_os("ATLAS_AI_PYTHON").unwrap_or_else(|| "python".into());
-    let mut command = Command::new(python);
+    let mut command = production::host_command(&app, "atlas_ai.host", false)?;
     command
-        .arg("-u")
-        .arg("-m")
-        .arg("atlas_ai.host")
-        .current_dir(&root)
-        .env("PYTHONPATH", python_path(&root)?)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
@@ -792,6 +761,8 @@ fn start_ai_host(app: AppHandle) -> Result<AIHostProcess, String> {
     let mut child = command
         .spawn()
         .map_err(|error| format!("Unable to start Python AI Runtime host: {error}"))?;
+    #[cfg(windows)]
+    let job = production::RuntimeJob::attach(&mut child)?;
     let stdin = child
         .stdin
         .take()
@@ -859,12 +830,15 @@ fn start_ai_host(app: AppHandle) -> Result<AIHostProcess, String> {
 
     std::thread::spawn(move || {
         for line in BufReader::new(stderr).lines().map_while(Result::ok) {
-            eprintln!("[AI Runtime Host] {line}");
+            let _ = line;
+            diagnostics::record("ai", "WARN", "HOST_STDERR_REDACTED");
         }
     });
 
     Ok(AIHostProcess {
         child,
+        #[cfg(windows)]
+        _job: job,
         stdin: Arc::new(Mutex::new(stdin)),
         pending,
     })
@@ -1036,6 +1010,8 @@ fn ai_credential_delete(
 
 struct WorkflowHostProcess {
     child: Child,
+    #[cfg(windows)]
+    _job: production::RuntimeJob,
     stdin: Arc<Mutex<ChildStdin>>,
     pending: PendingRequests,
 }
@@ -1060,6 +1036,7 @@ impl WorkflowHostManager {
             std::process::id(),
             self.next_id.fetch_add(1, Ordering::Relaxed)
         );
+        diagnostics::request_started("workflow", &request_id);
         let (sender, receiver) = mpsc::sync_channel(1);
         {
             let mut guard = self
@@ -1088,7 +1065,13 @@ impl WorkflowHostManager {
                 return Err(error);
             }
         }
-        match receiver.recv_timeout(Duration::from_secs(180)) {
+        match receiver.recv_timeout(Duration::from_secs(
+            if command == "workflow_emergency_stop" {
+                3
+            } else {
+                180
+            },
+        )) {
             Ok(result) => result,
             Err(_) => {
                 if let Ok(mut guard) = self.process.lock() {
@@ -1102,6 +1085,48 @@ impl WorkflowHostManager {
             }
         }
     }
+}
+
+#[cfg(windows)]
+fn install_global_pause_break_watcher(app: AppHandle) {
+    const HOTKEY_ID: i32 = 0x4154;
+    let _ = thread::Builder::new()
+        .name("atlas-global-pause-break".to_owned())
+        .spawn(move || unsafe {
+            if RegisterHotKey(None, HOTKEY_ID, MOD_NOREPEAT, VK_PAUSE.0 as u32).is_err() {
+                diagnostics::record(
+                    "input",
+                    "WARN",
+                    "GLOBAL_PAUSE_BREAK_REGISTRATION_FAILED",
+                );
+                return;
+            }
+            diagnostics::record("input", "INFO", "GLOBAL_PAUSE_BREAK_REGISTERED");
+
+            let mut message = MSG::default();
+            loop {
+                let result = GetMessageW(&mut message, None, 0, 0);
+                if result.0 <= 0 {
+                    break;
+                }
+                if message.message == WM_HOTKEY && message.wParam.0 as i32 == HOTKEY_ID {
+                    let stopped = app
+                        .state::<Arc<WorkflowHostManager>>()
+                        .request(app.clone(), "workflow_emergency_stop", json!({}))
+                        .is_ok();
+                    diagnostics::record(
+                        "input",
+                        if stopped { "INFO" } else { "WARN" },
+                        if stopped {
+                            "GLOBAL_PAUSE_BREAK_EMERGENCY_STOP"
+                        } else {
+                            "GLOBAL_PAUSE_BREAK_STOP_FAILED"
+                        },
+                    );
+                }
+            }
+            let _ = UnregisterHotKey(None, HOTKEY_ID);
+        });
 }
 
 fn write_host_message(
@@ -1121,20 +1146,8 @@ fn write_host_message(
 }
 
 fn start_workflow_host(app: AppHandle) -> Result<WorkflowHostProcess, String> {
-    let root = find_repo_root()?;
-    if !root.join("src/atlas_workflow/host.py").is_file() {
-        return Err("Unable to locate src/atlas_workflow/host.py.".to_owned());
-    }
-    let python = env::var_os("ATLAS_WORKFLOW_PYTHON")
-        .or_else(|| env::var_os("ATLAS_AI_PYTHON"))
-        .unwrap_or_else(|| "python".into());
-    let mut command = Command::new(python);
+    let mut command = production::host_command(&app, "atlas_workflow.host", true)?;
     command
-        .arg("-u")
-        .arg("-m")
-        .arg("atlas_workflow.host")
-        .current_dir(&root)
-        .env("PYTHONPATH", workflow_python_path(&root)?)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
@@ -1146,6 +1159,8 @@ fn start_workflow_host(app: AppHandle) -> Result<WorkflowHostProcess, String> {
     let mut child = command
         .spawn()
         .map_err(|error| format!("Unable to start Python Workflow Runtime host: {error}"))?;
+    #[cfg(windows)]
+    let job = production::RuntimeJob::attach(&mut child)?;
     let stdin = Arc::new(Mutex::new(child.stdin.take().ok_or_else(|| {
         "Python Workflow Runtime host has no stdin pipe.".to_owned()
     })?));
@@ -1224,7 +1239,9 @@ fn start_workflow_host(app: AppHandle) -> Result<WorkflowHostProcess, String> {
                                     worker_app.state::<Arc<AIHostManager>>().inner().clone();
                                 manager.request(worker_app.clone(), command, payload)
                             }
-                            ("plugin", "execute") => worker_app.state::<marketplace::MarketplaceHost>().execute(&worker_app, &payload),
+                            ("plugin", "execute") => worker_app
+                                .state::<marketplace::MarketplaceHost>()
+                                .execute(&worker_app, &payload),
                             ("vision", "vision_capture_frame") => {
                                 vision_capture_frame().and_then(|frame| {
                                     serde_json::to_value(frame).map_err(|error| error.to_string())
@@ -1259,11 +1276,14 @@ fn start_workflow_host(app: AppHandle) -> Result<WorkflowHostProcess, String> {
     });
     std::thread::spawn(move || {
         for line in BufReader::new(stderr).lines().map_while(Result::ok) {
-            eprintln!("[Workflow Runtime Host] {line}");
+            let _ = line;
+            diagnostics::record("workflow", "WARN", "HOST_STDERR_REDACTED");
         }
     });
     Ok(WorkflowHostProcess {
         child,
+        #[cfg(windows)]
+        _job: job,
         stdin,
         pending,
     })
@@ -1276,13 +1296,16 @@ async fn request_workflow_host(
     payload: Value,
 ) -> HostResult {
     tauri::async_runtime::spawn_blocking(move || {
-        if matches!(command, "workflow_start" | "workflow_validate" | "workflow_restart") {
+        if matches!(
+            command,
+            "workflow_start" | "workflow_validate" | "workflow_restart"
+        ) {
             marketplace::sync(&app, &manager)?;
         }
         manager.request(app, command, payload)
     })
-        .await
-        .map_err(|error| format!("Workflow Runtime host task failed: {error}"))?
+    .await
+    .map_err(|error| format!("Workflow Runtime host task failed: {error}"))?
 }
 
 #[tauri::command(rename_all = "camelCase")]
@@ -1635,11 +1658,28 @@ async fn knowledge_events(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            let guard = production::instance_lock(app.handle()).map_err(|error| {
+                rfd::MessageDialog::new()
+                    .set_title("Atlas could not start")
+                    .set_description(&error)
+                    .set_level(rfd::MessageLevel::Error)
+                    .show();
+                std::io::Error::other(error)
+            })?;
+            app.manage(guard);
+            diagnostics::initialize(app.handle());
+            #[cfg(windows)]
+            install_global_pause_break_watcher(app.handle().clone());
+            Ok(())
+        })
         .manage(Arc::new(AIHostManager::default()))
         .manage(Arc::new(WorkflowHostManager::default()))
         .manage(ActiveKnowledgeScope::default())
         .manage(marketplace::MarketplaceHost::default())
         .invoke_handler(tauri::generate_handler![
+            diagnostics::beta_system_info,
+            diagnostics::export_diagnostics,
             vision_capture_frame,
             ai_discover,
             ai_infer,
@@ -1680,13 +1720,46 @@ pub fn run() {
             project_assets_load,
             project_assets_save
         ])
-        .run(tauri::generate_context!())
-        .expect("failed to run Atlas desktop application");
+        .build(tauri::generate_context!())
+        .expect("failed to initialize Atlas desktop application")
+        .run(|app, event| {
+            if matches!(event, tauri::RunEvent::Exit) {
+                let _ = app.state::<Arc<AIHostManager>>().restart();
+                let running = app
+                    .state::<Arc<WorkflowHostManager>>()
+                    .process
+                    .lock()
+                    .map(|p| p.is_some())
+                    .unwrap_or(false);
+                if running {
+                    let _ = app.state::<Arc<WorkflowHostManager>>().request(
+                        app.clone(),
+                        "workflow_emergency_stop",
+                        json!({}),
+                    );
+                }
+                if let Ok(mut host) = app.state::<Arc<WorkflowHostManager>>().process.lock() {
+                    *host = None;
+                }
+                diagnostics::record("desktop", "INFO", "APPLICATION_STOPPED");
+            }
+        });
 }
 
 #[cfg(test)]
 mod hardening_tests {
     use super::*;
+
+    #[test]
+    fn non_ascii_color_and_unsafe_storage_paths_are_controlled_errors() {
+        assert!(parse_rgb("測試").is_err());
+        assert!(project_persistence::check_path(Path::new("C:/Atlas/../escape")).is_err());
+        #[cfg(windows)]
+        {
+            assert!(project_persistence::check_path(Path::new(r"\\server\share\project")).is_err());
+            assert!(project_persistence::check_path(Path::new(r"\\.\PhysicalDrive0")).is_err());
+        }
+    }
 
     #[test]
     fn project_assets_reject_credentials_without_masking_usage_metrics() {

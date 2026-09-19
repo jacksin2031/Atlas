@@ -1,0 +1,33 @@
+{
+  "scope": "installed workstation",
+  "result": "PARTIAL",
+  "targetScreen": "left physical monitor (user-defined monitor 2)",
+  "window": {
+    "title": "Atlas",
+    "screenshotOriginX": -2453,
+    "screenshotOriginY": 0,
+    "screenshotWidth": 1402,
+    "screenshotHeight": 775
+  },
+  "accessibility": {
+    "fileMenuOpened": true,
+    "editMenuOpened": true,
+    "escapeDismissedMenu": true,
+    "tabFocusVisible": true,
+    "screenReaderAcceptance": "NOT RUN",
+    "completeKeyboardOnlyStudioAcceptance": "NOT RUN",
+    "themeContrastAcceptance": "NOT RUN"
+  },
+  "dpiDisplay": {
+    "windowDisplayedOnTargetMonitor": true,
+    "mixedDpiMovement": "PARTIAL",
+    "clippingObserved": true,
+    "nativeUnparentedDialogCrossDisplayObserved": true,
+    "fullMixedDpiMatrix": "NOT RUN"
+  },
+  "limitations": [
+    "Evidence is from the installed developer workstation.",
+    "No clean Windows or alternate scaling profile was available.",
+    "The observed clipping and dialog placement gaps prevent a PASS classification."
+  ]
+}

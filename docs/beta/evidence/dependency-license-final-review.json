@@ -1,0 +1,10 @@
+{
+  "scope": "Sprint 18 final dependency/license review",
+  "result": "PARTIAL",
+  "verifiedAt": "2026-09-11",
+  "frontendAudit": {"command": "pnpm audit --json", "advisories": 0, "totalDependencies": 289, "status": "PASS"},
+  "frontendProductionAudit": {"command": "pnpm audit --prod --json", "advisories": 0, "totalDependencies": 48, "status": "PASS"},
+  "rustAdvisoryAudit": {"command": "cargo audit --version", "status": "UNVERIFIED", "reason": "cargo-audit is not installed on this workstation"},
+  "licenseInventory": {"frontendEntries": 226, "rustWorkspaceEntries": 82, "rustDesktopEntries": 334, "noticeFilesCopied": 626, "missingMetadataOrTexts": 18, "unresolvedOptionalFrontendDependencies": 2, "displayInfoLicenseInspectedAs": "Apache-2.0", "status": "REVIEW REQUIRED"},
+  "limitations": ["Inventory metadata does not by itself establish shipped-code linkage or legal redistribution clearance.", "RustSec advisory scan and final redistribution obligations remain open.", "This is developer-workstation evidence, not clean-machine acceptance."]
+}

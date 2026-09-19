@@ -1,0 +1,15 @@
+{
+  "scope": "Sprint 18 clean Windows lifecycle",
+  "result": "NOT RUN",
+  "verifiedAt": "2026-09-11",
+  "requiredLifecycleSteps": 20,
+  "environmentCheck": {
+    "windowsSandbox": "UNAVAILABLE: optional-feature query requires elevation and no sandbox session was available",
+    "hyperV": "UNAVAILABLE: optional-feature query requires elevation and no VM session was available",
+    "virtualizationTools": [],
+    "existingVm": "NOT IDENTIFIED"
+  },
+  "workstationEvidenceNotSubstitute": true,
+  "reason": "Only the existing developer workstation was available; a clean Windows VM or separate machine could not be provisioned in this session.",
+  "nextAction": "Provision a clean Windows VM or separate machine, copy the final installer by SHA-256, and run the full 20-step lifecycle including Marketplace and uninstall/reinstall."
+}

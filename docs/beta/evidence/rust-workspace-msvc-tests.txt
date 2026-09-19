@@ -1,0 +1,572 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling cfg-if v1.0.4
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling autocfg v1.5.1
+   Compiling memchr v2.8.3
+   Compiling zmij v1.0.23
+   Compiling thiserror v1.0.69
+   Compiling serde_json v1.0.151
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling once_cell v1.21.4
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling semver v1.0.28
+   Compiling crc32fast v1.5.1
+   Compiling cpufeatures v0.2.17
+   Compiling getrandom v0.2.17
+   Compiling futures-sink v0.3.34
+   Compiling adler2 v2.0.1
+   Compiling tracing-core v0.1.36
+   Compiling rustc_version v0.4.1
+   Compiling winapi v0.3.9
+   Compiling futures-core v0.3.34
+   Compiling simd-adler32 v0.3.10
+   Compiling futures-io v0.3.34
+   Compiling miniz_oxide v0.9.1
+   Compiling futures-channel v0.3.34
+   Compiling subtle v2.6.1
+   Compiling generic-array v0.14.7
+   Compiling zeroize v1.9.0
+   Compiling futures-task v0.3.34
+   Compiling getrandom v0.4.3
+   Compiling curve25519-dalek v4.1.3
+   Compiling slab v0.4.12
+   Compiling signature v2.2.0
+   Compiling num-traits v0.2.19
+   Compiling windows-link v0.2.1
+   Compiling byteorder v1.5.0
+   Compiling fastrand v2.5.0
+   Compiling windows-targets v0.52.6
+   Compiling windows-sys v0.61.2
+   Compiling base64 v0.22.1
+   Compiling flate2 v1.1.10
+   Compiling ed25519 v2.2.3
+   Compiling zip v0.6.6
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling syn v3.0.4
+   Compiling syn v2.0.119
+   Compiling digest v0.10.7
+   Compiling tempfile v3.27.0
+   Compiling sha2 v0.10.9
+   Compiling fs2 v0.4.3
+   Compiling serde_derive v1.0.229
+   Compiling futures-macro v0.3.34
+   Compiling async-trait v0.1.92
+   Compiling thiserror-impl v1.0.69
+   Compiling tracing-attributes v0.1.31
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling futures-util v0.3.34
+   Compiling tracing v0.1.44
+   Compiling ed25519-dalek v2.2.0
+   Compiling chrono v0.4.38
+   Compiling uuid v1.10.0
+   Compiling atlas-contracts v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\contracts)
+   Compiling futures-executor v0.3.34
+   Compiling futures v0.3.34
+   Compiling atlas-common v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\common)
+   Compiling atlas-runtime v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\runtime)
+   Compiling atlas-storage v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\storage)
+   Compiling atlas-plugin v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\plugin)
+   Compiling atlas-ipc v0.15.0-alpha (F:\資料夾\Desktop\Atlas\packages\ipc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.08s
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_common-25dc0943ccf26e84.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_contracts-6b01181cac5ea0db.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\event_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\event_tests-b308a47e5b0f50f9.exe)
+
+running 5 tests
+test test_channel_new ... ok
+test test_event_bus_stats_defaults ... ok
+test test_event_priority_override ... ok
+test test_subscription_handle ... ok
+test test_event_creation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\scheduler_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\scheduler_tests-f2679384b08bebc2.exe)
+
+running 3 tests
+test test_queue_depth_defaults ... ok
+test test_worker_pool_defaults ... ok
+test test_scheduler_errors_display ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\service_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\service_tests-e80d367af79d61ed.exe)
+
+running 2 tests
+test test_health_status_is_healthy ... ok
+test test_service_errors_display ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\state_machine_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\state_machine_tests-efae1c6599a946d3.exe)
+
+running 6 tests
+test test_illegal_transitions ... ok
+test test_terminal_states ... ok
+test test_initial_state_is_created ... ok
+test test_legal_transitions ... ok
+test test_display ... ok
+test test_transition_count_matches_legal_transitions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_ipc-40da627c9928a10a.exe)
+
+running 100 tests
+test capability::matcher::tests::test_mismatched_names ... ok
+test capability::version::tests::test_version_compatible ... ok
+test capability::version::tests::test_version_gte ... ok
+test capability::matcher::tests::test_major_version_mismatch ... ok
+test capability::resolver::tests::test_missing_required ... ok
+test capability::resolver::tests::test_resolve_required ... ok
+test channel::registry::tests::test_close_requires_owner ... ok
+test channel::registry::tests::test_cleanup_closed ... ok
+test channel::registry::tests::test_create_and_get ... ok
+test channel::registry::tests::test_duplicate_create_fails ... ok
+test channel::registry::tests::test_participant_management ... ok
+test channel::registry::tests::test_pause_and_resume ... ok
+test command::dispatcher::tests::test_dispatch_no_handler ... ok
+test command::dispatcher::tests::test_dispatch_success ... ok
+test eventbus::bridge::tests::test_publish_event ... ok
+test endpoint::registry::tests::test_discover_by_capability ... ok
+test endpoint::registry::tests::test_register_and_lookup ... ok
+test capability::version::tests::test_version_parse ... ok
+test capability::matcher::tests::test_match_capabilities ... ok
+test endpoint::registry::tests::test_deregister ... ok
+test eventbus::bridge::tests::test_subscribe_and_deliver ... ok
+test eventbus::subscriber::tests::test_subscribe_and_deliver ... ok
+test eventbus::subscriber::tests::test_unsubscribe ... ok
+test message::payload::tests::test_schema_version ... ok
+test message::payload::tests::test_schema_version_empty ... ok
+test metrics::service::tests::test_record_metrics ... ok
+test reliability::dlq_manager::tests::test_add_and_remove ... ok
+test reliability::dlq_manager::tests::test_capacity_limit ... ok
+test reliability::dlq_manager::tests::test_stats ... ok
+test reliability::retry::tests::test_exponential_backoff ... ok
+test reliability::retry::tests::test_max_attempts ... ok
+test reliability::retry::tests::test_fixed_backoff ... ok
+test request_response::cancellation::tests::test_cancel_callback ... ok
+test request_response::cancellation::tests::test_cancel ... ok
+test request_response::correlator::tests::test_cleanup_expired ... ok
+test request_response::correlator::tests::test_correlate_response ... ok
+test request_response::server::tests::test_request_response_cycle ... ok
+test router::dead_letter_queue::tests::test_add_and_remove ... ok
+test router::dead_letter_queue::tests::test_clear ... ok
+test router::dead_letter_queue::tests::test_eviction_on_overflow ... ok
+test router::dead_letter_queue::tests::test_stats ... ok
+test router::discovery::tests::test_all_endpoints ... ok
+test router::discovery::tests::test_find_by_capability ... ok
+test router::discovery::tests::test_heartbeat_update ... ok
+test router::discovery::tests::test_unregister ... ok
+test router::discovery::tests::test_register_and_lookup ... ok
+test router::priority_queue::tests::test_empty_queue_returns_none ... ok
+test router::priority_queue::tests::test_priority_order ... ok
+test router::priority_queue::tests::test_queue_stats ... ok
+test router::router::tests::test_deterministic_routing ... ok
+test router::router::tests::test_priority_queue ... ok
+test router::router::tests::test_route_forward ... ok
+test router::router::tests::test_route_no_match ... ok
+test router::router::tests::test_routing_table_version_increments ... ok
+test router::rule_engine::tests::test_exact_pattern_match ... ok
+test router::rule_engine::tests::test_no_match ... ok
+test router::rule_engine::tests::test_disabled_rule_not_matched ... ok
+test router::rule_engine::tests::test_prefix_match ... ok
+test router::rule_engine::tests::test_remove_rule ... ok
+test router::rule_engine::tests::test_replace_all_atomic ... ok
+test router::rule_engine::tests::test_rule_priority_ordering ... ok
+test router::rule_engine::tests::test_wildcard_match ... ok
+test serialization::binary_serializer::tests::test_binary_format_name ... ok
+test serialization::factory::tests::test_factory_by_name ... ok
+test serialization::factory::tests::test_factory_creates_binary ... ok
+test serialization::factory::tests::test_factory_creates_json ... ok
+test serialization::factory::tests::test_factory_creates_structured ... ok
+test serialization::json_serializer::tests::test_json_format_name ... ok
+test serialization::factory::tests::test_format_from_name ... ok
+test serialization::binary_serializer::tests::test_binary_roundtrip ... ok
+test serialization::json_serializer::tests::test_json_validates_before_serialize ... ok
+test serialization::structured_serializer::tests::test_structured_format_name ... ok
+test serialization::json_serializer::tests::test_json_serialize_deserialize_roundtrip ... ok
+test serialization::structured_serializer::tests::test_structured_serialize_structure ... ok
+test session::manager::tests::test_active_count ... ok
+test session::manager::tests::test_cleanup_expired ... ok
+test session::manager::tests::test_create_and_get ... ok
+test session::manager::tests::test_terminate ... ok
+test tracing::span_context::tests::test_child_span ... ok
+test tracing::span_context::tests::test_extract ... ok
+test tracing::span_context::tests::test_nested_child ... ok
+test tracing::span_context::tests::test_new_root ... ok
+test tracing::span_context::tests::test_span_id_display ... ok
+test tracing::span_context::tests::test_trace_id_display ... ok
+test transport::adapters::tests::test_double_connect_fails ... ok
+test transport::adapters::tests::test_named_pipe_adapter_info ... ok
+test transport::adapters::tests::test_named_pipe_lifecycle ... ok
+test transport::adapters::tests::test_tcp_adapter_info ... ok
+test transport::adapters::tests::test_tcp_lifecycle ... ok
+test transport::adapters::tests::test_transport_kind_labels ... ok
+test transport::adapters::tests::test_websocket_adapter_info ... ok
+test transport::adapters::tests::test_websocket_lifecycle ... ok
+test transport::factory::tests::test_factory_creates_transport ... ok
+test transport::in_memory_transport::tests::test_connect_disconnect ... ok
+test transport::in_memory_transport::tests::test_double_connect_fails ... ok
+test transport::in_memory_transport::tests::test_health_states ... ok
+test transport::in_memory_transport::tests::test_send_receive ... ok
+test transport::in_memory_transport::tests::test_send_without_connect_fails ... ok
+test transport::in_memory_transport::tests::test_shared_store_inter_process ... ok
+test transport::in_memory_transport::tests::test_try_receive_none_when_empty ... ok
+
+test result: ok. 100 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_plugin-3d0f68205b2db80c.exe)
+
+running 152 tests
+test capability::tests::test_capability_case_insensitive ... ok
+test capability::tests::test_capability_roundtrip ... ok
+test config::tests::test_len_and_is_empty ... ok
+test config::tests::test_freeze_blocks_mutation ... ok
+test capability::tests::test_capability_declaration_builder ... ok
+test context::tests::test_context_builder_defaults ... ok
+test config::tests::test_get_and_set ... ok
+test config::tests::test_validate_passes ... ok
+test config::tests::test_to_json ... ok
+test config::tests::test_snapshot ... ok
+test capability::tests::test_registry_deregister ... ok
+test capability::tests::test_registry_register_and_query ... ok
+test config::tests::test_validate_null_required_key ... ok
+test config::tests::test_validate_missing_required_key ... ok
+test capability::tests::test_capability_custom ... ok
+test context::tests::test_capturing_logger ... ok
+test capability::tests::test_registry_list_all ... ok
+test context::tests::test_service_directory ... ok
+test contracts::tests::test_loader_trait_load_order ... ok
+test context::tests::test_context_builder_with_storage ... ok
+test contracts::tests::test_plugin_metadata_fields ... ok
+test contracts::tests::test_plugin_trait_has_metadata ... ok
+test contracts::tests::test_registry_trait_dependency_order ... ok
+test contracts::tests::test_registry_trait_discovery ... ok
+test contracts::tests::test_registry_trait_enable_disable ... ok
+test contracts::tests::test_registry_trait_list ... ok
+test contracts::tests::test_registry_trait_register_lookup ... ok
+test contracts::tests::test_registry_trait_unload ... ok
+test dependency::tests::test_capability_dependency_unsatisfied ... ok
+test dependency::tests::test_capability_dependency_satisfied ... ok
+test dependency::tests::test_cycle_detected ... ok
+test dependency::tests::test_deterministic_order ... ok
+test dependency::tests::test_duplicate_ids_rejected ... ok
+test dependency::tests::test_empty_manifests ... ok
+test dependency::tests::test_missing_required ... ok
+test dependency::tests::test_linear_order ... ok
+test dependency::tests::test_optional_missing_produces_warning ... ok
+test dependency::tests::test_version_conflict_required ... ok
+test dependency::tests::test_version_satisfied ... ok
+test error::tests::test_dependency_error_version_conflict ... ok
+test error::tests::test_manifest_error_display ... ok
+test error::tests::test_plugin_error_from_manifest ... ok
+test events::tests::test_all_event_types_distinct ... ok
+test events::tests::test_event_constructors ... ok
+test events::tests::test_event_type_str ... ok
+test events::tests::test_plugin_event_to_event ... ok
+test events::tests::test_publish_and_subscribe ... ok
+test events::tests::test_stats_track_publish_and_subscribe ... ok
+test events::tests::test_unsubscribe_removes_handler ... ok
+test health::tests::test_aggregate_healthy_when_empty ... ok
+test distribution::tests::corrupt_digest_and_signature_are_rejected ... ok
+test health::tests::test_aggregate_skips_disabled ... ok
+test health::tests::test_aggregate_recovering_beats_degraded ... ok
+test health::tests::test_aggregate_worst_case ... ok
+test health::tests::test_all_returns_pairs ... ok
+test health::tests::test_record_and_query ... ok
+test health::tests::test_remove ... ok
+test health::tests::test_severity_ordering ... ok
+test health::tests::test_to_runtime_status ... ok
+test lifecycle::tests::test_can_transition ... ok
+test lifecycle::tests::test_failed_to_recovery_to_running ... ok
+test lifecycle::tests::test_force_recovery ... ok
+test lifecycle::tests::test_full_activation_sequence ... ok
+test lifecycle::tests::test_full_teardown ... ok
+test lifecycle::tests::test_initial_state_created ... ok
+test lifecycle::tests::test_illegal_transition_rejected ... ok
+test lifecycle::tests::test_pause_resume ... ok
+test lifecycle::tests::test_runtime_compatibility ... ok
+test lifecycle::tests::test_state_categories ... ok
+test distribution::tests::unsafe_paths_rejected_without_extraction ... ok
+test loader::tests::test_activate_and_deactivate ... ok
+test loader::tests::test_activate_unknown_rejected ... ok
+test loader::tests::test_activate_disabled_rejected ... ok
+test loader::tests::test_load_order ... ok
+test manager::tests::test_aggregate_health_healthy ... ok
+test distribution::tests::unsigned_package_and_undeclared_workflow_capability_are_rejected ... ok
+test loader::tests::test_double_activate_rejected ... ok
+test loader::tests::test_deactivate_unknown_rejected ... ok
+test manager::tests::test_capability_registry_available ... ok
+test manager::tests::test_event_bus_available ... ok
+test manager::tests::test_health_monitor_available ... ok
+test distribution::tests::store_lock_rejects_concurrent_process_and_orphan_is_not_activated ... ok
+test manager::tests::test_manager_creation ... ok
+test manager::tests::test_install_plugin ... ok
+test manager::tests::test_install_duplicate_rejected ... ok
+test manager::tests::test_pause_and_resume_plugin ... ok
+test manager::tests::test_registry_accessor ... ok
+test manager::tests::test_runtime_state_update ... ok
+test manager::tests::test_start_and_stop_plugin ... ok
+test manager::tests::test_start_unknown_plugin_rejected ... ok
+test manager::tests::test_shutdown_all ... ok
+test manager::tests::test_unload_plugin ... ok
+test manifest::tests::test_compatibility_rejects_api_mismatch ... ok
+test manifest::tests::test_accepts_pre_release_version ... ok
+test manifest::tests::test_compatibility_rejects_below_min ... ok
+test manifest::tests::test_compatibility_passes ... ok
+test manifest::tests::test_from_json_invalid ... ok
+test manifest::tests::test_from_json_valid ... ok
+test manifest::tests::test_metadata_and_capabilities ... ok
+test manifest::tests::test_rejects_bad_manifest_version ... ok
+test manifest::tests::test_rejects_empty_license ... ok
+test manifest::tests::test_rejects_duplicate_capability ... ok
+test manifest::tests::test_rejects_bad_semver ... ok
+test manifest::tests::test_rejects_empty_plugin_id ... ok
+test manifest::tests::test_rejects_duplicate_dependency ... ok
+test manifest::tests::test_rejects_long_plugin_name ... ok
+test manifest::tests::test_valid_manifest_passes ... ok
+test manifest::tests::test_rejects_self_dependency ... ok
+test registry::tests::test_dependency_order ... ok
+test registry::tests::test_discovery_preserves_order ... ok
+test registry::tests::test_duplicate_registration_rejected ... ok
+test registry::tests::test_enable_unknown_rejected ... ok
+test registry::tests::test_enable_disable ... ok
+test registry::tests::test_invalid_manifest_rejected ... ok
+test registry::tests::test_register_and_lookup ... ok
+test registry::tests::test_unload_unknown_rejected ... ok
+test registry::tests::test_unload ... ok
+test sandbox::tests::test_policy_validate_rejects_required_above_policy_level ... ok
+test sandbox::tests::test_policy_from_manifest_takes_max_level ... ok
+test sandbox::tests::test_boundary_mapping ... ok
+test sandbox::tests::test_noop_executor_lifecycle ... ok
+test sandbox::tests::test_noop_executor_check_without_prepare ... ok
+test sandbox::tests::test_resource_usage_check ... ok
+test version::tests::test_compatible_same_major ... ok
+test version::tests::test_constraint_any ... ok
+test version::tests::test_constraint_caret ... ok
+test version::tests::test_constraint_display ... ok
+test version::tests::test_constraint_eq ... ok
+test version::tests::test_constraint_gte ... ok
+test version::tests::test_constraint_tilde ... ok
+test version::tests::test_ordering ... ok
+test version::tests::test_parse_full_version ... ok
+test sandbox::tests::test_policy_validate_rejects_zero_memory ... ok
+test version::tests::test_parse_pre_release_and_build ... ok
+test version::tests::test_parse_rejects_missing_patch ... ok
+test version::tests::test_parse_rejects_non_numeric ... ok
+test version::tests::test_pre_release_lower_than_release ... ok
+test distribution::tests::provider_offline_preserves_installed_management ... ok
+test distribution::tests::permission_denial_has_structured_code ... ok
+test distribution::tests::orphan_cleanup_preserves_committed_and_unrelated_files ... ok
+test distribution::tests::invalid_manifest_and_platform_rejected ... ok
+test distribution::tests::semantic_order_and_empty_search ... ok
+test distribution::tests::missing_registry_after_restart_retains_trusted_installation ... ok
+test distribution::tests::tampered_committed_blob_is_never_registered_on_restart ... ok
+test distribution::tests::search_does_not_hide_installed_update_metadata ... ok
+test distribution::tests::failed_update_restores_running_version ... ok
+test distribution::tests::permission_escalation_needs_exact_review ... ok
+test distribution::tests::registration_failure_rolls_back_update_before_persistence ... ok
+test distribution::tests::failed_commit_restores_runtime_and_committed_version ... ok
+test distribution::tests::dependency_validation_and_multiple_owners_remain_isolated ... ok
+test distribution::tests::failure_and_unauthorized_operation_are_isolated ... ok
+test distribution::tests::lifecycle_execute_disable_update_restart_uninstall_reinstall ... ok
+
+test result: ok. 152 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_runtime-f7789bfc529f87c5.exe)
+
+running 33 tests
+test config::tests::test_double_initialize_rejected ... ok
+test health::tests::test_empty_aggregate_is_healthy ... ok
+test config::tests::test_load_missing_file_returns_file_not_found ... ok
+test config::tests::test_start_before_initialize_rejected ... ok
+test config::tests::test_freeze_prevents_mutation ... ok
+test manifest::tests::test_load_from_config_without_manifest_path ... ok
+test health::tests::test_degradation_escalation_to_disabled ... ok
+test config::tests::test_get_before_load_errors ... ok
+test health::tests::test_interval_and_threshold_config ... ok
+test health::tests::test_record_and_query_health ... ok
+test health::tests::test_service_contract_lifecycle ... ok
+test health::tests::test_unhealthy_aggregates_to_unhealthy ... ok
+test manifest::tests::test_discover_services_and_capabilities ... ok
+test health::tests::test_aggregate_worst_case ... ok
+test manifest::tests::test_load_from_path_missing_file ... ok
+test manifest::tests::test_manifest_service_lifecycle ... ok
+test config::tests::test_service_contract_lifecycle ... ok
+test health::tests::test_healthy_resets_failure_count ... ok
+test manifest::tests::test_missing_required_capabilities ... ok
+test manifest::tests::test_validate_accepts_valid_manifest ... ok
+test manifest::tests::test_validate_rejects_duplicate_capability ... ok
+test manifest::tests::test_validate_rejects_duplicate_service_id ... ok
+test manifest::tests::test_validate_rejects_empty_schema_version ... ok
+test metrics::tests::test_counter_register_and_increment ... ok
+test metrics::tests::test_gauge_register_and_set ... ok
+test metrics::tests::test_duplicate_registration_rejected ... ok
+test metrics::tests::test_histogram_observe_buckets ... ok
+test metrics::tests::test_increment_unknown_returns_not_found ... ok
+test metrics::tests::test_kind_mismatch_on_counter ... ok
+test metrics::tests::test_list_metrics ... ok
+test metrics::tests::test_service_contract_lifecycle ... ok
+test manifest::tests::test_load_from_path_valid_file ... ok
+test config::tests::test_load_valid_config ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests\dependency_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\dependency_tests-360807763562c1e9.exe)
+
+running 4 tests
+test test_single_service_resolution ... ok
+test test_linear_dependency_chain ... ok
+test test_cycle_detection ... ok
+test test_empty_dependency_resolution ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\eventbus_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\eventbus_tests-c95f5374f3c01d73.exe)
+
+running 6 tests
+test test_event_bus_creation ... ok
+test test_unsubscribe ... ok
+test test_publish_ready ... ok
+test test_publish_and_subscribe ... ok
+test test_stats_tracking ... ok
+test test_wildcard_channel_matching ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\health_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\health_tests-3a059bde964ab76d.exe)
+
+running 2 tests
+test test_record_and_query_health ... ok
+test test_health_service_empty ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\integration_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\integration_tests-b4fd32813f6a4551.exe)
+
+running 5 tests
+test test_lifecycle_full_shutdown ... ok
+test test_fatal_recovery ... ok
+test test_shutdown_from_ready ... ok
+test test_config_service_missing_file ... ok
+test test_lifecycle_manager_full_boot ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\lifecycle_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\lifecycle_tests-270cb9f00d724814.exe)
+
+running 8 tests
+test test_can_transition_checks ... ok
+test test_failed_to_terminated ... ok
+test test_initial_state_is_created ... ok
+test test_no_transition_from_terminated ... ok
+test test_graceful_shutdown ... ok
+test test_pause_resume_cycle ... ok
+test test_successful_boot_sequence ... ok
+test test_illegal_transition_from_created ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\registry_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\registry_tests-ed1766c7f4b5b804.exe)
+
+running 7 tests
+test test_deinitialize_all_returns_reverse ... ok
+test test_duplicate_registration ... ok
+test test_service_ids ... ok
+test test_lookup_not_found ... ok
+test test_lookup_success ... ok
+test test_register_service ... ok
+test test_empty_registry ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\scheduler_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\scheduler_tests-3bcdc7c16ee70c18.exe)
+
+running 5 tests
+test test_pause_and_resume ... ok
+test test_queue_depth_on_submit ... ok
+test test_cancel_task ... ok
+test test_submit_task ... ok
+test test_worker_pool_defaults ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\lib.rs (target\x86_64-pc-windows-msvc\debug\deps\atlas_storage-9acbc9e6b79d8a7e.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\storage_tests.rs (target\x86_64-pc-windows-msvc\debug\deps\storage_tests-285667e6bc8c96a5.exe)
+
+running 10 tests
+test test_duplicate_register_rejected ... ok
+test test_get_and_list ... ok
+test test_health_check_aggregate ... ok
+test test_provider_lifecycle_illegal_transition_rejected ... ok
+test test_register_rejects_missing_required_capability ... ok
+test test_resource_lifecycle_legal_path ... ok
+test test_select_by_capability ... ok
+test test_select_none_running_returns_unavailable ... ok
+test test_register_activate_deactivate ... ok
+test test_resource_illegal_transition_rejected ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_common
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_contracts
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_ipc
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_plugin
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests atlas_storage
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

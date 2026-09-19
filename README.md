@@ -1,5 +1,7 @@
 # Atlas
 
+> Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
+
 > Record Once. Understand Forever.
 
 Atlas is an open-source AI-powered automation platform designed to automate desktop applications, games, and workflows through computer vision, local AI, and extensible plugins.

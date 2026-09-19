@@ -1,0 +1,25 @@
+   Compiling atlas-desktop v0.18.0-alpha (F:\資料夾\Desktop\Atlas\apps\atlas-desktop\src-tauri)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 51.33s
+     Running unittests src\lib.rs (apps\atlas-desktop\src-tauri\target\debug\deps\atlas_desktop_lib-3a53bb7cd1799593.exe)
+
+running 17 tests
+test hardening_tests::non_ascii_color_and_unsafe_storage_paths_are_controlled_errors ... ok
+test hardening_tests::knowledge_ipc_payload_preserves_scope_and_correlation ... ok
+test hardening_tests::provider_ids_are_bounded_before_keyring_access ... ok
+test hardening_tests::ai_boundary_selects_only_typed_knowledge_references ... ok
+test production::tests::missing_bundle_never_falls_back_to_global_python ... ok
+test diagnostics::tests::diagnostic_bundle_contains_only_metadata ... ok
+test project_persistence::tests::malformed_envelopes_are_not_empty_projects ... ok
+test hardening_tests::project_assets_reject_credentials_without_masking_usage_metrics ... ok
+test project_persistence::tests::writers_are_exclusive_and_unlock_on_drop ... ok
+test hardening_tests::windows_credential_vault_round_trip_is_real_and_disposable ... ok
+test hardening_tests::project_session_round_trip_requires_manual_reopen_pointer ... ok
+test project_persistence::tests::historical_v1_identity_preserves_all_payload_fields ... ok
+test project_persistence::tests::invalid_destination_and_failed_commit_preserve_source ... ok
+test project_persistence::tests::junction_storage_is_refused_without_touching_target ... ok
+test project_persistence::tests::future_primary_cannot_fall_back_or_be_downgraded ... ok
+test hardening_tests::project_assets_round_trip_and_recover_from_backup ... ok
+test project_persistence::tests::corrupt_primary_does_not_replace_valid_backup ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

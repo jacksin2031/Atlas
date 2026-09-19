@@ -1,0 +1,7 @@
+{
+  "scenario": "Installed idle AI host terminated",
+  "desktopSurvived": true,
+  "desktopPid": 27748,
+  "oldHostPid": 24128,
+  "observedHealth": "AI unavailable; other five health entries available"
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "profile": "Roaming",
+    "testResultsPreserved": true,
+    "restored": true
+  },
+  {
+    "profile": "Local",
+    "testResultsPreserved": true,
+    "restored": true
+  }
+]

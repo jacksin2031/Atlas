@@ -2,7 +2,7 @@
 # Rust
 # ============================================================
 /target/
-Cargo.lock
+!Cargo.lock
 !apps/atlas-desktop/src-tauri/Cargo.lock
 
 # ============================================================
@@ -61,4 +61,6 @@ apps/atlas-desktop/dist/
 apps/atlas-desktop/src-tauri/target/
 apps/atlas-desktop/src-tauri/gen/schemas/
 apps/atlas-desktop/*.zip
+apps/atlas-desktop/src-tauri/resources/runtime/
+apps/atlas-desktop/src-tauri/resources/notices/
 *.tar.gz

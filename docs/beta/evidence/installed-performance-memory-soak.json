@@ -1,0 +1,44 @@
+{
+  "scope": "installed workstation",
+  "result": "PARTIAL",
+  "sampling": {
+    "intervalSeconds": 3,
+    "samples": 3,
+    "durationSeconds": 9,
+    "processes": [
+      {
+        "process": "atlas-desktop",
+        "pid": 28448,
+        "workingSetBytes": [31625216, 31625216, 31625216],
+        "privateBytes": [7241728, 7241728, 7241728],
+        "cpuSeconds": [5.531, 5.578, 5.594]
+      },
+      {
+        "process": "python",
+        "pid": 15976,
+        "workingSetBytes": [24788992, 24788992, 24788992],
+        "privateBytes": [15974400, 15974400, 15974400],
+        "cpuSeconds": [1.219, 1.219, 1.219]
+      },
+      {
+        "process": "python",
+        "pid": 28876,
+        "workingSetBytes": [26316800, 26316800, 26316800],
+        "privateBytes": [17567744, 17567744, 17567744],
+        "cpuSeconds": [0.188, 0.188, 0.188]
+      }
+    ]
+  },
+  "observations": {
+    "idleWorkingSetStableAcrossSamples": true,
+    "atlasWindowRemainedResponsive": true,
+    "representativeWorkflowSoak": "NOT RUN",
+    "postWorkflowMemoryBaseline": "NOT COLLECTED",
+    "longDurationSoak": "NOT RUN"
+  },
+  "limitations": [
+    "The Marketplace plugin had been intentionally removed by the preceding uninstall acceptance, so a representative plugin workflow was not rerun in this sampling pass.",
+    "Nine seconds of idle sampling cannot establish leak-free or production soak behaviour.",
+    "Evidence is from the installed developer workstation; clean-machine performance remains outstanding."
+  ]
+}

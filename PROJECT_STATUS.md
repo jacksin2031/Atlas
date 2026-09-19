@@ -1,5 +1,7 @@
 # Atlas Project Status
 
+> Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
+
 > **Last Updated**: 2026-08-30
 > **Current Version**: 0.15.0-alpha
 > **Current Focus**: Sprint 15 Final Acceptance PASS; baseline frozen

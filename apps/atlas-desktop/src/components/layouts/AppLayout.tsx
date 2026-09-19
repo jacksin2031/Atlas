@@ -3,6 +3,7 @@ import { marketplaceService, registerMarketplaceCommands } from "../../studio/ma
 // New layout: Menu | Toolbar | [Sidebar | Canvas | Inspector] | [Bottom Tabbed Panel] | StatusBar
 
 import React from 'react';
+import { BetaWelcome, BetaHelp } from "./BetaWelcome";
 import { MenuBar } from './MenuBar';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
@@ -37,7 +38,7 @@ export const AppLayout: React.FC = () => {
   React.useEffect(() => activeWorkspace === 'workflow' ? installWorkflowShortcuts() : undefined, [activeWorkspace]);
   React.useEffect(() => activeWorkspace === 'knowledge' ? installKnowledgeShortcuts() : undefined, [activeWorkspace]);
   React.useEffect(() => { if(activeWorkspace==='ai'&&!aiDiscoveryStarted.current){aiDiscoveryStarted.current=true;void aiStudioService.refresh();} }, [activeWorkspace]);
-  React.useEffect(() => { if(activeWorkspace==='knowledge')void knowledgeStudioService.initialize(); }, [activeWorkspace]);
+  React.useEffect(() => { if(currentProject&&activeWorkspace==='knowledge')void knowledgeStudioService.initialize(); }, [activeWorkspace,currentProject]);
   React.useEffect(() => { if(currentProject)void knowledgeStudioService.activateProject().catch(()=>undefined); }, [currentProject]);
   React.useEffect(() => { const reconcile=()=>void knowledgeStudioService.activateProject().catch(()=>undefined);window.addEventListener("atlas:project-assets-restored",reconcile);return()=>window.removeEventListener("atlas:project-assets-restored",reconcile); }, []);
 
@@ -45,9 +46,10 @@ export const AppLayout: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <MenuBar onToggleCommandPalette={() => setPaletteVisible(!paletteVisible)} />
       <Toolbar onToggleCommandPalette={() => setPaletteVisible(!paletteVisible)} />
-      {activeWorkspace === 'vision' && <VisionToolbar onCommandPalette={() => setPaletteVisible(true)} />}
-      {activeWorkspace === 'ai' && <AIToolbar />}
-      <WorkspaceManager />
+      {currentProject && activeWorkspace === 'vision' && <VisionToolbar onCommandPalette={() => setPaletteVisible(true)} />}
+      {currentProject && activeWorkspace === 'ai' && <AIToolbar />}
+      {currentProject ? <WorkspaceManager /> : <BetaWelcome />}
+      <BetaHelp />
 
       {/* Status bar */}
       <StatusBar />

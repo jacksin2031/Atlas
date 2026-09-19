@@ -23,11 +23,11 @@ jobs:
     outputs:
       sha: ${{ steps.commit.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ env.RELEASE_TAG }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Validate existing tag and Desktop versions
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: validate-release
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate-release.outputs.sha }}
       - uses: dtolnay/rust-toolchain@stable
@@ -74,10 +74,10 @@ jobs:
     env:
       PYTHONPATH: src:packages/vision/src:packages/ai/src:packages/knowledge/src
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate-release.outputs.sha }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: python -m pip install pytest==8.4.2
@@ -87,16 +87,16 @@ jobs:
     runs-on: windows-2022
     needs: validate-release
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate-release.outputs.sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: "11.9.0"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - uses: dtolnay/rust-toolchain@stable
@@ -112,11 +112,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run lint
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prime complete locked Rust dependency metadata
+        run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml
       - name: Bundle pinned Python runtime
         run: |
           python scripts/bundle_runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/bundle_notices.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build locked Windows installer
         working-directory: apps/atlas-desktop
         run: node node_modules/@tauri-apps/cli/tauri.js build --target x86_64-pc-windows-msvc --bundles nsis -- --locked
@@ -128,7 +131,7 @@ jobs:
           if ($installers.Count -eq 0) { throw 'No NSIS installer produced' }
           $installers | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name } | Set-Content -LiteralPath "$bundle/SHA256SUMS.txt"
           @{ version = $env:RELEASE_TAG; commit = '${{ needs.validate-release.outputs.sha }}'; target = 'x86_64-pc-windows-msvc'; signing = 'unsigned'; cleanMachineAcceptance = 'not-established-by-build'; workflowRun = '${{ github.run_id }}' } | ConvertTo-Json | Set-Content -LiteralPath "$bundle/build-metadata.json"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Atlas-Windows-${{ env.RELEASE_TAG }}
           path: apps/atlas-desktop/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/

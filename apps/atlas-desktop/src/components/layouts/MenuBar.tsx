@@ -21,4 +21,63 @@ export const MenuBar: React.FC<MenuBarProps> = ({ onToggleCommandPalette }) => {
   </nav>;
 };
 
-const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({ label, items }) => { const [open,setOpen]=React.useState(false); const timer=React.useRef<ReturnType<typeof setTimeout>|null>(null); const show=()=>{if(timer.current)clearTimeout(timer.current);setOpen(true)}; const hide=()=>{timer.current=setTimeout(()=>setOpen(false),2000)}; return <div className="menu-dropdown" onMouseEnter={show} onMouseLeave={hide} onFocus={show} onBlur={(event)=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setOpen(false)}} onKeyDown={(event)=>{if(event.key==="Escape"){setOpen(false);event.stopPropagation();} if(event.key==="ArrowDown"||event.key==="ArrowUp"){event.preventDefault();const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=menuitem]:not(:disabled)"));const index=buttons.indexOf(document.activeElement as HTMLButtonElement);buttons[(index+(event.key==="ArrowDown"?1:buttons.length-1))%buttons.length]?.focus();}}}><button aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(true)}>{label}</button>{open&&<div className="menu-popup" role="menu">{items.map((item,i)=>"separator" in item?<hr key={i}/>:<button role="menuitem" key={`${item.label}-${i}`} disabled={item.disabled} onClick={()=>{item.action?.();setOpen(false)}}><span>{item.label}</span>{item.shortcut&&<kbd>{item.shortcut}</kbd>}</button>)}</div>}</div>; };
+const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({ label, items }) => {
+  const [open, setOpen] = React.useState(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const root = React.useRef<HTMLDivElement>(null);
+  const trigger = React.useRef<HTMLButtonElement>(null);
+  const pendingFocus = React.useRef<"first" | "last" | "next" | "previous" | null>(null);
+  const menuId = React.useId();
+  const show = () => { if (timer.current) clearTimeout(timer.current); setOpen(true); };
+  const hide = () => { timer.current = setTimeout(() => setOpen(false), 2000); };
+  const focusItem = (container: HTMLDivElement, direction: "first" | "last" | "next" | "previous") => {
+    const buttons = Array.from(container.querySelectorAll<HTMLButtonElement>("[role=menuitem]:not(:disabled)"));
+    if (!buttons.length) return;
+    const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    let index = 0;
+    if (direction === "last") index = buttons.length - 1;
+    else if (direction === "next") index = current < 0 ? 0 : (current + 1) % buttons.length;
+    else if (direction === "previous") index = current < 0 ? buttons.length - 1 : (current - 1 + buttons.length) % buttons.length;
+    buttons[index]?.focus();
+  };
+  React.useLayoutEffect(() => {
+    if (!open || !pendingFocus.current || !root.current) return;
+    focusItem(root.current, pendingFocus.current);
+    pendingFocus.current = null;
+  }, [open]);
+  return <div
+    ref={root}
+    className="menu-dropdown"
+    onMouseEnter={show}
+    onMouseLeave={hide}
+    onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false); }}
+    onKeyDown={(event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setOpen(false);
+        trigger.current?.focus();
+        return;
+      }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
+        event.preventDefault();
+        const direction = event.key === "ArrowDown" ? "next" : event.key === "ArrowUp" ? "previous" : event.key === "Home" ? "first" : "last";
+        if (!open) {
+          pendingFocus.current = direction;
+          setOpen(true);
+        } else {
+          focusItem(event.currentTarget, direction);
+        }
+      }
+    }}
+  >
+    <button ref={trigger} aria-haspopup="menu" aria-expanded={open} aria-controls={open ? menuId : undefined} onClick={() => setOpen(true)}>{label}</button>
+    {open && <div id={menuId} className="menu-popup" role="menu" aria-label={label}>
+      {items.map((item, i) => "separator" in item
+        ? <hr role="separator" key={i}/>
+        : <button role="menuitem" key={`${item.label}-${i}`} disabled={item.disabled} onClick={() => { item.action?.(); setOpen(false); trigger.current?.focus(); }}>
+            <span>{item.label}</span>{item.shortcut && <kbd>{item.shortcut}</kbd>}
+          </button>)}
+    </div>}
+  </div>;
+};

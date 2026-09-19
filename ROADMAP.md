@@ -2,10 +2,10 @@
 
 > Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
 
-> **Last Updated**: 2026-09-04
-> **Current Version**: 0.15.0-alpha
-> **Current Sprint**: Sprint 17 — Marketplace
-> **Next Milestone**: Marketplace acceptance
+> **Last Updated**: 2026-09-20
+> **Current Version**: 0.18.0-alpha (unreleased candidate)
+> **Current Sprint**: Sprint 18.1 — Beta Acceptance Closure
+> **Next Milestone**: Real-machine beta acceptance and evidence closure
 
 ---
 
@@ -139,7 +139,7 @@
 
 ---
 
-## Upcoming Sprints
+## Historical delivery sequence
 
 ### Sprint 9 — Project Runtime
 **Version**: 0.9.0-alpha
@@ -260,21 +260,34 @@
 - Deleted Knowledge references are visibly invalidated and excluded from AI requests
 - AI Studio real-Tauri rendering regression fixed; live-provider acceptance remains pending an external provider
 
-### Sprint 17 — Marketplace
+### Sprint 17 — Marketplace & Plugin Distribution
 **Version**: 0.17.0-alpha
-**Status**: ⬜ Planned
-- Plugin marketplace
-- Knowledge pack distribution
-- Provider marketplace
-- Rating and review system
+**Status**: ✅ Complete — Local Development Distribution
+- Signed local-development package format and canonical manifest validation
+- Discover → inspect → validate → install → enable → load → execute → disable → update → uninstall lifecycle
+- Transactional install/update/uninstall with rollback and restart recovery
+- Permission review, compatibility validation, digest/signature/path safety and audit trail
+- Dynamic Workflow node registration and missing-plugin serialized-reference preservation
+- Production registry, publisher PKI and public distribution remain external infrastructure
 
-### Sprint 18 — Beta
-**Version**: 1.0.0-beta
-**Status**: ⬜ Planned
-- All Runtime modules implemented
-- API freeze
-- Focus on stability and performance
-- Community beta testing
+### Sprint 18 — Beta Readiness & Product Hardening
+**Version**: 0.18.0-alpha
+**Status**: ◐ PARTIAL — beta readiness not yet promoted
+- Windows NSIS packaging with pinned isolated CPython runtime
+- First-run UX, diagnostics/privacy hardening, project recovery and installed-runtime boundaries
+- Fresh GitHub-hosted Windows installed-product smoke covers build, Unicode/space install, repository-independent runtime imports, installed launch, process cleanup and uninstall
+- Security, dependency and notice inventory automation added
+- Interactive mixed-DPI, accessibility, Vision→Input closed-loop, 60-minute soak and package-interruption evidence remain real-machine acceptance work
+
+### Sprint 18.1 — Beta Acceptance Closure
+**Version**: 0.18.0-alpha
+**Status**: 🚧 In progress on review branch
+- Five-workspace persistence/corruption regression matrix
+- Installed-product Windows smoke and repeated lifecycle/orphan checks
+- Typed desktop IPC transport boundary and keyboard accessibility hardening
+- Deterministic dependency/security/notices checks
+- Guarded real-machine evidence harness and acceptance protocol
+- No beta tag/release until the real-machine evidence review is complete
 
 ---
 

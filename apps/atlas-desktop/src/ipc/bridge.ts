@@ -3,6 +3,7 @@
  * Maps desktop shell operations to Tauri commands.
  */
 
+import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 
@@ -22,6 +23,45 @@ async function invoke<T>(command: string, args?: Record<string, unknown>): Promi
 
 async function invokeRequired<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   return tauriInvoke<T>(command, args);
+}
+
+
+export interface BetaSystemInfo {
+  version: string;
+  platform: string;
+  architecture: string;
+  buildType: string;
+  commit: string;
+  runtimes: Array<{ name: string; status: string; detail: string }>;
+}
+
+export interface DiagnosticsExportResult {
+  path: string | null;
+}
+
+/** Queries installed-product identity and runtime health without exposing credentials. */
+export async function getBetaSystemInfo(): Promise<BetaSystemInfo> {
+  return invokeRequired<BetaSystemInfo>("beta_system_info");
+}
+
+/** Exports the allowlisted local diagnostics bundle through the native save dialog. */
+export async function exportDiagnostics(): Promise<DiagnosticsExportResult> {
+  return invokeRequired<DiagnosticsExportResult>("export_diagnostics");
+}
+
+/** Returns the native Tauri package version without exposing Tauri imports to React components. */
+export async function getNativeAppVersion(): Promise<string> {
+  return tauriGetVersion();
+}
+
+/** Generic Marketplace command boundary. */
+export async function requestMarketplace<T>(command: string, payload: Record<string, unknown>): Promise<T> {
+  return invokeRequired<T>("marketplace_request", { command, payload });
+}
+
+/** Marketplace revision event boundary. */
+export async function listenMarketplaceChanged(handler: (revision: number) => void): Promise<UnlistenFn> {
+  return listen<{ revision: number }>("plugin://marketplace-changed", ({ payload }) => handler(payload.revision));
 }
 
 /**

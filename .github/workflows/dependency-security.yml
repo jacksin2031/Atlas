@@ -1,0 +1,71 @@
+name: Dependency Security Audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+      - "apps/atlas-desktop/package.json"
+      - "apps/atlas-desktop/pnpm-lock.yaml"
+      - ".github/workflows/dependency-security.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+      - "apps/atlas-desktop/package.json"
+      - "apps/atlas-desktop/pnpm-lock.yaml"
+      - ".github/workflows/dependency-security.yml"
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: dependency-security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rustsec:
+    name: RustSec
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Audit root Rust lockfile
+        run: cargo audit
+      - name: Trace vulnerable desktop transitive dependency
+        working-directory: apps/atlas-desktop/src-tauri
+        run: cargo tree -i quick-xml@0.28.2 || true
+      - name: Audit desktop Rust lockfile
+        working-directory: apps/atlas-desktop/src-tauri
+        run: cargo audit
+
+  frontend:
+    name: Frontend dependency audit
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: apps/atlas-desktop
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
+      - name: Install exact locked dependency graph
+        run: pnpm install --frozen-lockfile
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level moderate
+      - name: Audit full dependency graph
+        run: pnpm audit --audit-level moderate

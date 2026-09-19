@@ -5,22 +5,26 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, edited]
 
+concurrency:
+  group: pull-request-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   PYTHON_VERSION: "3.12"
-  PYTHONPATH: "src"
-  RUST_TOOLCHAIN: "1.80"
+  PYTHONPATH: "src:packages/vision/src:packages/ai/src:packages/knowledge/src"
+  RUST_TOOLCHAIN: "stable"
 
 jobs:
   architecture-check:
     name: Architecture Validation
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -39,10 +43,10 @@ jobs:
     name: RFC Compliance
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -58,10 +62,10 @@ jobs:
     name: ADR Validation
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -77,10 +81,10 @@ jobs:
     name: Documentation Validation
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -110,10 +114,10 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -123,7 +127,7 @@ jobs:
           pip install pytest ruff
 
       - name: Run all Python tests
-        run: python -m pytest tests/ -v --tb=short --color=yes
+        run: python -m pytest tests packages/vision/tests packages/ai/tests packages/knowledge/tests --import-mode=importlib -v --tb=short --color=yes
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -139,15 +143,56 @@ jobs:
       - name: Run Rust tests
         run: cargo test --workspace
 
+  desktop-tests:
+    name: Desktop Build and Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: apps/atlas-desktop
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
+      - name: Install Tauri system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint frontend
+        run: pnpm run lint
+      - name: Test frontend
+        run: pnpm test
+      - name: Build frontend
+        run: pnpm run build
+      - name: Prime Windows-target Rust metadata for notices
+        working-directory: ${{ github.workspace }}
+        run: cargo fetch --locked --manifest-path apps/atlas-desktop/src-tauri/Cargo.toml
+      - name: Generate packaged notices
+        working-directory: ${{ github.workspace }}
+        run: python scripts/bundle_notices.py
+      - name: Stage minimal runtime resource for Tauri backend check
+        run: |
+          mkdir -p src-tauri/resources/runtime
+          printf '%s\n' 'CI placeholder: packaged runtime is built and validated by Windows Installed-Product Smoke.' > src-tauri/resources/runtime/README.txt
+      - name: Check Tauri backend
+        run: cargo check --manifest-path src-tauri/Cargo.toml
+
   conformance:
     name: Conformance Suite
     runs-on: ubuntu-22.04
-    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests]
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, desktop-tests]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -160,7 +205,7 @@ jobs:
         run: python -m pytest tests/conformance/ -v --tb=short
 
       - name: Upload conformance results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: pr-conformance-results
@@ -171,7 +216,7 @@ jobs:
   pr-summary:
     name: PR Summary
     runs-on: ubuntu-22.04
-    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, conformance]
+    needs: [architecture-check, rfc-check, adr-check, documentation-check, tests, desktop-tests, conformance]
     if: always()
     steps:
       - name: PR Check Summary
@@ -185,6 +230,7 @@ jobs:
           echo "| ADR Validation | ${{ needs.adr-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Documentation | ${{ needs.documentation-check.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Tests | ${{ needs.tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Desktop | ${{ needs.desktop-tests.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Conformance | ${{ needs.conformance.result == 'success' && 'OK' || 'FAIL' }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ needs.architecture-check.result }}" = "success" ] && \
@@ -192,6 +238,7 @@ jobs:
              [ "${{ needs.adr-check.result }}" = "success" ] && \
              [ "${{ needs.documentation-check.result }}" = "success" ] && \
              [ "${{ needs.tests.result }}" = "success" ] && \
+             [ "${{ needs.desktop-tests.result }}" = "success" ] && \
              [ "${{ needs.conformance.result }}" = "success" ]; then
             echo "All checks passed. Ready for review." >> "$GITHUB_STEP_SUMMARY"
           else

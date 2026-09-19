@@ -688,7 +688,13 @@ class DesktopWorkflowHost:
         if action not in operations or not operations[action](execution_id):
             return False
         if action == "stop":
-            self.input_service.execute("input_release_all", {})
+            # Cancellation is platform-independent. Releasing held physical input is
+            # best-effort because non-Windows/test hosts intentionally expose an
+            # unavailable provider.
+            try:
+                self.input_service.execute("input_release_all", {})
+            except Exception:
+                pass
         return self._state(execution_id)
 
     def restart(self, execution_id: str) -> dict[str, Any]:

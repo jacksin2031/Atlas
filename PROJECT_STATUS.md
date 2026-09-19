@@ -1,64 +1,108 @@
 # Atlas Project Status
 
-> Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
+> **Last Updated**: 2026-09-19
+> **Current Version**: 0.18.0-alpha (unreleased candidate)
+> **Current Focus**: Sprint 18.1 Beta Acceptance Closure
+> **Sprint 18 Verdict**: PARTIAL — BETA READINESS: NOT YET
 
-> **Last Updated**: 2026-08-30
-> **Current Version**: 0.15.0-alpha
-> **Current Focus**: Sprint 15 Final Acceptance PASS; baseline frozen
+The authoritative Sprint 18 acceptance record is [docs/beta/SPRINT_18_BETA_READINESS_REPORT.md](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Historical sprint reports remain evidence for their own checkpoints and must not override the current acceptance matrix.
 
-## Verified Implementation Status
+## Current Product Status
 
-| Component | Status | Verified automated tests |
-|---|---|---:|
-| Runtime | Implemented | 70 |
-| Plugin | Implemented | 133 |
-| IPC | Implemented | 100 |
-| Contracts | Implemented | 16 |
-| Storage | Partial | 10 |
-| Common | Implemented; no direct tests | 0 |
-| Workflow and Conformance | Implemented in `src/`; Desktop host integrated | 310 |
-| Vision | Implemented | 185 |
-| AI | Implemented | 110 |
-| Desktop, Workflow, Vision, and AI Studio UI | Alpha | 135 |
-| Knowledge | Specifications only | 0 |
-| Project | Specifications only; package absent | 0 |
-| Cross-runtime integration | Workflow-to-AI/Vision/Plugin boundaries integrated; broader integration partial | 0 |
-
-**Verified test total**: 1,074
-
-The counts above reflect tests that are present and executable in this repository snapshot. Historical sprint reports may describe implementations that are not included here.
-
-## Build Health
-
-| Check | Expected result |
+| Area | Current state |
 |---|---|
-| `cargo fmt --all --check` | Pass |
-| `cargo test --workspace --all-targets` | Pass |
-| Root Python tests | Pass |
-| AI package tests | Pass |
-| Vision package tests | Pass |
-| Desktop TypeScript check | Pass |
-| Desktop ESLint | Pass |
-| Desktop Vitest suite | Pass |
-| Desktop production build | Pass |
-| Tauri backend check/build | Pass |
+| Desktop Shell | Implemented alpha product shell (Tauri 2 + React) |
+| Workflow Studio | Integrated with persistent native Workflow host |
+| Vision Studio | Integrated native capture/analysis workspace |
+| AI Studio | Integrated Desktop bridge; live-provider response remains external |
+| Knowledge Studio | Integrated project-scoped CRUD/retrieval/persistence |
+| Input Runtime | Integrated with explicit arm/foreground/emergency-stop safety |
+| Plugin Runtime | Implemented |
+| Marketplace | Sprint 17 local development distribution complete |
+| Project persistence | Implemented for current product assets with backup/recovery/version gates |
+| Windows packaging | NSIS x64 candidate with bundled isolated CPython |
+| Clean-machine lifecycle | **NOT RUN** |
+| Beta readiness | **NOT YET** |
 
-CI runs all of these implementation-level checks. Knowledge and Project remain specification work until source packages and tests are added.
+## Sprint 18 Recorded Verification
 
-## Sprint 14 Verification Note
+The final recorded Sprint 18 automated checkpoint is:
 
-Vision Studio is implemented as a separate FlexLayout workspace with versioned per-workspace persistence, a centralized panel registry, image canvas, overlays, properties, result panels, timeline, commands, and an IPC capture boundary. On 2026-08-22, desktop TypeScript, ESLint, all 110 Vitest tests, the production build, the Tauri MSVC check, and all 185 Vision runtime tests passed.
+| Suite | Passed | Failed |
+|---|---:|---:|
+| Root Rust workspace (MSVC) | 348 | 0 |
+| Combined Python regression | 717 | 0 |
+| Frontend (25 files) | 178 | 0 |
+| Desktop native Rust | 17 | 0 |
+| **Total** | **1,260** | **0** |
 
-## Sprint 15 Verification Note
+The 21 bundled-host smoke checks are acceptance checks and are not added to this unit/integration total. These figures are recorded evidence, not a claim that CI has been rerun after every later documentation change.
 
-AI Studio is implemented as a third FlexLayout workspace with provider/model discovery views, Playground, Prompt/Conversation modes, Context/Request/Response inspectors, Memory, Tools, Agent, Events, Metrics, and Vision input. The persistent Rust/Tauri-to-Python host exposes all four AI commands with request-correlated streaming/cancellation events, Runtime metrics, and multimodal plumbing. The former Desktop Connect `unavailable` regression is closed. Live provider output remains `PENDING EXTERNAL CONDITION` because no healthy provider/model was available; the Atlas-owned bridge and Vision-context attachment pass.
+## Installed-Product Evidence
 
-## Sprint 15.2 Verification Note
+On the existing Windows developer workstation, the installed candidate has evidence for:
 
-Workflow Studio serializes its editable graph into the canonical Workflow manifest and executes through Tauri commands and a persistent Python host. Typed edge propagation, branches, variables, cancellation, restart, Input/Vision/AI bridges, dynamic plugins, and recovery are integrated. Real target relocation, missing-target/no-click, Template, OCR, emergency stop, project restart, interrupted recovery, no replay, and manual restart pass. The final suite contains 310 root Python, 110 AI, 185 Vision, 135 Desktop, 329 root Rust, and 5 Tauri Rust tests.
+- first-run Welcome and runtime-health UX;
+- embedded Workflow/AI Python hosts launched from installed resources;
+- project create/reopen;
+- Workflow production execution;
+- native Vision capture;
+- Input arming, foreground restriction, emergency stop and global Pause/Break;
+- crash to interrupted/no-replay recovery;
+- Knowledge create/search/edit/restart/delete/restart;
+- local-development Marketplace install/enable/execute/restart/disable/uninstall;
+- local diagnostics export and seeded-secret redaction;
+- Unicode/space installation and project paths;
+- uninstall/reinstall with retained user data.
+
+These workstation results remain bounded by their evidence. They do not substitute for the required clean-Windows lifecycle.
+
+## Open Internal Acceptance Gates
+
+The current report still records internally controllable gaps:
+
+1. Clean Windows install and complete no-source/no-dev-dependency lifecycle.
+2. Complete workspace persistence/corruption matrix.
+3. Full mixed-DPI/display and accessibility acceptance.
+4. Representative installed soak/memory/runtime-orphan testing.
+5. Installed plugin mutation-interruption recovery.
+6. Full installed visual closed loop (detection/template → RegionReference → armed Input → validation).
+7. Rust advisory review and remaining redistribution/license metadata review.
+8. Full command/boundary security review beyond the focused Sprint 18 review.
+
+Installer-to-installer upgrade from a previous distributable is recorded as unavailable historical evidence; fixture migration and same-version replacement are not represented as equivalent proof.
+
+## External Conditions
+
+The following do not justify fabricating a PASS and remain separate from internal engineering acceptance when unavailable:
+
+- live OpenAI/Ollama provider response;
+- production Marketplace registry;
+- publisher certification PKI;
+- trusted Windows code-signing certificate;
+- SmartScreen reputation.
+
+## Release Artifact Record
+
+```text
+Version:   0.18.0-alpha
+Target:    x86_64-pc-windows-msvc
+Installer: NSIS current-user
+Filename:  Atlas_0.18.0-alpha_x64-setup.exe
+Size:      227,702,216 bytes
+SHA-256:   f99bcd6c72b634f364fcc58a98b5fd819d98da5ad56cd8ec6fe87e671871d941
+```
+
+The recorded artifact is unsigned. No production code-signing trust or SmartScreen reputation is claimed.
+
+## Promotion Rule
+
+Do not change the verdict to `SPRINT 18: COMPLETE / BETA READINESS: PASS` until all internally controllable mandatory gates in the B-A–B-X matrix pass under their required scope. In particular, the clean-machine lifecycle cannot be replaced by a restricted-PATH test on the developer workstation.
+
+Do not create or publish a beta tag/release solely because the installer builds.
 
 ## Version and License
 
-- Release line: `0.15.0-alpha`
-- Python-compatible version: `0.15.0a0`
+- Release line: `0.18.0-alpha`
+- Python-compatible release notation, where required: `0.18.0a0`
 - License: Apache-2.0

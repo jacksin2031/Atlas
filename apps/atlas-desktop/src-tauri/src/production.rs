@@ -41,6 +41,7 @@ pub fn host_command(app: &AppHandle, module: &str, workflow: bool) -> Result<Com
     }
 }
 
+#[cfg(any(not(debug_assertions), test))]
 pub fn installed_host_command(root: &Path, module: &str) -> Result<Command, String> {
     if !matches!(module, "atlas_ai.host" | "atlas_workflow.host") {
         return Err("RUNTIME_MODULE_DENIED".into());

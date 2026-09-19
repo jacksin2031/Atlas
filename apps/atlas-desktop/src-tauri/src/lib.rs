@@ -15,6 +15,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{mpsc, Arc, Mutex};
+#[cfg(windows)]
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -419,6 +420,7 @@ fn write_project_session(path: &Path, project_path: &str) -> Result<(), String> 
     if !project.is_absolute() || !project.is_dir() {
         return Err("Project session requires an existing absolute project directory.".to_owned());
     }
+    project_persistence::check_path(&project)?;
     let directory = path
         .parent()
         .ok_or_else(|| "Project session directory is invalid.".to_owned())?;
@@ -457,6 +459,7 @@ fn read_project_session(path: &Path) -> Result<Option<String>, String> {
     if !project.is_absolute() || !project.is_dir() {
         return Ok(None);
     }
+    project_persistence::check_path(&project)?;
     Ok(Some(project_path.to_owned()))
 }
 
@@ -560,6 +563,7 @@ fn project_assets_save(project_path: String, assets: Value) -> Result<(), String
 
 type HostResult = Result<Value, String>;
 type PendingRequests = Arc<Mutex<HashMap<String, mpsc::SyncSender<HostResult>>>>;
+#[cfg(windows)]
 const CREDENTIAL_SERVICE: &str = "Atlas AI Provider";
 
 fn validate_provider_id(provider_id: &str) -> Result<(), String> {
@@ -944,6 +948,10 @@ async fn ai_provider_action(
     provider_id: String,
     action: String,
 ) -> Result<bool, String> {
+    validate_provider_id(&provider_id)?;
+    if !matches!(action.as_str(), "connect" | "disconnect" | "refresh" | "test") {
+        return Err("Unsupported AI provider action.".to_owned());
+    }
     let value = request_ai_host(
         state.inner().clone(),
         app,
@@ -1432,11 +1440,25 @@ async fn request_knowledge_host(
     request_workflow_host(manager, app, command, payload).await
 }
 
+fn validate_knowledge_scope(project_id: &str, project_path: &str) -> Result<(), String> {
+    if project_id.is_empty()
+        || project_id.len() > 128
+        || !project_id
+            .chars()
+            .all(|value| value.is_ascii_alphanumeric() || "_.:-".contains(value))
+    {
+        return Err("Knowledge project id contains unsupported characters.".to_owned());
+    }
+    project_asset_paths(project_path)?;
+    Ok(())
+}
+
 fn knowledge_payload(
     project_id: String,
     project_path: String,
     mut payload: Value,
 ) -> Result<Value, String> {
+    validate_knowledge_scope(&project_id, &project_path)?;
     let object = payload
         .as_object_mut()
         .ok_or_else(|| "Knowledge command payload must be an object.".to_owned())?;
@@ -1451,15 +1473,7 @@ fn knowledge_activate(
     project_id: String,
     project_path: String,
 ) -> Result<(), String> {
-    if project_id.is_empty()
-        || project_id.len() > 128
-        || !project_id
-            .chars()
-            .all(|value| value.is_ascii_alphanumeric() || "_.:-".contains(value))
-    {
-        return Err("Knowledge project id contains unsupported characters.".to_owned());
-    }
-    project_asset_paths(&project_path)?;
+    validate_knowledge_scope(&project_id, &project_path)?;
     *state
         .value
         .lock()
@@ -1777,6 +1791,31 @@ mod hardening_tests {
         assert!(validate_provider_id("../openai").is_err());
     }
 
+    #[test]
+    fn project_session_rejects_redirected_project_scope() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = env::temp_dir().join(format!(
+            "atlas-session-scope-{}-{unique}",
+            std::process::id()
+        ));
+        let project = root.join("project");
+        fs::create_dir_all(&project).unwrap();
+        let pointer = root.join("state/project-session.v1.json");
+        assert!(write_project_session(&pointer, &project.to_string_lossy()).is_ok());
+
+        #[cfg(not(windows))]
+        {
+            let redirected = root.join("redirected");
+            std::os::unix::fs::symlink(&project, &redirected).unwrap();
+            assert!(write_project_session(&pointer, &redirected.to_string_lossy()).is_err());
+        }
+
+        fs::remove_dir_all(root).unwrap();
+    }
+
     #[cfg(windows)]
     #[test]
     fn windows_credential_vault_round_trip_is_real_and_disposable() {
@@ -1843,17 +1882,32 @@ mod hardening_tests {
     }
 
     #[test]
-    fn knowledge_ipc_payload_preserves_scope_and_correlation() {
+    fn knowledge_ipc_payload_preserves_scope_and_rejects_untrusted_scope() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = env::temp_dir().join(format!(
+            "atlas-knowledge-scope-{}-{unique}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&root).unwrap();
+        let path = root.to_string_lossy().into_owned();
+
         let value = knowledge_payload(
             "project-a".to_owned(),
-            r"C:\Atlas\Project".to_owned(),
+            path.clone(),
             json!({"query":"Atlas","requestId":"request-16"}),
         )
         .unwrap();
         assert_eq!(value["projectId"], "project-a");
-        assert_eq!(value["projectPath"], r"C:\Atlas\Project");
+        assert_eq!(value["projectPath"], path);
         assert_eq!(value["requestId"], "request-16");
-        assert!(knowledge_payload("a".to_owned(), "b".to_owned(), Value::Null).is_err());
+
+        assert!(knowledge_payload("../project".to_owned(), path.clone(), json!({})).is_err());
+        assert!(knowledge_payload("project-a".to_owned(), "relative/path".to_owned(), json!({})).is_err());
+        assert!(knowledge_payload("project-a".to_owned(), path, Value::Null).is_err());
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

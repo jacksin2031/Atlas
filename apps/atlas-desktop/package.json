@@ -2,7 +2,7 @@
   "name": "@atlas/desktop",
   "private": true,
   "packageManager": "pnpm@11.9.0",
-  "version": "0.15.0-alpha",
+  "version": "0.18.0-alpha",
   "description": "Atlas Desktop Shell",
   "type": "module",
   "scripts": {
@@ -36,6 +36,6 @@
     "typescript": "^5",
     "typescript-eslint": "^8.67.0",
     "vite": "^7",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   }
 }

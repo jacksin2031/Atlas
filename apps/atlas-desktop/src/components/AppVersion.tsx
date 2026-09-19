@@ -1,11 +1,11 @@
 import React from "react";
-import { getVersion } from "@tauri-apps/api/app";
+import { getNativeAppVersion } from "../ipc/bridge";
 
 export function AppVersion() {
   const [label, setLabel] = React.useState("Atlas · checking version…");
   React.useEffect(() => {
     let active = true;
-    void getVersion().then((version) => {
+    void getNativeAppVersion().then((version) => {
       if (active) setLabel(`Atlas v${version}`);
     }).catch(() => {
       if (active) setLabel("Atlas · version unavailable");

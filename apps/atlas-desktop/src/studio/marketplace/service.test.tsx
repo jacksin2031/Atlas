@@ -3,6 +3,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
+(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 async function render(element: React.ReactNode): Promise<string> { const container = document.createElement("div"); const root = createRoot(container); await act(async () => root.render(element)); const html = container.innerHTML; await act(async () => root.unmount()); return html; }
 import { MarketplaceService, registerMarketplaceCommands, useMarketplaceStore, type Snapshot } from "./service";
 import { MarketplaceBrowser, MarketplaceDetails, MarketplaceActivity } from "./panels";

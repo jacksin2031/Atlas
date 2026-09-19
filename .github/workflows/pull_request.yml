@@ -173,6 +173,10 @@ jobs:
       - name: Generate packaged notices
         working-directory: ${{ github.workspace }}
         run: python scripts/bundle_notices.py
+      - name: Stage minimal runtime resource for Tauri backend check
+        run: |
+          mkdir -p src-tauri/resources/runtime
+          printf '%s\n' 'CI placeholder: packaged runtime is built and validated by Windows Installed-Product Smoke.' > src-tauri/resources/runtime/README.txt
       - name: Check Tauri backend
         run: cargo check --manifest-path src-tauri/Cargo.toml
 

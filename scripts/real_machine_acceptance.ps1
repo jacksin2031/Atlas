@@ -101,9 +101,17 @@ function Get-MachineEvidence {
   )
   foreach ($root in $uninstallRoots) {
     $webView2 += @(Get-ItemProperty -Path $root -ErrorAction SilentlyContinue | Where-Object {
-      $_.DisplayName -like "*WebView2*Runtime*"
+      $name = $_.PSObject.Properties["DisplayName"]
+      $name -and $name.Value -like "*WebView2*Runtime*"
     } | ForEach-Object {
-      [ordered]@{ displayName = $_.DisplayName; displayVersion = $_.DisplayVersion; installLocation = $_.InstallLocation }
+      $name = $_.PSObject.Properties["DisplayName"]
+      $version = $_.PSObject.Properties["DisplayVersion"]
+      $location = $_.PSObject.Properties["InstallLocation"]
+      [ordered]@{
+        displayName = $name.Value
+        displayVersion = $(if ($version) { $version.Value } else { $null })
+        installLocation = $(if ($location) { $location.Value } else { $null })
+      }
     })
   }
 
@@ -114,9 +122,10 @@ function Get-MachineEvidence {
   if (Test-Path -LiteralPath "HKCU:\Control Panel\Desktop\PerMonitorSettings") {
     $perMonitor = @(Get-ChildItem -LiteralPath "HKCU:\Control Panel\Desktop\PerMonitorSettings" | ForEach-Object {
       $values = Get-ItemProperty -LiteralPath $_.PSPath
+      $dpiValue = $values.PSObject.Properties["DpiValue"]
       [ordered]@{
         monitorKey = $_.PSChildName
-        dpiValue = $values.DpiValue
+        dpiValue = $(if ($dpiValue) { $dpiValue.Value } else { $null })
       }
     })
   }
@@ -144,8 +153,8 @@ function Get-MachineEvidence {
       elevatedAdministrator = $isAdministrator
     }
     desktopDpi = [ordered]@{
-      logPixels = $dpi.LogPixels
-      win8DpiScaling = $dpi.Win8DpiScaling
+      logPixels = $(if ($dpi -and $dpi.PSObject.Properties["LogPixels"]) { $dpi.PSObject.Properties["LogPixels"].Value } else { $null })
+      win8DpiScaling = $(if ($dpi -and $dpi.PSObject.Properties["Win8DpiScaling"]) { $dpi.PSObject.Properties["Win8DpiScaling"].Value } else { $null })
       perMonitorSettings = $perMonitor
       note = "Registry values are captured as evidence only; RM-E still requires visual/coordinate verification on the physical displays."
     }

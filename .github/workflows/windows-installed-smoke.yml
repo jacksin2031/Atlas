@@ -107,66 +107,75 @@ jobs:
           INSTALL_DIR: ${{ steps.install.outputs.install_dir }}
         run: |
           $oldPath = $env:PATH
-          $p = $null
-          $failure = $null
           try {
             $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot;$env:INSTALL_DIR"
-            $p = Start-Process -FilePath $env:ATLAS_EXE -WorkingDirectory $env:RUNNER_TEMP -PassThru
-            Start-Sleep -Seconds 8
 
-            if ($p.HasExited) {
-              throw "Installed Atlas exited early with code $($p.ExitCode)"
+            function Assert-NoAtlasOrphans {
+              $orphans = @(Get-CimInstance Win32_Process | Where-Object {
+                $_.ExecutablePath -and
+                $_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase) -and
+                $_.Name -match '^(python(w)?|atlas-desktop)\.exe$'
+              })
+              if ($orphans.Count -gt 0) {
+                throw "Installed Atlas left orphan processes: $($orphans.ProcessId -join ', ')"
+              }
             }
 
-            $children = @(Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id })
-            $bad = @($children | Where-Object {
-              if (-not $_.ExecutablePath) { return $false }
-              if ($_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase)) { return $false }
+            for ($cycle = 1; $cycle -le 10; $cycle++) {
+              $p = $null
+              $failure = $null
+              try {
+                $p = Start-Process -FilePath $env:ATLAS_EXE -WorkingDirectory $env:RUNNER_TEMP -PassThru
+                Start-Sleep -Seconds $(if ($cycle -eq 1) { 8 } else { 3 })
 
-              $name = [IO.Path]::GetFileName($_.ExecutablePath)
-              $systemConhost =
-                $name -ieq 'conhost.exe' -and
-                $_.ExecutablePath.StartsWith($env:SystemRoot, [StringComparison]::OrdinalIgnoreCase)
-              $webview =
-                $name -ieq 'msedgewebview2.exe' -and
-                $_.ExecutablePath -match '\\Microsoft\\EdgeWebView\\Application\\'
+                if ($p.HasExited) {
+                  throw "Installed Atlas exited early during cycle $cycle with code $($p.ExitCode)"
+                }
 
-              return -not ($systemConhost -or $webview)
-            })
+                if ($cycle -eq 1) {
+                  $children = @(Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id })
+                  $bad = @($children | Where-Object {
+                    if (-not $_.ExecutablePath) { return $false }
+                    if ($_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase)) { return $false }
 
-            if ($bad.Count -gt 0) {
-              throw "Atlas spawned unexpected child outside install directory: $($bad.ExecutablePath -join ', ')"
+                    $name = [IO.Path]::GetFileName($_.ExecutablePath)
+                    $systemConhost =
+                      $name -ieq 'conhost.exe' -and
+                      $_.ExecutablePath.StartsWith($env:SystemRoot, [StringComparison]::OrdinalIgnoreCase)
+                    $webview =
+                      $name -ieq 'msedgewebview2.exe' -and
+                      $_.ExecutablePath -match '\\Microsoft\\EdgeWebView\\Application\\'
+
+                    return -not ($systemConhost -or $webview)
+                  })
+
+                  if ($bad.Count -gt 0) {
+                    throw "Atlas spawned unexpected child outside install directory: $($bad.ExecutablePath -join ', ')"
+                  }
+
+                  $outsidePython = @($children | Where-Object {
+                    $_.Name -match '^python(w)?\.exe$' -and
+                    $_.ExecutablePath -and
+                    -not $_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase)
+                  })
+                  if ($outsidePython.Count -gt 0) {
+                    throw "Atlas used Python outside install directory: $($outsidePython.ExecutablePath -join ', ')"
+                  }
+                }
+              } catch {
+                $failure = $_
+              } finally {
+                if ($p -and -not $p.HasExited) {
+                  Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+                }
+              }
+
+              Start-Sleep -Seconds 2
+              Assert-NoAtlasOrphans
+              if ($failure) { throw $failure }
             }
-
-            $outsidePython = @($children | Where-Object {
-              $_.Name -match '^python(w)?\.exe$' -and
-              $_.ExecutablePath -and
-              -not $_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase)
-            })
-            if ($outsidePython.Count -gt 0) {
-              throw "Atlas used Python outside install directory: $($outsidePython.ExecutablePath -join ', ')"
-            }
-          } catch {
-            $failure = $_
           } finally {
-            if ($p -and -not $p.HasExited) {
-              Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
-            }
             $env:PATH = $oldPath
-          }
-
-          Start-Sleep -Seconds 3
-          $orphans = @(Get-CimInstance Win32_Process | Where-Object {
-            $_.ExecutablePath -and
-            $_.ExecutablePath.StartsWith($env:INSTALL_DIR, [StringComparison]::OrdinalIgnoreCase) -and
-            $_.Name -match '^(python(w)?|atlas-desktop)\.exe$'
-          })
-          if ($orphans.Count -gt 0) {
-            throw "Installed Atlas left orphan processes: $($orphans.ProcessId -join ', ')"
-          }
-
-          if ($failure) {
-            throw $failure
           }
 
       - name: Silent uninstall
@@ -198,7 +207,7 @@ jobs:
           Fresh GitHub-hosted Windows VM smoke passed only if this job is green.
           This validates build, Unicode/space silent install, bundled-runtime imports outside the checkout,
           launch without development PATH, trusted-host-aware child-process containment,
-          forced-close orphan cleanup, and silent uninstall.
+          ten launch/forced-close cycles with orphan cleanup, and silent uninstall.
           It does NOT establish interactive GUI, Input, mixed-DPI, accessibility,
           or full real-machine acceptance.
           '@ | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY

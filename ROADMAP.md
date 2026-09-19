@@ -2,10 +2,10 @@
 
 > Sprint 18 candidate: **0.18.0-alpha**. Beta readiness is **NOT YET**; see [current evidence and acceptance gaps](docs/beta/SPRINT_18_BETA_READINESS_REPORT.md). Earlier sprint results below remain historical evidence.
 
-> **Last Updated**: 2026-09-04
-> **Current Version**: 0.15.0-alpha
-> **Current Sprint**: Sprint 17 — Marketplace
-> **Next Milestone**: Marketplace acceptance
+> **Last Updated**: 2026-09-20
+> **Current Version**: 0.18.0-alpha (unreleased candidate)
+> **Current Sprint**: Sprint 18.1 — Beta Acceptance Closure
+> **Next Milestone**: Real-machine beta acceptance and evidence closure
 
 ---
 

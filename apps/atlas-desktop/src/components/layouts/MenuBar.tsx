@@ -50,7 +50,6 @@ const MenuDropdown: React.FC<{ label: string; items: readonly MenuItem[] }> = ({
     className="menu-dropdown"
     onMouseEnter={show}
     onMouseLeave={hide}
-    onFocus={show}
     onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false); }}
     onKeyDown={(event) => {
       if (event.key === "Escape") {

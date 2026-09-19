@@ -9,7 +9,10 @@ import { cloneDefaultLayout } from "../workspace/layouts";
 import { getAllowedPanelIds } from "../workspace/panel-registry";
 import type { WorkspaceId } from "../workspace/types";
 
-vi.mock("../ipc/bridge", () => ({ loadProjectAssets: vi.fn(), saveProjectAssets: vi.fn() }));
+vi.mock("../ipc/bridge", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../ipc/bridge")>();
+  return { ...actual, loadProjectAssets: vi.fn(), saveProjectAssets: vi.fn() };
+});
 describe("project assets activation safety", () => {
   afterEach(async () => { vi.mocked(saveProjectAssets).mockResolvedValue(undefined); await projectAssetService.close(); vi.resetAllMocks(); });
   it("initializes a fresh project without previous private AI input", async () => {

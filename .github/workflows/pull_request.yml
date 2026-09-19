@@ -168,8 +168,7 @@ jobs:
       - name: Build frontend
         run: pnpm run build
       - name: Generate packaged notices
-        working-directory: ../..
-        run: python Atlas/scripts/bundle_notices.py
+        run: python scripts/bundle_notices.py
       - name: Check Tauri backend
         run: cargo check --manifest-path src-tauri/Cargo.toml
 

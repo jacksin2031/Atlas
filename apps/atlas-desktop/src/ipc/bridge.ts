@@ -24,6 +24,30 @@ async function invokeRequired<T>(command: string, args?: Record<string, unknown>
   return tauriInvoke<T>(command, args);
 }
 
+
+export interface BetaSystemInfo {
+  version: string;
+  platform: string;
+  architecture: string;
+  buildType: string;
+  commit: string;
+  runtimes: Array<{ name: string; status: string; detail: string }>;
+}
+
+export interface DiagnosticsExportResult {
+  path: string | null;
+}
+
+/** Queries installed-product identity and runtime health without exposing credentials. */
+export async function getBetaSystemInfo(): Promise<BetaSystemInfo> {
+  return invokeRequired<BetaSystemInfo>("beta_system_info");
+}
+
+/** Exports the allowlisted local diagnostics bundle through the native save dialog. */
+export async function exportDiagnostics(): Promise<DiagnosticsExportResult> {
+  return invokeRequired<DiagnosticsExportResult>("export_diagnostics");
+}
+
 /**
  * Open a project via the Tauri backend.
  */

@@ -59,8 +59,6 @@ jobs:
           node-version: "22"
           cache: pnpm
           cache-dependency-path: apps/atlas-desktop/pnpm-lock.yaml
-      - name: Install locked dependency graph
-        run: pnpm install --frozen-lockfile
       - name: Refresh patched dependency resolutions
         run: pnpm update postcss nanoid browserslist vitest baseline-browser-mapping --lockfile-only --depth Infinity
       - name: Upload refreshed lockfile for review

@@ -97,7 +97,10 @@ def rust():
     command = ["cargo", "metadata", "--format-version", "1", "--locked", "--offline",
                "--filter-platform", "x86_64-pc-windows-msvc", "--manifest-path",
                str(APP / "src-tauri/Cargo.toml")]
-    result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, encoding="utf-8")
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, encoding="utf-8")
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"cargo metadata failed ({result.returncode}): {detail}")
     metadata = json.loads(result.stdout)
     nodes = {node["id"]: node for node in metadata["resolve"]["nodes"]}
     pending = [metadata["resolve"]["root"]]

@@ -49,11 +49,15 @@ jobs:
           $installer = @(Get-ChildItem -LiteralPath $bundle -Filter '*.exe')
           if ($installer.Count -ne 1) { throw "Expected exactly one NSIS installer, got $($installer.Count)" }
           $installDir = Join-Path $env:RUNNER_TEMP 'Atlas 驗收 日本語 Space'
-          New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-          $proc = Start-Process -FilePath $installer[0].FullName -ArgumentList @('/S', "/D=$installDir") -Wait -PassThru
+          if (Test-Path -LiteralPath $installDir) { Remove-Item -LiteralPath $installDir -Recurse -Force }
+          $arguments = "/S /D=$installDir"
+          $proc = Start-Process -FilePath $installer[0].FullName -ArgumentList $arguments -Wait -PassThru
           if ($proc.ExitCode -ne 0) { throw "Installer failed: $($proc.ExitCode)" }
           $exe = Join-Path $installDir 'Atlas.exe'
-          if (-not (Test-Path -LiteralPath $exe)) { throw "Installed Atlas.exe missing at $exe" }
+          if (-not (Test-Path -LiteralPath $exe)) {
+            $found = @(Get-ChildItem -LiteralPath $installDir -Filter '*.exe' -File -ErrorAction SilentlyContinue)
+            throw "Installed Atlas.exe missing at $exe; found: $($found.Name -join ', ')"
+          }
           $runtime = Join-Path $installDir 'resources/runtime/python.exe'
           if (-not (Test-Path -LiteralPath $runtime)) { throw "Bundled python.exe missing at $runtime" }
           "install_dir=$installDir" >> $env:GITHUB_OUTPUT

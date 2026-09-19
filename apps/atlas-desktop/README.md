@@ -6,7 +6,7 @@
 
 Atlas Desktop Shell — the graphical user interface that hosts every Atlas runtime.
 
-This is the application shell that hosts the independent Workflow, Vision, and AI Studio workspaces.
+This is the application shell that hosts the independent Workflow, Vision, AI, Knowledge, and Marketplace workspaces.
 
 ## Technology Stack
 
@@ -30,7 +30,7 @@ apps/atlas-desktop/
 │   │   └── CommandPalette.tsx
 │   ├── design-system/      # Atlas SVG icons and compact shared primitives
 │   ├── workspace/          # FlexLayout manager, models, registry, persistence
-│   ├── studio/             # Workflow, Vision, and AI Studio
+│   ├── studio/             # Workflow, Vision, AI, Knowledge, and Marketplace workspaces
 │   ├── services/           # IPC, plugin, project, theme, log, command registry/palette
 │   ├── stores/             # Shell Zustand stores
 │   ├── ipc/                # Tauri IPC bridge layer
@@ -52,11 +52,13 @@ apps/atlas-desktop/
 
 ## Workspaces
 
-Workflow, Vision, and AI each own a FlexLayout model. Panel tabs can be moved, docked, split, reordered, resized, closed, reopened, and maximized. Layouts persist independently and recover to defaults when invalid.
+Workflow, Vision, AI, Knowledge, and Marketplace each own an independent versioned FlexLayout model. Panel tabs can be moved, docked, split, reordered, resized, closed, reopened, and maximized. Layouts persist independently and recover to defaults when invalid.
 
 - Workflow: Project Explorer / Node Palette, Workflow Canvas, Properties, Variables / Console / Problems / Debugger / Output.
 - Vision: Vision Toolbox / Project Explorer, Vision Canvas, Vision Properties, OCR / Detection / Color / Template / Timeline / Console / Output / Problems.
 - AI: Providers / Models / Sessions, multi-mode AI editor, Context / Request / Response, Console / Tools / Memory / Retrieval / Metrics / Events / Comparison / Problems.
+- Knowledge: project-scoped browser/editor/search with provenance, events, persistence and import/export surfaces.
+- Marketplace: local-development package discovery/details/activity, permission review and installed/update state.
 
 AI Studio uses the existing AI Runtime contracts through a typed IPC boundary, a persistent Tauri process manager, and a long-running Python host. The host implements discovery, inference, cancellation, provider actions, and request-correlated streaming for OpenAI-compatible and Ollama providers. Production mode shows explicit Runtime/provider-unavailable states; browser development can opt into the visibly isolated adapter with `VITE_ATLAS_AI_DEMO=true`.
 
@@ -92,6 +94,7 @@ system default, run a command with `$env:RUSTUP_TOOLCHAIN='stable-x86_64-pc-wind
 - Conforms to MODULE_DEPENDENCIES.md (Layer 8 — Desktop UI)
 - Depends on: Core Foundation, Plugin, IPC, Workflow, Vision, AI, Knowledge, Project
 - No forbidden dependencies
+- Tauri API imports are constrained to `src/ipc/bridge.ts`; React/workspace/Studio code consumes typed bridge/service boundaries
 - IPC compliant with RFC-0101 through RFC-0112
 - Plugin compliant with RFC-0201 through RFC-0230
 - Runtime lifecycle FSM aligned with RFC-0002

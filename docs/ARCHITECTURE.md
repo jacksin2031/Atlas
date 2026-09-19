@@ -1,7 +1,8 @@
 ﻿# Atlas Platform Architecture
 
-> **Last Updated**: 2026-07-06
-> **Current Version**: 0.12.0-beta
+> **Last Updated**: 2026-09-19
+> **Current Version**: 0.18.0-alpha (unreleased beta-readiness candidate)
+> **Acceptance Status**: Sprint 18 PARTIAL — Beta Readiness NOT YET. Historical sprint sections below describe the architecture as it evolved; the Sprint 18 installed-runtime section and beta readiness report define the current product boundary.
 
 ---
 

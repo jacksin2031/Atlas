@@ -191,6 +191,9 @@ def main():
                f"\n\n## Omitted optional frontend peers ({len(unresolved_optional)})\n\n" +
                ("\n".join(f"- `{item['parent']}` → `{item['dependency']}`." for item in unresolved_optional) if unresolved_optional else "None.") + "\n")
     (ROOT / "docs/beta/NOTICES.md").write_text(summary, encoding="utf-8")
+    if unresolved_required:
+        missing = ", ".join(f"{item['parent']} -> {item['dependency']}" for item in unresolved_required)
+        raise RuntimeError(f"Unresolved required frontend production dependencies: {missing}")
     print(json.dumps({
         "npm": len(npm),
         "cargo": len(cargo),

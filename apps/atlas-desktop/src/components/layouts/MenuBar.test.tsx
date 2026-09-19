@@ -3,6 +3,7 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MenuBar } from "./MenuBar";
+(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 const { execute } = vi.hoisted(() => ({ execute: vi.fn() }));
 vi.mock("../../services", () => ({ commandPaletteService: { execute } }));

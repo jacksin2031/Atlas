@@ -38,13 +38,27 @@ def collect(ecosystem, name, version, directory, license_value, source, reposito
     identifier = re.sub(r"[^a-zA-Z0-9._-]", "_", f"{name}-{version}")
     output = DEST / ecosystem / identifier
     texts = []
-    for index, path in enumerate(license_files(directory, explicit)):
+    discovered = license_files(directory, explicit)
+    for index, path in enumerate(discovered):
         output.mkdir(parents=True, exist_ok=True)
         target = output / f"{index:02d}-{path.name}"
         shutil.copyfile(path, target)
         texts.append({"original_file": str(path.relative_to(directory)) if path.is_relative_to(directory) else explicit,
                       "bundled_file": target.relative_to(DEST).as_posix(),
                       "sha256": hashlib.sha256(target.read_bytes()).hexdigest()})
+
+    # Workspace crates inherit Atlas' Apache-2.0 license from the workspace manifest.
+    # Their package directories intentionally do not duplicate the repository root LICENSE.
+    if not texts and source == "local workspace package":
+        root_license = ROOT / "LICENSE"
+        if root_license.is_file():
+            output.mkdir(parents=True, exist_ok=True)
+            target = output / "00-ATLAS-LICENSE"
+            shutil.copyfile(root_license, target)
+            texts.append({"original_file": "LICENSE",
+                          "bundled_file": target.relative_to(DEST).as_posix(),
+                          "sha256": hashlib.sha256(target.read_bytes()).hexdigest()})
+
     return {"ecosystem": ecosystem, "name": name, "version": version,
             "declared_license": license_value or "UNKNOWN", "source": source,
             "repository": repository, "license_texts": texts,
@@ -132,12 +146,28 @@ def main():
     cargo = rust()
     packages = sorted(npm + cargo, key=lambda item: (item["ecosystem"], item["name"], item["version"]))
     review = [f"{p['ecosystem']}:{p['name']}@{p['version']}" for p in packages if p["review_required"]]
+    review_details = [
+        {
+            "package": f"{p['ecosystem']}:{p['name']}@{p['version']}",
+            "declared_license": p["declared_license"],
+            "license_text_count": len(p["license_texts"]),
+            "reasons": p["review_reasons"],
+        }
+        for p in packages if p["review_required"]
+    ]
+    unresolved_required = [item for item in unresolved if not item["optional"]]
+    unresolved_optional = [item for item in unresolved if item["optional"]]
     inventory = {"scope": "Installed frontend production dependency and peer closure; Cargo Windows resolved graph including build dependencies",
                  "generation_command": "python scripts/bundle_notices.py",
                  "legal_compatibility_assessed": False,
                  "python_license": "../runtime/LICENSE.txt (embedded CPython distribution; includes its bundled third-party notices)",
                  "atlas_license": "../runtime/ATLAS-LICENSE.txt",
-                 "unresolved_frontend_dependencies": unresolved, "review_required": review, "packages": packages}
+                 "unresolved_frontend_dependencies": unresolved,
+                 "unresolved_required_frontend_dependencies": unresolved_required,
+                 "unresolved_optional_frontend_dependencies": unresolved_optional,
+                 "review_required": review,
+                 "review_required_details": review_details,
+                 "packages": packages}
     (DEST / "inventory.json").write_text(json.dumps(inventory, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     summary = ("# Beta dependency notices\n\n"
                "Generated with `python scripts/bundle_notices.py`, using local installed packages and "
@@ -156,8 +186,10 @@ def main():
                "Generated resources are ignored by Git and must be regenerated before packaging.\n\n"
                f"## Missing metadata or texts ({len(review)})\n\n" +
                ("\n".join(f"- `{p['ecosystem']}:{p['name']}@{p['version']}`: {', '.join(p['review_reasons'])}." for p in packages if p["review_required"]) if review else "None in the collected package inventory.") +
-               f"\n\n## Unresolved frontend dependencies ({len(unresolved)})\n\n" +
-               ("\n".join(f"- `{item['parent']}` → `{item['dependency']}` (optional: {item['optional']})." for item in unresolved) if unresolved else "None.") + "\n")
+               f"\n\n## Unresolved required frontend dependencies ({len(unresolved_required)})\n\n" +
+               ("\n".join(f"- `{item['parent']}` → `{item['dependency']}`." for item in unresolved_required) if unresolved_required else "None.") +
+               f"\n\n## Omitted optional frontend peers ({len(unresolved_optional)})\n\n" +
+               ("\n".join(f"- `{item['parent']}` → `{item['dependency']}`." for item in unresolved_optional) if unresolved_optional else "None.") + "\n")
     (ROOT / "docs/beta/NOTICES.md").write_text(summary, encoding="utf-8")
     print(json.dumps({
         "npm": len(npm),
@@ -165,7 +197,10 @@ def main():
         "license_files": sum(len(p["license_texts"]) for p in packages),
         "review_required": len(review),
         "review_required_packages": review,
+        "review_required_details": review_details,
         "unresolved_frontend": len(unresolved),
+        "unresolved_required_frontend": len(unresolved_required),
+        "unresolved_optional_frontend": len(unresolved_optional),
         "unresolved_frontend_dependencies": unresolved,
     }, ensure_ascii=False))
 
